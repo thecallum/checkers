@@ -1,0 +1,38 @@
+.home {
+    &__title {
+        font-size: 80px;
+        font-weight: 100;
+        text-align: center;
+    }
+    &__subtitle {
+        font-size: 30px;
+        font-weight: 300;
+        text-align: center;
+    }
+    &__optionContainer {
+        display: flex;
+        justify-content: center;
+    }
+    &__option {
+        display: block;
+        margin: 0 10px;
+    }
+
+    &__button {
+        width: 280px;
+        height: 140px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__buttonIcon { width: 60px }
+    &__buttonIcon--globe { width: 80px }
+
+    &__buttonVs,
+    &__buttonOnline {
+        margin: 0 10px;
+        font-size: 34px;
+        flex-grow: 1;
+    }
+}

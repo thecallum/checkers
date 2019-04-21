@@ -1,0 +1,52 @@
+.canvas {
+    &__players {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    &__player {
+        width: 200px;        
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    &__playerImg {
+        background-color: $color_white_tertiary;
+        height: 80px;
+        width: 80px;
+        display: block;
+    }
+
+    &__playerName {
+        margin: 10px;
+        font-size: 22px;
+        text-align: center;
+    }   
+
+    &__board {
+        padding: 20px 0 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    &__container {
+        background-color: $color_canvas_main;
+        padding: 50px 70px;
+        position: relative;
+    }
+
+    &__bottom {
+        display: flex;
+        justify-content: center;
+    }
+
+    &__message {
+        text-align: center;
+        color: $color_white_main;
+        font-size: 40px;
+        font-weight: 300;
+        margin: 15px 0;
+        color:$color_canvas_main;
+    }
+}
