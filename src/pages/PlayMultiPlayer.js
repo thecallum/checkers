@@ -33,6 +33,7 @@ class PlayMultiPlayer extends Component {
             width: width,
             height: width,
             gridSize: width /8,
+            halfGridSize: width /16,
          
             players: [
                 { name: 'Player 1', color: colors.red },
@@ -126,6 +127,7 @@ class PlayMultiPlayer extends Component {
                                             width={this.state.width}
                                             height={this.state.height}
                                             gridSize={this.state.gridSize}
+                                            halfGridSize={this.state.halfGridSize}
                                         />
                                     </div>
                                 </div>

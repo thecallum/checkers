@@ -4,7 +4,8 @@ const handleCanvasResize = function() {
     this.setState({
         width,
         height: width,
-        gridSize: width /8
+        gridSize: width /8,
+        halfGridSize: width/16,
     }, this.state.gameStarted ? this.updateCanvas : this.preUpdateCanvas);
 }
 

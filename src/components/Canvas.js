@@ -63,25 +63,26 @@ class Canvas extends Component {
     drawOptions() {
         this.props.options.map(({ start, end }) => {
 
+            // Calculate which direction arrow needs to point
             const xDir = start.x > end.x ? -1 : 1;
             const yDir = start.y > end.y ? -1 : 1;
 
-            const halfGrid = this.props.gridSize /2;
             const gridCenter = {
-                x: (end.x * this.props.gridSize) + halfGrid,
-                y: (end.y * this.props.gridSize) + halfGrid
+                x: (end.x * this.props.gridSize) + this.props.halfGridSize,
+                y: (end.y * this.props.gridSize) + this.props.halfGridSize
             };
         
             // line
             this.ctx.strokeStyle = colors.green;
             this.ctx.fillStyle = colors.green;
             this.ctx.lineWidth = 6;
+
+            // arrow
             this.ctx.beginPath();
-            this.ctx.moveTo((start.x * this.props.gridSize) + halfGrid, (start.y * this.props.gridSize) + halfGrid);
+            this.ctx.moveTo((start.x * this.props.gridSize) + this.props.halfGridSize, (start.y * this.props.gridSize) + this.props.halfGridSize);
             this.ctx.lineTo(gridCenter.x, gridCenter.y);
             this.ctx.stroke();
 
-            // arrow
             // this layout may be more clunky, but its much easier to understand
             this.ctx.beginPath();
 
