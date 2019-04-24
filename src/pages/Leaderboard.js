@@ -1,12 +1,10 @@
 import React from 'react';
-import Header from './Header';
+import Layout from '../components/Layout';
 
 const Leaderboard = () => (
-    <div>
-        <Header />
-        
+    <Layout>
         <p>Leaderboard</p>
-    </div>
+    </Layout>
 );
 
 export default Leaderboard;

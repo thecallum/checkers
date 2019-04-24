@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import Canvas from './Canvas';
-import Header from './Header';
-import Footer from './Footer';
-import Modal from './Modal';
+import Canvas from '../components/Canvas';
+import Layout from '../components/Layout';
+
+import Modal from '../components/Modal';
 
 import colors from '../board/pieceColors';
 
@@ -97,46 +97,46 @@ class PlayMultiPlayer extends Component {
         return (
             <div>
                 <div className={(!this.state.gameStarted || this.state.gameEnded) ? 'blur' : ''}>
-                    <Header/>
+                    <Layout>
 
-                    <div className="container">
+                        <div className="container">
 
-                        <div className='canvasView'>
-                            <div className='canvas__players'>
-                            {
-                                this.state.players.map((player, index) => (
-                                    <div className='canvas__player' key={index + 'a'}>
-                                        <img src="" alt="" className='canvas__playerImg'/>
-                                        <p className='canvas__playerName'>{ player.name }</p>
-                                    </div>  
-                                ))
-                            }
-                            </div>
+                            <div className='canvasView'>
+                                <div className='canvas__players'>
+                                {
+                                    this.state.players.map((player, index) => (
+                                        <div className='canvas__player' key={index + 'a'}>
+                                            <img src="" alt="" className='canvas__playerImg'/>
+                                            <p className='canvas__playerName'>{ player.name }</p>
+                                        </div>  
+                                    ))
+                                }
+                                </div>
 
-                            <div className='canvas__board'>
-                                <div className="canvas__container">
-                                    <Canvas 
-                                        ref={this.canvasRef}
-                                        players={this.state.players}
-                                        pieces={this.state.pieces}    
-                                        options={this.state.options}
-                                        canvasReady={this.canvasReady}
-                                        selectedPiece={this.state.selectedPiece}
+                                <div className='canvas__board'>
+                                    <div className="canvas__container">
+                                        <Canvas 
+                                            ref={this.canvasRef}
+                                            players={this.state.players}
+                                            pieces={this.state.pieces}    
+                                            options={this.state.options}
+                                            canvasReady={this.canvasReady}
+                                            selectedPiece={this.state.selectedPiece}
 
-                                        width={this.state.width}
-                                        height={this.state.height}
-                                        gridSize={this.state.gridSize}
-                                    />
+                                            width={this.state.width}
+                                            height={this.state.height}
+                                            gridSize={this.state.gridSize}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="canvas__bottom">
+                                    <h3 className='canvas__message'>It's {this.state.players[this.state.activePlayer].name}'s turn!</h3>
                                 </div>
                             </div>
-
-                            <div className="canvas__bottom">
-                                <h3 className='canvas__message'>It's {this.state.players[this.state.activePlayer].name}'s turn!</h3>
-                            </div>
                         </div>
-                    </div>
 
-                    <Footer/>
+                    </Layout>
                     
                 </div>
 

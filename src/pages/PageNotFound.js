@@ -1,14 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-
-import Header from './Header';
+import Layout from '../components/Layout';
 
 const PageNotFound = () => (
-    <div>
-      <Header/>
+    <Layout>
       <h1>404 Page not found!</h1>
       <Link to='/'>to Home</Link>
-    </div>
-  )
+    </Layout>
+);
 
 export default PageNotFound;

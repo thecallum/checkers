@@ -1,12 +1,10 @@
 import React from 'react';
-import Header from './Header';
+import Layout from '../components/Layout';
 
 const PlaySinglePlayer = () => (
-    <div>
-        <Header />
-        
+    <Layout>
         <h1>SinglePlayer</h1>
-    </div>
+    </Layout>
 )
 
 export default PlaySinglePlayer;

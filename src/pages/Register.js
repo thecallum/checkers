@@ -1,12 +1,10 @@
 import React from 'react';
-import Header from './Header';
+import Layout from '../components/Layout';
 
 const Register = () => (
-  <div>
-    <Header /> 
-
+  <Layout>
     <p>Register</p>
-  </div>
+  </Layout>
 );
 
 export default Register;

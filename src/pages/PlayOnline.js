@@ -1,11 +1,10 @@
 import React from 'react';
-import Header from './Header';
+import Layout from '../components/Layout';
 
 const PlayOnline = () => (
-    <div>
-        <Header />
+    <Layout>
         <h1>Online</h1>
-    </div>
+    </Layout>
   )
 
 export default PlayOnline;

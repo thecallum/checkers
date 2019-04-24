@@ -2,17 +2,17 @@ import React from 'react';
 
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 
-import Home from '../components/Home';
-import Login from '../components/Login';
-import Register from '../components/Register';
+import Home from '../pages/Home';
+import Login from '../pages/Login';
+import Register from '../pages/Register';
 
-import PlayMultiPlayer from '../components/PlayMultiPlayer';
-import PlaySinglePlayer from '../components/PlaySinglePlayer';
-import PlayOnline from '../components/PlayOnline';
+import PlayMultiPlayer from '../pages/PlayMultiPlayer';
+import PlaySinglePlayer from '../pages/PlaySinglePlayer';
+import PlayOnline from '../pages/PlayOnline';
 
-import Leaderboard from '../components/Leaderboard';
+import Leaderboard from '../pages/Leaderboard';
 
-import PageNotFound from '../components/PageNotFound';
+import PageNotFound from '../pages/PageNotFound';
 
 const Router = () => (
     <BrowserRouter>
