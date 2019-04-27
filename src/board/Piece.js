@@ -1,20 +1,27 @@
 import colors from './pieceColors';
 
 class Piece {
-    constructor(coords, color, id, isKing = false) {
-        this.color = color;
+    constructor(coords, player, id, isKing = false) {
+        this.player = player;
         this.id = id;
         this.coords = coords;
-        this.selected = false;
         this.king = isKing;
     }
 
-    draw(gridSize, ctx, validOptions) {
+    draw(gridSize, ctx, validOptions, selected) {
         const radius = (gridSize /2) - 6;
         const x = (this.coords.x * gridSize) + (gridSize /2);
         const y = (this.coords.y * gridSize) + (gridSize /2);
         
-        ctx.fillStyle = this.selected ? validOptions ? colors.green : colors.grey : this.color;
+        // ctx.fillStyle = this.selected ? validOptions ? colors.green : colors.grey : this.color;
+        
+        if (selected && !validOptions) {
+            ctx.fillStyle = colors.grey;
+        } else if (selected) {
+            ctx.fillStyle = colors.green;
+        } else {
+            ctx.fillStyle = colors[this.player === 0 ? 'red' : 'blue'];
+        }
         
         ctx.beginPath();
         ctx.arc(x, y, radius, 50, 0, 2*Math.PI);
