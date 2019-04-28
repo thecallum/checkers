@@ -1,82 +1,47 @@
 import React, { Component } from 'react';
 import colors from '../board/pieceColors';
 
-// pass draw prob to redraw
+import loadFont from '../board/loadFont';
 
 class Canvas extends Component {
     constructor(props) {
         super(props);
 
-        this.canvas = React.createRef();
-    
+        this.gamestate = {};
+
+        this.canvas = React.createRef();    
         this.ctx = null;
 
-        //
-        // this.draw = this.draw.bind(this);
         this.preDraw = this.preDraw.bind(this);
-
-        // this.drawGrid = this.drawGrid.bind(this);
-        // this.drawPieces = this.drawPieces.bind(this);
-        // this.drawOptions = this.drawOptions.bind(this);
-
         this.updateCanvas = this.updateCanvas.bind(this);
-
-        this.clearCanvas = this.clearCanvas.bind(this);
-
-        this.gamestate = {};
     }
 
     componentDidMount() {
-
-        console.log('canvas mounted', this.canvas);
-
-        // console.log('props', this.props)
-
-        
-
         this.ctx = this.canvas.current.getContext('2d');
 
+        loadFont(this.ctx, 'Special Elite', 36);
 
-
-        // const canvas = this.canvas.current;
-
-        this.props.fetchCanvasControls({
+        const controls = {
             update: this.updateCanvas,
             preDraw: this.preDraw
-        }, this.canvas.current);
-        // const draw = this.draw;
-        // const preDraw = this.preDraw;
+        };
 
-        // this.props.canvasReady({ canvas, draw, preDraw });
+        this.props.fetchCanvasControls(controls, this.canvas.current);
     }
 
     updateCanvas(state) {
         this.gameState = state;
 
         this.clearCanvas();
-        this.drawGrid()
+        this.drawGrid();
         this.drawPieces();
         this.drawOptions();
+
+        if (!!this.gameState.selectedPiece) this.drawSelectedPiece();
     }
 
     clearCanvas() {
         this.ctx.clearRect(0,0, this.props.width, this.props.height);
-    }
-
-    preDraw() {
-        // only draw grid (before player starts game)
-        this.drawGrid();
-    }
-    draw() {
-        // this.ctx.clearRect(0,0, this.props.width, this.props.height);
-        this.drawGrid();
-        this.drawPieces();
-        this.drawOptions();
-
-        //  draw selected piece
-        if (!!this.props.selectedPiece) {
-            this.props.selectedPiece.draw(this.props.gridSize, this.ctx, !!this.props.options.length);
-        }
     }
 
     drawGrid() {
@@ -92,74 +57,36 @@ class Canvas extends Component {
             }
         }
     }
-    drawPieces() {
 
-        // console.log('draw Pieces', this.gameState);
+    drawPieces() {
         this.gameState.pieces.map(piece => {
             const isSelected = piece.id === this.gameState.selectedPiece;
             const availableOptions = this.gameState.options[piece.id].length > 0;
             piece.draw(this.props.gridSize, this.ctx, availableOptions, isSelected);
         });
     }
+
     drawOptions() {
-        if (!this.gameState.selectedPiece) return;
+        if (this.gameState.selectedPiece === null) return;
 
-        const selected = this.gameState.options[this.gameState.selectedPiece];
+        const selectedPiece = this.gameState.selectedPiece;
+        const selectedOptions = this.gameState.options[selectedPiece];
 
-        for (let { start, end } of selected) {
-
-            // Calculate which direction arrow needs to point
-            const xDir = start.x > end.x ? -1 : 1;
-            const yDir = start.y > end.y ? -1 : 1;
-
-            const gridCenter = {
-                x: (end.x * this.props.gridSize) + this.props.halfGridSize,
-                y: (end.y * this.props.gridSize) + this.props.halfGridSize
-            };
-        
-            this.ctx.strokeStyle = colors.green;
-            this.ctx.fillStyle = colors.green;
-            this.ctx.lineWidth = 6;
-
-            // line
-
-            this.ctx.beginPath();
-            this.ctx.moveTo((start.x * this.props.gridSize) + this.props.halfGridSize, (start.y * this.props.gridSize) + this.props.halfGridSize);
-            this.ctx.lineTo(gridCenter.x, gridCenter.y);
-            this.ctx.stroke();
-
-            // arrow
-            //      this layout may be more clunky, but its much easier to understand
-            //      It's tilting the arrow according to its direction
-
-            this.ctx.beginPath();
-
-            if (xDir === -1) { // left
-                if (yDir === -1) {
-                    this.ctx.moveTo(gridCenter.x +15, gridCenter.y -5);
-                    this.ctx.lineTo(gridCenter.x -5, gridCenter.y +15);
-                    this.ctx.lineTo(gridCenter.x -6.5, gridCenter.y -7);
-                } else {
-                    this.ctx.moveTo(gridCenter.x +15, gridCenter.y +5);
-                    this.ctx.lineTo(gridCenter.x -5, gridCenter.y -15);
-                    this.ctx.lineTo(gridCenter.x -6.5, gridCenter.y +7);    
-                }
-            } else {
-                if (yDir === -1) {
-                    this.ctx.moveTo(gridCenter.x -15, gridCenter.y -5);
-                    this.ctx.lineTo(gridCenter.x +5, gridCenter.y +15);
-                    this.ctx.lineTo(gridCenter.x +6.5, gridCenter.y -7);
-                } else {
-                    this.ctx.moveTo(gridCenter.x -15, gridCenter.y +5);
-                    this.ctx.lineTo(gridCenter.x +5, gridCenter.y -15);
-                    this.ctx.lineTo(gridCenter.x +6.5, gridCenter.y +7);
-                }
-            }
-
-            this.ctx.fill();
-        }
+        this.gameState.pieces[selectedPiece].drawOptions(this.ctx, selectedOptions, this.props.gridSize, this.props.halfGridSize);
     }
 
+    drawSelectedPiece() {
+        const pieceID = this.gameState.selectedPiece;
+        const availableOptions = this.gameState.options[pieceID].length > 0;
+
+        this.gameState.pieces.filter(piece => piece.id === pieceID)[0].draw(this.props.gridSize, this.ctx, availableOptions, true);
+    }
+
+    preDraw() {
+        // only draw grid (before player starts game)
+        this.drawGrid();
+    }    
+    
     render() {
         return (
             <canvas

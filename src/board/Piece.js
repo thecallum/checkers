@@ -13,7 +13,6 @@ class Piece {
         const x = (this.coords.x * gridSize) + (gridSize /2);
         const y = (this.coords.y * gridSize) + (gridSize /2);
         
-        // ctx.fillStyle = this.selected ? validOptions ? colors.green : colors.grey : this.color;
         
         if (selected && !validOptions) {
             ctx.fillStyle = colors.grey;
@@ -27,16 +26,69 @@ class Piece {
         ctx.arc(x, y, radius, 50, 0, 2*Math.PI);
         ctx.fill();
 
-        if (this.king) {
-            ctx.fillStyle = 'black';
-            ctx.font = '36px Special Elite, cursive';
-            ctx.fillText('K', x - 10, y + 12);    
-        }
+        if (this.king) this.drawKingOverlay(ctx, x, y)  ;
     }
 
-    toggleActive(newState) {
-        this.selected = newState;
+    drawKingOverlay(ctx, x, y) {
+        ctx.fillStyle = 'black';
+        ctx.fillText('K', x - 10, y + 12);   
     }
+
+    drawOptions(ctx, options, gridSize, halfGridSize) {
+        for (let { start, end } of options) {
+
+            // Calculate which direction arrow needs to point
+            const xDir = start.x > end.x ? -1 : 1;
+            const yDir = start.y > end.y ? -1 : 1;
+
+            const gridCenter = {
+                x: (end.x * gridSize) + halfGridSize,
+                y: (end.y * gridSize) + halfGridSize
+            };
+        
+            ctx.strokeStyle = colors.green;
+            ctx.fillStyle = colors.green;
+            ctx.lineWidth = 6;
+
+            // line
+
+            ctx.beginPath();
+            ctx.moveTo((start.x * gridSize) + halfGridSize, (start.y * gridSize) + halfGridSize);
+            ctx.lineTo(gridCenter.x, gridCenter.y);
+            ctx.stroke();
+
+            // arrow
+            //      this layout may be more clunky, but its much easier to understand
+            //      It's tilting the arrow according to its direction
+
+            ctx.beginPath();
+
+            if (xDir === -1) { // left
+                if (yDir === -1) {
+                    ctx.moveTo(gridCenter.x +15, gridCenter.y -5);
+                    ctx.lineTo(gridCenter.x -5, gridCenter.y +15);
+                    ctx.lineTo(gridCenter.x -6.5, gridCenter.y -7);
+                } else {
+                    ctx.moveTo(gridCenter.x +15, gridCenter.y +5);
+                    ctx.lineTo(gridCenter.x -5, gridCenter.y -15);
+                    ctx.lineTo(gridCenter.x -6.5, gridCenter.y +7);    
+                }
+            } else {
+                if (yDir === -1) {
+                    ctx.moveTo(gridCenter.x -15, gridCenter.y -5);
+                    ctx.lineTo(gridCenter.x +5, gridCenter.y +15);
+                    ctx.lineTo(gridCenter.x +6.5, gridCenter.y -7);
+                } else {
+                    ctx.moveTo(gridCenter.x -15, gridCenter.y +5);
+                    ctx.lineTo(gridCenter.x +5, gridCenter.y -15);
+                    ctx.lineTo(gridCenter.x +6.5, gridCenter.y +7);
+                }
+            }
+
+            ctx.fill();
+        }
+    }
+    // add draw options to piece
 }
 
 export default Piece

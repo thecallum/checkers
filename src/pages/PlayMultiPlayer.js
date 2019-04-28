@@ -18,25 +18,25 @@ class PlayMultiPlayer extends Component {
             gameEnded: false,
             winMessage: '',
             gameStarted: false,
+            clickHandler: false,
 
             players: [
                 { name: '' },
                 { name: '' }
             ],
+
+            width: 500, // width and height
+            gridSize: 500 /8,
+            halfGridSize: 500 / 16,
+
         };
 
         this.game = {
-            players: [
-                { name: 'Player 1' },
-                { name: 'Player 2' }
-            ],
             pieces: [],
             options: {},
-            currentPlayer: 0, // player 
+            currentPlayer: 0,
             selectedPiece: null,
-            gridSize: 500 /8,
-
-        }
+        };
 
         this.fetchCanvasControls = this.fetchCanvasControls.bind(this);
 
@@ -44,7 +44,7 @@ class PlayMultiPlayer extends Component {
         this.generateOptions = this.generateOptions.bind(this);
         this.clickHandler = this.clickHandler.bind(this);
 
-        this.callUpdate = this.callUpdate.bind(this);
+        this.callCanvasRedraw = this.callCanvasRedraw.bind(this);
 
         this.endTurn = this.endTurn.bind(this);
         this.handleGameEnd = this.handleGameEnd.bind(this);
@@ -54,27 +54,33 @@ class PlayMultiPlayer extends Component {
     };
 
 
+// =======================================
+
+    // add listener for resize
+
+// =======================================
+
+
+
     fetchCanvasControls(controls, canvasElement) {
-
-        const pieces = this.generatePieces();
-        const options = this.generateOptions(pieces, 0);
-
-        console.log('OPT', options)
-        // const options = [];
+        // called by Canvas, passed as prop
+        const newPieces = this.generatePieces();
+        const newOptions = this.generateOptions(newPieces, 0);
 
         this.game = {
             ...this.game,
-            pieces,
-            options
+            pieces: newPieces,
+            options: newOptions
         };
 
         this.updateGame = controls.update;
         this.canvasElement = canvasElement; 
         
+        // draws grid
         controls.preDraw();
     }
 
-    callUpdate() {
+    callCanvasRedraw() {
         this.updateGame(this.game)
     }
 
@@ -189,11 +195,11 @@ class PlayMultiPlayer extends Component {
     endTurn() {
         // 1. if opponent has no new Pieces, win game
         // 2. if oppornent has no options, draw
+        // 3. otherwise, it comes next players turn
 
         const opponentHasPieces = this.game.pieces.filter(piece => piece.player !== this.game.currentPlayer).length > 0;
     
         if (!opponentHasPieces) {
-            alert('WIN')
             this.handleGameEnd('win');
             return;
         } 
@@ -209,7 +215,6 @@ class PlayMultiPlayer extends Component {
         }
 
         if (!opponentHasOptions) {
-            alert('DRAW')
             this.handleGameEnd('draw');
             return;
         }
@@ -230,47 +235,26 @@ class PlayMultiPlayer extends Component {
         if (winType === 'draw') {
             winMessage = 'It\'s a draw!';
         } else {
-            winMessage = `${this.game.players[this.game.currentPlayer].name} has won!`;
+            winMessage = `${this.state.players[this.game.currentPlayer === 0 ? 1 : 0].name} has won!`;
         }
     
-        this.setState({
-            gameEnded: true,
-            winMessage
-        });
+        this.setState({ gameEnded: true, winMessage });
     } 
 
     startGame() {
-        // assign player names
-        this.game.players[0].name = this.state.players[0].name || 'Player 1';
-        this.game.players[1].name = this.state.players[1].name || 'Player 2';
 
+        if (!this.state.clickHandler) {
+            this.setState({ clickHandler: true });
+            this.canvasElement.addEventListener('click', this.clickHandler)
+        }
+        
+        this.setState({ gameStarted: true });
 
-        this.setState({
-            gameStarted: true
-        });
-
-
-        // issue with restarting game
-        // =================================================
-        // =================================================
-        // =================================================
-        // =================================================
-        // =================================================
-        // =================================================
-        // =================================================
-        // =================================================
-        // =================================================
-        // =================================================
-        // =================================================
-        this.canvasElement.addEventListener('click', this.clickHandler);
-
-        this.callUpdate(this.game);
+        this.callCanvasRedraw(this.game);
     }
 
     handleRematch() {
         // reset default variables except from name
-
-        console.log('rematch', this.game);
 
         const newPieces = this.generatePieces();
         const newOptions = this.generateOptions(newPieces, 0);
@@ -282,19 +266,17 @@ class PlayMultiPlayer extends Component {
             pieces: newPieces,
             options: newOptions,
             selectedPiece: null, 
-        }
+        };
 
         this.setState({
             gameEnded: false,
             winMessage: '',
             gameStarted: false
-        })
-
+        });
     }
 
-
     clickHandler({offsetX, offsetY}) {
-        // if (this.state.gameEnded) return;
+        if (this.state.gameEnded) return;
     
         const checkOptionsClicked = (options, gridSize) => {
             if (options.length === 0) return null;
@@ -317,7 +299,7 @@ class PlayMultiPlayer extends Component {
         }
 
         // if no piece is selected, cannot select an option..
-        let selectedOption = !this.game.selectedPiece ? null : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.game.gridSize);       
+        let selectedOption = !this.game.selectedPiece ? null : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.state.gridSize);       
         
         if (!!selectedOption) {
             // Option is selected! 
@@ -325,41 +307,42 @@ class PlayMultiPlayer extends Component {
             // Move Piece and reset options
             // Then update turn
 
-            console.log('SELECTED OPTION!', selectedOption)
-
-            const kill = selectedOption.hasOwnProperty('kill');
-            // const becomeKing = selectedOption.becomeKing;
-
-            const newPieces = this.game.pieces.filter(piece => {
-                // remove killed piece
-                return !(kill && piece.id === selectedOption.kill.id) 
-            }).map(piece => {
-                if (piece.id === this.game.selectedPiece) {
-                    return new Piece(selectedOption.end, this.game.currentPlayer, piece.id, false);
-                }
-                return piece;
-            });
-
-
-            const newPlayer = this.game.currentPlayer === 0 ? 1 : 0;
-            const newOptions = this.generateOptions(newPieces, newPlayer);
+            const handleSelection = selectedOption => {
+                const kill = selectedOption.hasOwnProperty('kill');
+                const becomeKing = selectedOption.becomeKing;
     
-            this.game = {
-                ...this.game,
-                pieces: newPieces,
-                options: newOptions,
-                selectedPiece: null,
-                currentPlayer: newPlayer,
-            };
+                const newPieces = this.game.pieces.filter(piece => {
+                    // remove killed piece
+                    return !(kill && piece.id === selectedOption.kill.id) 
+                }).map(piece => {
+                    if (piece.id === this.game.selectedPiece) {
+                        return new Piece(selectedOption.end, this.game.currentPlayer, piece.id, becomeKing);
+                    }
+                    return piece;
+                });
 
-            this.callUpdate(this.game);    
+                const newPlayer = this.game.currentPlayer === 0 ? 1 : 0;
+                const newOptions = this.generateOptions(newPieces, newPlayer);
+        
+                this.game = {
+                    ...this.game,
+                    pieces: newPieces,
+                    options: newOptions,
+                    selectedPiece: null,
+                    currentPlayer: newPlayer,
+                };
+            }
+
+            handleSelection(selectedOption);
+
+            this.callCanvasRedraw(this.game);    
 
             this.endTurn();
 
         } else {
             // player didnt't click an option, now check if a piece is selected
 
-            const pieceClicked = (pieces, currentPlayer, gridSize, offsetX, offsetY) => {
+            const pieceClicked = (pieces, currentPlayer, gridSize, halfGridSize, offsetX, offsetY) => {
                 let foundPiece = false;
 
                 for (let piece of pieces) {
@@ -367,15 +350,15 @@ class PlayMultiPlayer extends Component {
                     if (piece.player !== currentPlayer) continue;
         
                     const centerCoords = {
-                        x: (piece.coords.x * gridSize) + (gridSize /2) -6,
-                        y: (piece.coords.y * gridSize) + (gridSize /2) -6
+                        x: (piece.coords.x * gridSize) + halfGridSize -6,
+                        y: (piece.coords.y * gridSize) + halfGridSize -6
                     }
         
                     const xDist = centerCoords.x > offsetX ? centerCoords.x - offsetX : offsetX - centerCoords.x;
                     const yDist = centerCoords.y > offsetY ? centerCoords.y - offsetY : offsetY - centerCoords.y;
         
                     // distance from center determines if user has clicked in the piece
-                    if (xDist <= (gridSize /2) -6 && yDist <= (gridSize /2) -6) {
+                    if (xDist <= halfGridSize -6 && yDist <= halfGridSize -6) {
                         foundPiece = piece;
                         break;
                     }
@@ -384,7 +367,7 @@ class PlayMultiPlayer extends Component {
                 return foundPiece;
             }
     
-            const foundPiece = pieceClicked(this.game.pieces, this.game.currentPlayer, this.game.gridSize, offsetX, offsetY);
+            const foundPiece = pieceClicked(this.game.pieces, this.game.currentPlayer, this.state.gridSize, this.state.halfGridSize, offsetX, offsetY);
 
             if (!!foundPiece && foundPiece.id === this.game.selectedPiece) {
                 this.game.selectedPiece = null;
@@ -394,7 +377,7 @@ class PlayMultiPlayer extends Component {
                 this.game.selectedPiece = null;
             }   
 
-            this.callUpdate(this.game);    
+            this.callCanvasRedraw(this.game);    
         }
     }
 
@@ -422,10 +405,10 @@ class PlayMultiPlayer extends Component {
                                 <div className="canvas__container">
                                     <Canvas 
                                         fetchCanvasControls={this.fetchCanvasControls}
-                                        width={500}
-                                        height={500}
-                                        gridSize={500/8}
-                                        halfGridSize={500/16}
+                                        width={this.state.width}
+                                        height={this.state.width}
+                                        gridSize={this.state.gridSize}
+                                        halfGridSize={this.state.halfGridSize}
                                     />
                                 </div>
                             </div>
@@ -434,7 +417,7 @@ class PlayMultiPlayer extends Component {
                                 {/* <h3 className='canvas__message'>It's {this.game.players[this.game.activePlayer].name}'s turn!</h3> */}
                                 <h3 className='canvas__message'>
                                 {
-                                    (this.state.gameStarted && !this.state.gameEnded) && `It's ${this.game.players[0].name}'s turn!`
+                                    (this.state.gameStarted && !this.state.gameEnded) && `It's ${this.state.players[0].name}'s turn!`
                                 }
                                 </h3>
 
@@ -442,15 +425,12 @@ class PlayMultiPlayer extends Component {
                         </div>
                     </div>
 
-                    <button onClick={() => this.handleGameEnd('win')}>Win</button>
+                    <button onClick={() => this.setState({ gameEnded: true, winMessage: 'Some win message' })}>Win</button>
 
                 </Layout>
 
-
-
-
-                    {/* Game Setup Modal */}
-                    <Modal show={ !this.state.gameStarted }>
+                {/* Game Setup Modal */}
+                <Modal show={ !this.state.gameStarted }>
                     <h1 className="modal__title">Select Player Names</h1>
 
                     <div className="modal__form">
@@ -476,7 +456,7 @@ class PlayMultiPlayer extends Component {
                     <p className="modal__message">{ this.state.winMessage }</p>
                     <div className="modal__options">
                         <button className="button modal__button" onClick={this.handleRematch}>Rematch</button>
-                        <button className="button modal__button" onClick={() => this.props.history.push('/')}>Home</button>
+                        <button className="button modal__button" onClick={() => this.endTurn('win')}>Home</button>
                     </div>
                 </Modal>
 

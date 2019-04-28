@@ -1,0 +1,16 @@
+import hasFont from 'has-font';
+
+// apply font to ctx when loaded
+const loadFont = (ctx, font, fontSize) => {
+    const int = setInterval(() => {
+
+        if (hasFont('Special Elite')) {
+            clearInterval(int);
+
+            // initialise font
+            ctx.font = `${fontSize}px ${font}`;
+        }
+    }, 200);
+}
+
+export default loadFont;
