@@ -51,16 +51,26 @@ class PlayMultiPlayer extends Component {
         this.handleSetupModalInputs = this.handleSetupModalInputs.bind(this);
         this.startGame = this.startGame.bind(this);
         this.handleRematch = this.handleRematch.bind(this);
+
+        this.handleResize = this.handleResize.bind(this);
     };
 
+    componentDidMount() {
+        window.addEventListener('resize', this.handleResize);
+    }
 
-// =======================================
+    handleResize() {
+        // canvas max width 500px
+        // if window is smaller, shrink canvas
 
-    // add listener for resize
+        const newCanvasWidth = window.innerWidth > 500 ? 520 : window.innerWidth - 20;
 
-// =======================================
-
-
+        this.setState({
+            width: newCanvasWidth,
+            gridSize: newCanvasWidth / 8,
+            halfGridSize: newCanvasWidth / 16,
+        }, this.callCanvasRedraw);
+    }
 
     fetchCanvasControls(controls, canvasElement) {
         // called by Canvas, passed as prop
