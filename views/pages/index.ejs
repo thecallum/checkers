@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ../components/head %>
+</head>
+<body>
+    
+
+
+    <% include ../components/header %>
+
+    <div class="container">
+    
+        <div class="mainView">
+            <div class="mainView__top">
+                <h1 class='home__title'>CHECKERS</h1>
+            </div>
+    
+            <div class="mainView__bottom">
+                <h3 class='home__subtitle'>Select Game Mode</h3>
+    
+                <ul class='home__optionContainer'>
+                    <li class='home__option'>
+                        <a class='button home__button' href='/play/singleplayer'>
+                            <div class="home__buttonLabel">
+                                <img src="/assets/avatar.svg" alt="" class='home__buttonIcon'/>
+                                <div class="home__buttonText">Player</div>
+                            </div>
+    
+                            <div class="home__buttonVs">VS</div>
+    
+                            <div class="home__buttonLabel">
+                                <img src="/assets/robotic.svg" alt="" class='home__buttonIcon'/>
+                                <div class="home__buttonText">AI</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class='home__option'>
+                        <a class='button home__button'  href='/play/multiplayer'>
+                            <div class="home__buttonLabel">
+                                <img src="/assets/avatar.svg" alt="" class='home__buttonIcon'/>
+                                <div class="home__buttonText">Player</div>
+                            </div>
+    
+                            <div class="home__buttonVs">VS</div>
+    
+                            <div class="home__buttonLabel">
+                                <img src="/assets/avatar.svg" alt="" class='home__buttonIcon'/>
+                                <div class="home__buttonText">Player</div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class='home__option'>
+                        <a class='button home__button' href='/play/online'>
+                            <div class="home__buttonLabel">
+                                <img src="/assets/globe.svg" alt="" class='home__buttonIcon--globe'/>
+                            </div>
+                            <div class="home__buttonOnline">Online</div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/bundle.js"></script>
+
+</body>
+</html>
