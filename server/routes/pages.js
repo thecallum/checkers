@@ -16,7 +16,7 @@ router.get('/register', (req, res) => {
 });
 
 router.get('/profile', protectedRoute, (req, res) => {
-    res.render('pages/profile', { auth: !!req.user });
+    res.render('pages/profile', { auth: !!req.user, username: req.user.username, email: req.user.email });
 });
 
 router.get('/play/singleplayer', (req, res) => {
