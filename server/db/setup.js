@@ -20,9 +20,10 @@ const setup = () => new Promise(async (resolve, reject) => {
     if (tables.indexOf('user') === -1) {
         await asyncQuery(con, `
             CREATE TABLE user (
-                id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-                email VARCHAR(255),
-                password VARCHAR(255),
+                id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+                email VARCHAR(100) NOT NULL,
+                password VARCHAR(50) NOT NULL,
+                username VARCHAR(30) NOT NULL,
                 UNIQUE(email)
             );
         `);
