@@ -3,15 +3,12 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const getUser = require('./middleware/getUser');
 
-const ejs = require('ejs');
-
 const app = express();
 const PORT = 4000;
 
 const path = require('path');
 const fileName = path.basename(__filename);
 
-const con = require('./db/connection');
 const setupDatabase = require('./db/setup');
 
 module.exports = async () => {

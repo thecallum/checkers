@@ -4,64 +4,69 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const con = require('../db/connection');
 
+const asyncQuery = require('../db/asyncQuery');
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 router.get('/logout', (req, res) => {
     res.cookie('jwt', null);
     res.redirect('/');
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
     const { email, password } = req.body;
-
-    console.log('login', { email, password })
 
     if (!email || !password) return res.status(400).send();
 
     const query = `SELECT id, username, password FROM user WHERE email = '${email}';`;
 
-    con.query(query, (err, queryResponse) => {
-        if (err) return res.status(401).send();
-        if (queryResponse.length === 0) return res.status(401).send();
+    const queryResponse = await asyncQuery(con, query);
+    if (!queryResponse.success) return res.status(401).send();
+    if (queryResponse.response.length === 0) return res.status(401).send();
 
-        const passwordHash = queryResponse[0].password;
-        if (passwordHash !== password) return res.status(401).send();
+    const { password: res_password, id: res_id, username: res_username } = queryResponse.response[0];
 
-        // login successful 
+    const validPassword = bcrypt.compareSync(password, res_password);
+    if (!validPassword) return res.status(401).send();
 
-        const user = {
-            email,
-            username: queryResponse[0].username,
-            id: queryResponse[0].id
-        };
+    // login successful 
 
-        const token = jwt.sign(user, process.env.JWT_SECRET);
+    const user = {
+        email,
+        username: res_username,
+        id: res_id,
+    };
 
-        res.cookie('jwt', token);
-        res.status(200).send();
-    })
+    const token = jwt.sign(user, process.env.JWT_SECRET);
+
+    res.cookie('jwt', token);
+    res.status(200).send();
 })
 
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
     const { email, password, username } = req.body;
 
     if (!email || !password || !username) return res.status(400).send();
 
-    const query = `INSERT INTO user (username, email, password) VALUES ('${username}','${email}','${password}');`;
+    const hash = bcrypt.hashSync(password, saltRounds);
 
-    con.query(query, (err, queryResponse) => {
-        if (err) return res.status(500).send();
+    const query = `INSERT INTO user (username, email, password) VALUES ('${username}','${email}','${hash}');`;
 
-        // register successful 
-        const user = {
-            email,
-            username,
-            id: queryResponse.insertId
-        };
+    const queryResponse = await asyncQuery(con, query);
+    if (!queryResponse.success) return res.status(500).send();
 
-        const token = jwt.sign(user, process.env.JWT_SECRET);
+    // register successful 
+    const user = {
+        email,
+        username,
+        id: queryResponse.response.insertId
+    };
 
-        res.cookie('jwt', token)
-        res.status(200).send();
-    })
+    const token = jwt.sign(user, process.env.JWT_SECRET);
+
+    res.cookie('jwt', token)
+    res.status(200).send();
 })
 
 
