@@ -9,6 +9,7 @@ module.exports = (undefined, argv) => {
             style: path.resolve(__dirname, 'src', 'styles', 'styles.scss'),
             multiplayer: path.resolve(__dirname, 'src', 'multiplayer.js'),
             login: path.resolve(__dirname, 'src', 'login.js'),
+            register: path.resolve(__dirname, 'src', 'register.js'),
         },
         output: {
             path: path.resolve(__dirname, 'public'),

@@ -1,4 +1,13 @@
-<%- include('../components/header', { auth: auth }); %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ../components/head %>
+    <title>404 Page Not Found | Checkers</title>
+</head>
+<body>
+    <%- include('../components/header', { auth: auth }); %>
 
-<h1>404 Page not found!</h1>
-<Link to='/'>to Home</Link>
+    <h1>404 Page not found!</h1>
+    <Link to='/'>to Home</Link>
+</body>
+</html>

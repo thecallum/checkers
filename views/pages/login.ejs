@@ -2,67 +2,7 @@
 <html lang="en">
 <head>
     <% include ../components/head %>
-
-    <style>
-        .form {
-            background-color: #ccc;
-            width: 100%;
-            max-width: 600px;
-
-            margin: 0 auto;
-
-        }
-
-        .form .form__title {
-            font-weight: 100;
-            font-size: 30px;
-        }
-
-        .form .form__group {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto 20px;
-            /* background-color: orange; */
-            padding: 10px 20px;
-
-        }
-
-        .form input {
-            width: 100%;
-            height: 50px;
-
-            margin: 0 auto;
-            display: block;
-            border-radius: 4px;
-            border: none;
-
-        }
-
-        .form button {
-            width: 100%;
-            height: 50px;
-
-            border-radius: 4px;
-            border: none;
-            background-color: hsl(128, 86%, 45%);
-            color: white;
-            text-transform: uppercase;
-            font-weight: 100;
-            font-size: 20px;
-            line-height: 50px;
-            cursor: pointer;
-        }
-
-        .form .form__error {
-            color: hsl(0, 50%, 50%);
-            background-color: hsl(0, 50%, 70%);
-            border: 1px solid hsl(0, 50%, 50%);
-            border-radius: 4px;
-            padding: 4px 8px;
-            /* width: 100%; */
-            /* display: block; */
-        }
-    </style>
+    <title>Login | Checkers</title>
 </head>
 <body>
 
@@ -85,7 +25,7 @@
             </div>
 
             <div class="form__group">
-                <div class="form__error" v-if='error'>
+                <div class="form__error" v-if='error' v-cloak>
                     Error: {{ error }}
                 </div>
             </div>            
