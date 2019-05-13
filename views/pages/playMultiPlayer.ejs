@@ -3,6 +3,12 @@
 <head>
     <% include ../components/head %>
     <title>MultiPlayer | Checkers</title>
+    
+    <style>
+        .canvas {
+            background-color: #ddd;
+        }
+    </style>
 </head>
 <body>
 
@@ -10,25 +16,26 @@
 
     <div class="container">
 
-            <div class='canvasView'>
-                <div class='canvas__players'>
-                        <div class='canvas__player'>
-                            <img src="" alt="" class='canvas__playerImg'/>
-                            <p class='canvas__playerName'>Player 1</p>
-                        </div> 
-                        <div class='canvas__player'>
-                            <img src="" alt="" class='canvas__playerImg'/>
-                            <p class='canvas__playerName'>Player 2</p>
-                        </div> 
-                </div>
+        <div id="app">
 
-                <%- include('../components/canvas', { auth: auth }); %>
 
-                <div class="canvas__bottom">
-                    <h3 class='canvas__message'>It's Player 1's turn!</h3>
+                <div class='canvasView'>
+                        <div class="canvas__players">
+                            <div class='canvas__player' v-for='player in players'>
+                                <img v-bind:src="player.src" v-bind:alt="player.name" class='canvas__playerImg'/>
+                                <p class='canvas__playerName'>{{ player.name }}</p>
+                            </div> 
+                        </div>
+        
+                       <canvas-component :fetchcanvascontrols='fetchCanvasControls' />
+        
+                        <div class="canvas__bottom">
+                            <h3 class='canvas__message'>It's {{ players[activePlayer].name }}'s turn!</h3>
+                        </div>
+                    </div>
                 </div>
-            </div>
         </div>
+    
     
             <!-- <button onClick={() => this.setState({ gameEnded: true, winMessage: 'Some win message' })}>Win</button> -->
     
@@ -60,7 +67,8 @@
             <%- include('../components/modal', { id: '#modalEndGame' }); %>
 
 
-            
+            <script src="/js/multiplayer.bundle.js"></script>
+
         
 </body>
 </html>

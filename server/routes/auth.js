@@ -7,7 +7,7 @@ const con = require('../db/connection');
 const asyncQuery = require('../db/asyncQuery');
 
 const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const saltRounds = 15;
 
 router.get('/logout', (req, res) => {
     res.cookie('jwt', null);
