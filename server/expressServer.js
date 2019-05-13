@@ -12,12 +12,10 @@ const path = require('path');
 const fileName = path.basename(__filename);
 
 const con = require('./db/connection');
+const setupDatabase = require('./db/setup');
 
-module.exports = () => {
-    con.connect(err => {
-        if (err) throw err;
-        console.log('Connected to database!');
-    });
+module.exports = async () => {
+    await setupDatabase();
 
     app.set('view engine', 'ejs');
     app.set('view options', { rmWhitespace: true });
