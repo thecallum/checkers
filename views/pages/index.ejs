@@ -5,9 +5,7 @@
 </head>
 <body>
     
-
-
-    <% include ../components/header %>
+    <%- include('../components/header', { auth: auth }); %>  
 
     <div class="container">
     
@@ -63,7 +61,7 @@
         </div>
     </div>
     
-    <script src="js/bundle.js"></script>
+    <script src="js/multiplayer.bundle.js"></script>
 
 </body>
 </html>

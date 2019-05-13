@@ -1,93 +1,38 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const getUser = require('./middleware/getUser');
+
 const ejs = require('ejs');
 
 const app = express();
 const PORT = 4000;
 
+const path = require('path');
+const fileName = path.basename(__filename);
+
+const con = require('./db/connection');
 
 module.exports = () => {
+    con.connect(err => {
+        if (err) throw err;
+        console.log('Connected to database!');
+    });
+
     app.set('view engine', 'ejs');
-    app.set('view options', {
-        rmWhitespace: true
-    })
+    app.set('view options', { rmWhitespace: true });
 
-    app.get('/', (req, res) => {
-        console.log('Request', req.url)
-        // res.status(200).send('Hello, World!');
-    
-        res.render('pages/index', {
-            name: 'callum',
-            auth: true
-        });
-    });
-    app.get('/login', (req, res) => {
-        console.log('Request', req.url)
-        // res.status(200).send('Hello, World!');
-    
-        res.render('pages/login', {
-            name: 'callum',
-            auth: true
-        });
-    });
-    app.get('/register', (req, res) => {
-        console.log('Request', req.url)
-        // res.status(200).send('Hello, World!');
-    
-        res.render('pages/register', {
-            name: 'callum',
-            auth: true
-        });
-    });
-    app.get('/play/singleplayer', (req, res) => {
-        console.log('Request', req.url)
-        // res.status(200).send('Hello, World!');
-    
-        res.render('pages/playSinglePlayer', {
-            name: 'callum',
-            auth: true
-        });
-    });
-    app.get('/play/multiplayer', (req, res) => {
-        console.log('Request', req.url)
-        // res.status(200).send('Hello, World!');
-    
-        res.render('pages/playMultiPlayer', {
-            name: 'callum',
-            auth: true
-        });
-    });
-    app.get('/play/online', (req, res) => {
-        console.log('Request', req.url)
-        // res.status(200).send('Hello, World!');
-    
-        res.render('pages/playOnline', {
-            name: 'callum',
-            auth: true
-        });
-    });
-    app.get('/leaderboard', (req, res) => {
-        console.log('Request', req.url)
-        // res.status(200).send('Hello, World!');
-    
-        res.render('pages/leaderboard', {
-            name: 'callum',
-            auth: true
-        });
-    });
+    app.use(bodyParser());
+    app.use(cookieParser());
 
-    app.use(express.static('public'))
+    app.use('/js/', express.static('public/js/'));
+    app.use('/css/', express.static('public/css/'));
+    app.use('/assets/', express.static('public/assets/'));
 
-    app.get('*', (req, res) => {
-        console.log('Request', req.url)
-        // res.status(200).send('Hello, World!');
+    app.use(getUser);    
+
+    app.use(require('./routes/auth'));  
+    app.use(require('./routes/pages'));  
     
-        res.render('pages/pageNotFound', {
-            name: 'callum',
-            auth: true
-        });
-    });    
-    
-    const path = require('path');
-    app.listen(PORT, () => console.log(`${path.basename(__filename)} is running on https://localhost:${PORT}`));
+    app.listen(PORT, () => console.log(`${fileName} is running on https://localhost:${PORT}`));
 }
-

@@ -4,29 +4,30 @@
     <% include ../components/head %>
 </head>
 <body>
-        <% include ../components/header %>
 
-        <div class="container">
+    <%- include('../components/header', { auth: auth }); %>
 
-                <div class='canvasView'>
-                    <div class='canvas__players'>
-                            <div class='canvas__player'>
-                                <img src="" alt="" class='canvas__playerImg'/>
-                                <p class='canvas__playerName'>Player 1</p>
-                            </div> 
-                            <div class='canvas__player'>
-                                <img src="" alt="" class='canvas__playerImg'/>
-                                <p class='canvas__playerName'>Player 2</p>
-                            </div> 
-                    </div>
-    
-                    <%- include('../components/canvas', { id: '#modalEndGame' }); %>
-    
-                    <div class="canvas__bottom">
-                        <h3 class='canvas__message'>It's Player 1's turn!</h3>
-                    </div>
+    <div class="container">
+
+            <div class='canvasView'>
+                <div class='canvas__players'>
+                        <div class='canvas__player'>
+                            <img src="" alt="" class='canvas__playerImg'/>
+                            <p class='canvas__playerName'>Player 1</p>
+                        </div> 
+                        <div class='canvas__player'>
+                            <img src="" alt="" class='canvas__playerImg'/>
+                            <p class='canvas__playerName'>Player 2</p>
+                        </div> 
+                </div>
+
+                <%- include('../components/canvas', { auth: auth }); %>
+
+                <div class="canvas__bottom">
+                    <h3 class='canvas__message'>It's Player 1's turn!</h3>
                 </div>
             </div>
+        </div>
     
             <!-- <button onClick={() => this.setState({ gameEnded: true, winMessage: 'Some win message' })}>Win</button> -->
     
