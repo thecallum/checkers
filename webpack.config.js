@@ -7,9 +7,9 @@ module.exports = (undefined, argv) => {
         mode: 'development',
         entry: {
             style: path.resolve(__dirname, 'src', 'styles', 'styles.scss'),
-            multiplayer: path.resolve(__dirname, 'src', 'multiplayer.js'),
-            login: path.resolve(__dirname, 'src', 'login.js'),
-            register: path.resolve(__dirname, 'src', 'register.js'),
+            multiplayer: path.resolve(__dirname, 'src', 'js', 'multiplayer.js'),
+            login: path.resolve(__dirname, 'src', 'js', 'login.js'),
+            register: path.resolve(__dirname, 'src', 'js', 'register.js'),
         },
         output: {
             path: path.resolve(__dirname, 'public'),

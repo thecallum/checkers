@@ -6,6 +6,9 @@
     font-size: 30px;
     box-shadow: 0px 4px 4px $color_button_shadow;
     cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    text-align: center;
 
     &:hover { border-color:$color_button_border }
     &:focus { outline: none }

@@ -1,4 +1,7 @@
 .canvas {
+    margin: 20px auto;
+    display: block;
+
     &__players {
         display: flex;
         justify-content: space-between;
