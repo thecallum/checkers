@@ -24,9 +24,6 @@
     "build": "webpack --config webpack.config.js --watch",
     "start": "node --require dotenv/config app.js"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "devDependencies": {
     "webpack-cli": "^3.3.2"
   }
