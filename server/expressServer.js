@@ -1,16 +1,19 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const getUser = require('./middleware/getUser');
+const cookieEncrypter = require('cookie-encrypter');
 const helmet = require('helmet');
 
+// middleware
+const getUser = require('./middleware/getUser');
+
+const setupDatabase = require('./db/setup');
+
 const app = express();
-const PORT = 4000;
+const PORT = 4000 || process.env.PORT;
 
 const path = require('path');
 const fileName = path.basename(__filename);
-
-const setupDatabase = require('./db/setup');
 
 module.exports = async () => {
     await setupDatabase();
@@ -20,7 +23,8 @@ module.exports = async () => {
 
     app.use(helmet())
     app.use(bodyParser());
-    app.use(cookieParser());
+    app.use(cookieParser(process.env.COOKIE_SECRET));
+    app.use(cookieEncrypter(process.env.COOKIE_SECRET));
 
     app.use('/js/', express.static('public/js/'));
     app.use('/css/', express.static('public/css/'));
