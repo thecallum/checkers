@@ -9,13 +9,14 @@ new Vue({
 
             const email = e.target.email.value;
             const password = e.target.password.value;
+            const stayLogged = e.target.staylogged.checked;
 
             if (!email || !password) return this.error = 'Missing fields!';
             
             // Error flashes for each request
             // this.error = null;
 
-            const body = { email, password };
+            const body = { email, password, stayLogged };
 
             fetch('/login', {
                 method: 'POST',

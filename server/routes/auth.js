@@ -9,13 +9,15 @@ const asyncQuery = require('../db/asyncQuery');
 const bcrypt = require('bcrypt');
 const saltRounds = 15;
 
+const generateCookieOptions = require('../cookieOptions');
+
 router.get('/logout', (req, res) => {
-    res.cookie('jwt', null);
+    res.cookie('sessionId', null);
     res.redirect('/');
 });
 
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, stayLogged } = req.body;
 
     if (!email || !password) return res.status(400).send();
 
@@ -36,16 +38,18 @@ router.post('/login', async (req, res) => {
         email,
         username: res_username,
         id: res_id,
+        stayLogged
     };
 
     const token = jwt.sign(user, process.env.JWT_SECRET);
 
-    res.cookie('jwt', token);
+    res.cookie('sessionId', token, generateCookieOptions(stayLogged || false));
+
     res.status(200).send();
 })
 
 router.post('/register', async (req, res) => {
-    const { email, password, username } = req.body;
+    const { email, password, username, stayLogged } = req.body;
 
     if (!email || !password || !username) return res.status(400).send();
 
@@ -60,12 +64,13 @@ router.post('/register', async (req, res) => {
     const user = {
         email,
         username,
-        id: queryResponse.response.insertId
+        id: queryResponse.response.insertId,
+        stayLogged
     };
 
     const token = jwt.sign(user, process.env.JWT_SECRET);
 
-    res.cookie('jwt', token)
+    res.cookie('sessionId', token, generateCookieOptions(stayLogged || false));
     res.status(200).send();
 })
 

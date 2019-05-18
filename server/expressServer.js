@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const getUser = require('./middleware/getUser');
+const helmet = require('helmet');
 
 const app = express();
 const PORT = 4000;
@@ -17,6 +18,7 @@ module.exports = async () => {
     app.set('view engine', 'ejs');
     app.set('view options', { rmWhitespace: true });
 
+    app.use(helmet())
     app.use(bodyParser());
     app.use(cookieParser());
 
