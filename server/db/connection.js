@@ -2,8 +2,8 @@ const db = require('mysql');
 
 const config = {
     host: 'localhost',
-    user: 'root',
-    password: 'password',
+    user: 'server',
+    password: 'password1234',
     database: 'callum'
 };
 
