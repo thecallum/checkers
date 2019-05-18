@@ -44,44 +44,43 @@
             </div>
         </div>
     
-    
         <!-- Game Setup Modal -->
-        <div class='modal' v-bind:class="{ 'modal__show': !gameStarted }">
-            <div class="modal__background"></div>
-
-            <div class="modal__body">
+        <modal :show='!gameStarted'>
+            <div>
                 <h1 class="modal__title">Select Player Names</h1>
 
                 <div class="modal__form">
-
+    
                     <div class='modal__formRow' v-for='(player, index) in players'>
                         <div class="modal__piece" v-bind:class='{ "modal__piece--red" : index === 0, "modal__piece--blue" : index === 1 }'></div>
                         <input type="text" class="modal__input" :name='index' :placeholder='player.default' v-model='player.name'/>
                     </div>
-
+    
                 </div>
     
                 <div class="modal__options">
                     <button class="button modal__button" @click='startGame'>Start</button>
                 </div>
             </div>
-        </div>
-        
+        </modal>
+    
         <!-- Game End Modal -->
-        <div class='modal' v-bind:class="{ 'modal__show': this.gameEnded }">
-            <div class="modal__background"></div>
+        <modal :show='gameEnded'>
+            <div>
+                <div class="modal__background"></div>
 
-            <div class="modal__body">
-                <h1 class="modal__title">Game Ended</h1>
-
-                <p class="modal__message">{{ winMessage }}</p>
-
-                <div class="modal__options">
-                    <button class="button modal__button" @click='handleRematch'>Rematch</button>
-                    <a class="button modal__button" href='/'>Home</a>
+                <div class="modal__body">
+                    <h1 class="modal__title">Game Ended</h1>
+    
+                    <p class="modal__message">{{ winMessage }}</p>
+    
+                    <div class="modal__options">
+                        <button class="button modal__button" @click='handleRematch'>Rematch</button>
+                        <a class="button modal__button" href='/'>Home</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        </modal>
 
     </div>
 

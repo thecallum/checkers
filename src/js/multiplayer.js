@@ -1,111 +1,14 @@
 console.log('APP RUNNING');
 
 import canvas from './components/canvas';
+import Piece from './components/piece';
+import generatePieces from './components/generatePieces';
 
-
-const colors =  {
-    'yellow': 'hsl(60, 80%, 50%)',
-    'red': 'hsl(0, 50%, 50%)',
-    'green': 'hsl(100, 50%, 50%)',
-    'blue': 'hsl(220, 70%, 50%)',
-    'grey': 'hsl(220, 5%, 70%)',
-};
-
-class Piece {
-    constructor(coords, player, id, isKing = false) {
-        this.player = player;
-        this.id = id;
-        this.coords = coords;
-        this.king = isKing;
-    }
-
-    draw(gridSize, ctx, validOptions, selected) {
-        const radius = (gridSize /2) - 6;
-        const x = (this.coords.x * gridSize) + (gridSize /2);
-        const y = (this.coords.y * gridSize) + (gridSize /2);
-        
-        
-        if (selected && !validOptions) {
-            ctx.fillStyle = colors.grey;
-        } else if (selected) {
-            ctx.fillStyle = colors.green;
-        } else {
-            ctx.fillStyle = colors[this.player === 0 ? 'red' : 'blue'];
-        }
-        
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 50, 0, 2*Math.PI);
-        ctx.fill();
-
-        if (this.king) this.drawKingOverlay(ctx, x, y)  ;
-    }
-
-    drawKingOverlay(ctx, x, y) {
-        ctx.fillStyle = 'black';
-        ctx.fillText('K', x - 10, y + 12);   
-    }
-
-    drawOptions(ctx, options, gridSize, halfGridSize) {
-        for (let { start, end } of options) {
-
-            // Calculate which direction arrow needs to point
-            const xDir = start.x > end.x ? -1 : 1;
-            const yDir = start.y > end.y ? -1 : 1;
-
-            const gridCenter = {
-                x: (end.x * gridSize) + halfGridSize,
-                y: (end.y * gridSize) + halfGridSize
-            };
-        
-            ctx.strokeStyle = colors.green;
-            ctx.fillStyle = colors.green;
-            ctx.lineWidth = 6;
-
-            // line
-
-            ctx.beginPath();
-            ctx.moveTo((start.x * gridSize) + halfGridSize, (start.y * gridSize) + halfGridSize);
-            ctx.lineTo(gridCenter.x, gridCenter.y);
-            ctx.stroke();
-
-            // arrow
-            //      this layout may be more clunky, but its much easier to understand
-            //      It's tilting the arrow according to its direction
-
-            ctx.beginPath();
-
-            if (xDir === -1) { // left
-                if (yDir === -1) {
-                    ctx.moveTo(gridCenter.x +15, gridCenter.y -5);
-                    ctx.lineTo(gridCenter.x -5, gridCenter.y +15);
-                    ctx.lineTo(gridCenter.x -6.5, gridCenter.y -7);
-                } else {
-                    ctx.moveTo(gridCenter.x +15, gridCenter.y +5);
-                    ctx.lineTo(gridCenter.x -5, gridCenter.y -15);
-                    ctx.lineTo(gridCenter.x -6.5, gridCenter.y +7);    
-                }
-            } else {
-                if (yDir === -1) {
-                    ctx.moveTo(gridCenter.x -15, gridCenter.y -5);
-                    ctx.lineTo(gridCenter.x +5, gridCenter.y +15);
-                    ctx.lineTo(gridCenter.x +6.5, gridCenter.y -7);
-                } else {
-                    ctx.moveTo(gridCenter.x -15, gridCenter.y +5);
-                    ctx.lineTo(gridCenter.x +5, gridCenter.y -15);
-                    ctx.lineTo(gridCenter.x +6.5, gridCenter.y +7);
-                }
-            }
-
-            ctx.fill();
-        }
-    }
-    // add draw options to piece
-}
-
+import modal from './components/modal';
 
 new Vue({
     el: '#app',
-    components: { canvasComponent: canvas },
+    components: { canvasComponent: canvas, modal },
     data: {
         players: [
             { name: '', default: 'player 1', src: '#' },
@@ -139,6 +42,15 @@ new Vue({
 
     },
 
+    mounted() {
+        const width = window.innerWidth > this.canvas.maxWidth ? this.canvas.maxWidth : window.innerWidth - 20;
+        this.canvas.width = width;
+        this.canvas.gridSize = width / 8;
+        this.canvas.halfGridSize = width / 16;
+
+        window.addEventListener('resize', this.handleResize)
+    },
+
     methods: {
         toggleWin() {
             this.winMessage = 'Test win';
@@ -168,6 +80,8 @@ new Vue({
         callCanvasRedraw() {
             this.update(this.game);
         },
+
+        generatePieces: generatePieces,
 
         generateOptions(pieces, currentPlayer) {
             const newOptions = {};
@@ -284,8 +198,8 @@ new Vue({
             // 2. if oppornent has no options, draw
             // 3. otherwise, it comes next players turn
 
-            const opponentHasPieces = this.game.pieces.filter(piece => piece.player !== this.game.currentPlayer).length > 0;
-        
+            const opponentHasPieces = this.game.pieces.filter(piece => piece.player === this.game.currentPlayer).length > 0;
+
             if (!opponentHasPieces) {
                 this.handleGameEnd('win');
                 return;
@@ -307,42 +221,15 @@ new Vue({
             }
         },
 
-        generatePieces() {
-            let id = 0;
-            const pieces = [];
-        
-            // bottom (first player in array)
-            for (let row=0;row<3;row++) {
-                for (let col=row%2===0?1:0;col<8;col+=2) {
-                    pieces.push(new Piece({x:col, y:7-row}, 0, id++));
-                }
-            }
-        
-            // top (second player in array)
-            for (let row=0;row<3;row++) {
-                for (let col=row%2===0?0:1;col<8;col+=2) {
-                    pieces.push(new Piece({x:col, y:row}, 1, id++));
-                }
-            }
-        
-            return pieces;
-        },
-
-        handleSetupModalInputs() {
-            // const { name, value } = e.target;
-
-            // this.setState(prev => ({
-            //     players: prev.players.map((player, index) => index == name ? { name: value } : player)
-            // }))
-        },
-
         handleGameEnd(winType) {
             let winMessage;
     
             if (winType === 'draw') {
                 winMessage = 'It\'s a draw!';
             } else {
-                winMessage = `${this.state.players[this.game.currentPlayer === 0 ? 1 : 0].name} has won!`;
+                const player = this.players[this.game.currentPlayer === 0 ? 1 : 0];
+                const name = !!player.name ? player.name : player.default;
+                winMessage = `${name} has won!`;
             }
         
             this.gameEnded = true;
@@ -353,7 +240,6 @@ new Vue({
             if (!this.enabledClickHandler) {
                 this.enabledClickHandler = true;
                 this.canvasElement.addEventListener('click', this.clickHandler);
-                window.addEventListener('resize', this.handleResize)
             }
             
             this.gameStarted = true;
@@ -369,7 +255,7 @@ new Vue({
             this.canvas.halfGridSize = width / 16;
 
 
-            setTimeout(this.callCanvasRedraw, 0);
+            setTimeout(this.gameStarted ? this.callCanvasRedraw : this.preDraw, 0);
 
         },
 
