@@ -7,8 +7,9 @@ const setup = () => new Promise(async (resolve, reject) => {
     console.log('Connected to database!');
 
     let tables = await asyncQuery(con, 'SHOW TABLES;');
-    if (!tables.success) throw tables.error;
-    tables = tables.response.map(item => {
+    console.log('TABLES', tables)
+
+    tables = tables.map(item => {
         const key = Object.keys(item);
         return item[key];
     })

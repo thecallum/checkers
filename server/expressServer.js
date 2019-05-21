@@ -30,6 +30,8 @@ module.exports = async () => {
     app.use('/css/', express.static('public/css/'));
     app.use('/assets/', express.static('public/assets/'));
 
+    app.use(require('./routes/data'));  
+    
     app.use(getUser);    
 
     app.use(require('./routes/auth'));  
