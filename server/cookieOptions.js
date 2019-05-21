@@ -18,6 +18,7 @@ const options = stayLoggedIn => ({
     httpOnly: true,
     domain: process.env.domain || 'localhost',
     expires: getTime(stayLoggedIn),
+    signed: true
 });
 
 module.exports = options;
