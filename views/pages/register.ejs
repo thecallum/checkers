@@ -21,8 +21,9 @@
             <div class="form__row">
                 <input type="text" name="username" id="input__username" v-model='username' v-bind:class='username__class' class='form__input form__input__username'>
                 <label class='form__label' for="input__username" v-bind:class='{notempty: username}'>Username</label>
-                <span class="form__input__username__search" v-bind:class='{loading: username_search_loading, valid: username_search_valid === true, invalid: username_search_valid === false}'></span>
-                <span class="form__error" v-if='username__error || username__search__error'>{{ username__error || username__search__error }}</span>
+                <span class="form__input__username__search" v-bind:class='{loading: username_search_loading}'></span>
+                <span class="form__error" v-if='(username__error || username__search__error) && !username_search_loading'>{{ username__error || username__search__error }}</span>
+                <span class="form__message" v-if='!username_search_loading && !username__search__error && !username__error && username'>{{ username }} is available</span>
             </div>
 
             <div class="form__row">

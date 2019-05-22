@@ -23,7 +23,7 @@
     "webpack": "^4.31.0"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js --watch",
+    "build": "webpack --config webpack.config.js",
     "start": "node --require dotenv/config app.js"
   },
   "devDependencies": {

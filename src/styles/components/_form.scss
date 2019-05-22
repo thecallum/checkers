@@ -114,7 +114,8 @@ $color_text: hsl(200, 20%, 20%);
 		}
 	}
 
-	&__error {
+	&__error,
+	&__message {
 		position: absolute;
 		right: 0;
 		top: 100%;
@@ -122,6 +123,14 @@ $color_text: hsl(200, 20%, 20%);
 		font-size: 14px;
 		color: $color_red;
 		text-transform: uppercase;
+	}
+
+	&__errpr {
+		color: $color_red;		
+	}
+
+	&__message {
+		color: $color_green;
 	}
 
 	&__label {
@@ -247,15 +256,15 @@ $color_text: hsl(200, 20%, 20%);
 			font-size: 26px;
 		}
 		
-		&.valid::before {
-			color: hsl(144, 40%, 35%);
-		}
+		// &.valid::before {
+		// 	color: hsl(144, 40%, 35%);
+		// }
 		
-		&.invalid::before {
-			content: '\2716';
-			color: hsl(0, 40%, 35%);
-			// margin-right: 4.5px;
-		}
+		// &.invalid::before {
+		// 	content: '\2716';
+		// 	color: hsl(0, 40%, 35%);
+		// 	// margin-right: 4.5px;
+		// }
 	}
 }
 

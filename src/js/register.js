@@ -18,7 +18,7 @@ new Vue({
 
         password_rules: [
             {
-                value: 'Between 10-128 Characters',
+                value: 'Between 10-128 characters',
                 test: str => str.match(/^.{10,128}$/)
             },
             {
@@ -43,6 +43,19 @@ new Vue({
             }
         ],
 
+        username__rules: [
+            {
+                value: 'Between 2-14 characters',
+                test: str => str.match(/^.{2,14}$/)
+                // test: str => true,
+            },
+            {
+                value: 'Allow letters, numbers and punctuation',
+                // test: str => str.match(/^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]$/)#
+                test: str => true,
+            }
+        ],
+
         username_search_loading: false,
         username_timeout: null,
         username_search_valid: undefined,
@@ -55,7 +68,6 @@ new Vue({
     methods: {
         handleSubmit(e) {
             e.preventDefault();
-            const el = document.querySelector('form__submit');
 
             if (this.loading || this.username_search_loading) return;
 
@@ -77,16 +89,9 @@ new Vue({
             ) {
                 const newError = 'You have errors';
 
-                if (this.main__error !== newError) {
-                    this.main__error = newError;
-
-
-
-                }
+                if (this.main__error !== newError) this.main__error = newError;
                 return;
             }
-
-
 
             this.loading = true;
 
@@ -149,12 +154,14 @@ new Vue({
             const el = this.username;
             if (this.hasSubmitted && el === "") return "Username is required";
             if (el === "") return false;
-            if (el.length < 10) return "Username must be 10 characters"
+            // if (el.length < 10) return "Username must be 10 characters"
+
+            if (!this.username_rule_0_met || !this.username_rule_1_met) return "Invalid username";
 
             return false;
         },
         username__search__error() {
-            if (this.username_search_valid === false) return "Username Taken!";
+            if (this.username_search_valid === false) return `${this.username} is taken`;
 
             // validate username
             // check username is available
@@ -248,6 +255,15 @@ new Vue({
             const valid = this.rule_5_met;
             return { valid }
         },
+
+        username_rule_0_met() {
+            // return true;
+            return !!this.username__rules[0].test(this.username);
+        },
+        username_rule_1_met() {
+            // return true
+            return !!this.username__rules[1].test(this.username);
+        }
     },
     watch: {
         username(val) {
@@ -274,23 +290,13 @@ new Vue({
                     body: JSON.stringify({ username: this.username }),
                     headers: { "Content-Type": "application/json" }
                 })
+                .then(res => res.json())
                 .then(res => {
-                   
-                    return res.json();
-                })
-                .then(res => {
-                    console.log('get username', res);
                     this.username_search_valid = !res.exists;
-
-
                 })
-                .catch(err => {
-                    console.log('Fetch username err', err)
-                })
-
+                .catch(err => console.error('Fetch username err', err))
 
             }, 500);
-
 
 
             // on change, set loading to true
