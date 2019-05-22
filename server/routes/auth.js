@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-
-const jwt = require('jsonwebtoken');
 const con = require('../db/connection');
 
 const asyncQuery = require('../db/asyncQuery');
@@ -51,9 +49,9 @@ router.post('/login', async (req, res) => {
             stayLogged
         };
 
-        const token = jwt.sign(user, process.env.JWT_SECRET);
+        const payload = JSON.stringify(user);
 
-        res.cookie('sessionId', token, generateCookieOptions(stayLogged || false));
+        res.cookie('sessionId', payload, generateCookieOptions(stayLogged || false));
 
         res.status(200).send();
 
@@ -83,14 +81,15 @@ router.post('/register', async (req, res) => {
             stayLogged
         };
 
-        const token = jwt.sign(user, process.env.JWT_SECRET);
+        const payload = JSON.stringify(user);
 
-        res.cookie('sessionId', token, generateCookieOptions(stayLogged || false));
+        res.cookie('sessionId', payload, generateCookieOptions(stayLogged || false));
         res.status(200).send();
     } catch(e) {
         console.log('Register error', e)
         return res.status(500).send();
     }
+
 })
 
 module.exports = router;
