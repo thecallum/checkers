@@ -14,7 +14,7 @@ const getUser = (req, res, next) => {
         res.cookie('sessionId', cookie, generateCookieOptions(payload.stayLogged || false));
         next();
     } catch (e) {
-        console.error('Get User Error', e)
+        // console.error('Get User Error', e)
         req.user = null;
         next();
     }

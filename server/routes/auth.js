@@ -19,31 +19,38 @@ router.post('/login', async (req, res) => {
 
     if (!email || !password) return res.status(400).send();
 
-    const query = `SELECT id, username, password FROM user WHERE email = '${email}';`;
+    try {
+        const query = `SELECT id, username, password FROM user WHERE email = '${email}';`;
 
-    const queryResponse = await asyncQuery(con, query);
-    if (!queryResponse.success) return res.status(401).send();
-    if (queryResponse.response.length === 0) return res.status(401).send();
+        const queryResponse = await asyncQuery(con, query);
+        if (!queryResponse.success) return res.status(401).send();
+        if (queryResponse.response.length === 0) return res.status(401).send();
+    
+        const { password: res_password, id: res_id, username: res_username } = queryResponse.response[0];
+    
+        const validPassword = bcrypt.compareSync(password, res_password);
+        if (!validPassword) return res.status(401).send();
+    
+        // login successful 
+    
+        const user = {
+            email,
+            username: res_username,
+            id: res_id,
+            stayLogged
+        };
+    
+        const payload = JSON.stringify(user);
+    
+        res.cookie('sessionId', payload, generateCookieOptions(stayLogged || false));
+    
+        res.status(200).send();
+    } catch(e) {
+        console.log('LOGIN ERROR', e);
+        res.status(500).send();
+    }
 
-    const { password: res_password, id: res_id, username: res_username } = queryResponse.response[0];
 
-    const validPassword = bcrypt.compareSync(password, res_password);
-    if (!validPassword) return res.status(401).send();
-
-    // login successful 
-
-    const user = {
-        email,
-        username: res_username,
-        id: res_id,
-        stayLogged
-    };
-
-    const payload = JSON.stringify(user);
-
-    res.cookie('sessionId', payload, generateCookieOptions(stayLogged || false));
-
-    res.status(200).send();
 })
 
 router.post('/register', async (req, res) => {

@@ -3,10 +3,147 @@
 <head>
     <% include ../components/head %>
     <title>Online | Checkers</title>
+
+    <style>
+      .box {
+        border: 1px solid black;
+
+
+        max-width: 600px;
+        margin: 0 auto;
+
+        padding: 10px 20px;
+        min-height: 100px;
+
+        box-sizing: border-box;
+
+      }
+
+
+      button {
+        display: block;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 400px;
+
+        height: 50px;
+        
+        border-radius: 4px;
+        border: none;
+        background-color: hsl(200, 50%, 50%);
+
+        text-transform: uppercase;
+        color: white;
+        font-size: 20px;
+        letter-spacing: 1px;
+        cursor: pointer;
+      }
+
+      .title {
+        text-align: center;
+
+        font-weight: 100;
+      }
+    
+      .queue {
+        background-color: hsl(200, 20%, 60%);
+        box-sizing: border-box;
+        height: 300px;
+        padding: 10px;
+
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+      }
+
+      @keyframes searching-dots {
+        0% { content: '' }
+        25% { content: '.' }
+        50% { content: '..' }
+        75% { content: '...' }
+      }
+
+      .searching::after {
+        content: '';
+
+        animation-name: searching-dots;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+      }
+
+      .button__group {
+        display: flex;
+
+
+      }
+
+      .button__gropu > * {
+        flex-grow: 1;
+        flex-shrink: 1;
+      }
+
+    </style>
 </head>
 <body>
     <%- include('../components/header', { auth: auth }); %>
 
-    <h1>Online</h1>
+
+    <div id="app">
+      <h2>{{ state }} - {{ connecting ? 'Connecting' : 'Connected' }}</h2>
+      <h1 v-if='socketerror'>Error: {{socketerror}}</h1>
+
+      <div class="box">
+        <h1 class='title'>Online</h1>
+
+          <div v-if='state === "connected" || state === "connecting" || state === "disconnect"'>
+              <button :disabled='state === "connecting"' @click='joinQueue'>Join Queue</button>
+            </div>
+      
+            <div v-if='state === "queue"' class="queue">
+              <h3>Queue</h3>
+              <p class="searching">Searching for players</p>
+            </div>
+      
+            <div v-if='state === "found"' class='queue'>
+              <h3>Queue</h3>
+
+              <p>Found an opponent</p>
+      
+               <div v-if='accepted && opponentAccepted'>
+                  <p class='searching'>Setting up game</p>
+               </div>
+               <div v-else>
+                  <p>Opponent: {{ foundGame.data[Object.keys(foundGame.data).filter(key => key !== socket.id)[0]].username }}</p>
+      
+                  <p v-if='accepted'>You have accepted</p>
+                  <p v-if='opponentAccepted'>Your opponent has accepted</p>
+          
+                  <div class="button__group">
+                      <button @click='acceptGame'>Accept</button>
+                      <button @click='acceptGame' disabled>Decline</button>
+                  </div>
+                  
+               </div>
+            </div>
+            
+            <div v-if='state === "ready"'>     
+              <canvas-component 
+                  v-bind:width='canvas.width'  
+                  v-bind:grid-size='canvas.gridSize'
+                  v-bind:half-grid-size='canvas.halfGridSize'
+
+                  :max-width='canvas.maxWidth'
+                  :fetch-canvas-controls='fetchCanvasControls' 
+              />
+            </div>
+      
+          </div>
+
+      </div>
+
+  
+
+    <script src="/js/online.bundle.js"></script>
 </body>
 </html>

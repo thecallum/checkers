@@ -14,6 +14,7 @@ const canvas = {
             
             canvas: null,
             ctx: null,
+
         }
     },
     mounted() {
@@ -40,9 +41,14 @@ const canvas = {
             this.clearCanvas();
             this.drawGrid();
             this.drawPieces();
-            this.drawOptions();
+
+            if (!!this.gameState.clientUser && this.gameState.clientUser === this.gameState.currentUser) {
+                this.drawOptions();
+
+                if (!!this.gameState.selectedPiece) this.drawSelectedPiece();
+
+            }
             
-            if (!!this.gameState.selectedPiece) this.drawSelectedPiece();
         },
 
         preDraw() {
@@ -73,6 +79,7 @@ const canvas = {
             this.gameState.pieces.map(piece => {
                 const isSelected = piece.id === this.gameState.selectedPiece;
                 const availableOptions = this.gameState.options[piece.id].length > 0;
+                console.log('canvas draws pieces', piece)
                 piece.draw(this.gridSize, this.ctx, availableOptions, isSelected);
             });
         },
