@@ -1,4 +1,4 @@
-import Piece from './piece';
+const { Piece } = require('./piece');
 
 const generatePieces = () => {
     let id = 0;
@@ -21,4 +21,4 @@ const generatePieces = () => {
     return pieces;
 }
 
-export default generatePieces;
+module.exports = generatePieces;

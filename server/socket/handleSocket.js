@@ -147,25 +147,35 @@ module.exports = io => {
                     // BOTH PLAYERS HAVE ACCEPTED!
                     // start game
 
-                    const generatePieces = require('../generatePieces');
-                    const generateOptions = require('../generateOptions');
+                    const generatePieces = require('../../src/js/components/generatePieces');
+                    const generateOptions = require('../../src/js/components/generateOptions');
 
                     const newPieces = generatePieces();
+                    // console.log({ newPieces })
                     const newOptions = generateOptions(newPieces, 0);
+
+                    // console.log('setup game', rooms[data.data.gameIndex]);
+                    // console.log('CLients', clients)
+                    // console.log(clients[socket.id], clients[otherPlayer])
 
                     const game = {
                         pieces: newPieces,
                         options: newOptions,
                         players: [
-                            rooms[data.data.gameIndex].players[0],
-                            rooms[data.data.gameIndex].players[1]
+                            { id: socket.id, username: clients[otherPlayer].username },
+                            { id: otherPlayer, username: clients[otherPlayer].username }
+                            // { username: rooms[data.data.gameIndex].players[0], id: },
+                            // {}
+                            // rooms[data.data.gameIndex].players[0],
+                            // rooms[data.data.gameIndex].players[1]
                         ],
-                        currentPlayer: 0
+                        currentPlayer: 0,   
+                        clientUser: 0,
                     }
 
                     setTimeout(() => {
                         io.to(data.data.gameIndex).emit('game', { state: 'ready', game });
-                    }, 3000);
+                    }, 100);
                 }
             }
 

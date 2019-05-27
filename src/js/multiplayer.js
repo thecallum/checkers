@@ -1,9 +1,13 @@
 console.log('APP RUNNING');
 
 import canvas from './components/canvas';
-import Piece from './components/piece';
-import generatePieces from './components/generatePieces';
-import generateOptions from './components/generateOptions';
+// import Piece from './components/piece';
+// import generatePieces from './components/generatePieces';
+// import generateOptions from './components/generateOptions';
+
+const { Piece } = require('./components/piece')
+const generatePieces = require('./components/generatePieces');
+const generateOptions = require('./components/generateOptions');
 
 import modal from './components/modal';
 
@@ -49,7 +53,7 @@ new Vue({
         this.canvas.gridSize = width / 8;
         this.canvas.halfGridSize = width / 16;
 
-        window.addEventListener('resize', this.handleResize)
+        window.addEventListener('resize', this.handleResize);
     },
 
     methods: {

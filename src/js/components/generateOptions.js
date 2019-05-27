@@ -1,4 +1,4 @@
-export default function(pieces, currentPlayer) {
+module.exports = ( pieces, currentPlayer ) => {
     const newOptions = {};
 
     for (let piece of pieces) {     

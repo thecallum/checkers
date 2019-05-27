@@ -1,4 +1,4 @@
-import hasFont from 'has-font';
+const hasFont = require('has-font')
 
 // apply font to ctx when loaded
 const loadFont = (ctx, font, fontSize) => {
@@ -6,6 +6,7 @@ const loadFont = (ctx, font, fontSize) => {
 
         if (hasFont('Special Elite')) {
             clearInterval(int);
+            console.log('FONT LOADED')
 
             // initialise font
             ctx.font = `${fontSize}px ${font}`;
@@ -13,4 +14,4 @@ const loadFont = (ctx, font, fontSize) => {
     }, 200);
 }
 
-export default loadFont;
+module.exports = loadFont;
