@@ -94,6 +94,10 @@
       <h2>{{ state }} - {{ connecting ? 'Connecting' : 'Connected' }}</h2>
       <h1 v-if='socketerror'>Error: {{socketerror}}</h1>
 
+      <p>GameStarted: {{ gameStarted }}</p>
+      <p v-if='gameStarted'>Turn: {{ game.currentPlayer === socket.id ? 'Its your turn' : 'Its opponents turn' }}</p>
+
+
       <div class="box">
         <h1 class='title'>Online</h1>
 
@@ -141,6 +145,7 @@
                   :max-width='canvas.maxWidth'
                   :fetch-canvas-controls='fetchCanvasControls' 
               />
+
       
           </div>
 

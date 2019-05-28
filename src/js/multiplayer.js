@@ -1,11 +1,10 @@
 console.log('APP RUNNING');
 
-import canvas from './components/canvas';
-
 const { Piece } = require('./components/piece')
 const generatePieces = require('./components/generatePieces');
 const generateOptions = require('./components/generateOptions');
 
+import canvas from './components/canvas';
 import modal from './components/modal';
 
 new Vue({
@@ -64,7 +63,7 @@ new Vue({
 
             // setup game env
             const newPieces = this.generatePieces();
-            const newOptions = this.generateOptions(newPieces, 0);
+            const newOptions = this.generateOptions(newPieces, 0, [ 0, 1 ]);
 
             this.game = {
                 ...this.game,
@@ -84,7 +83,6 @@ new Vue({
         },
 
         generatePieces: generatePieces,
-
         generateOptions: generateOptions,
 
         endTurn() {
@@ -220,13 +218,13 @@ new Vue({
                         return !(kill && piece.id === selectedOption.kill.id) 
                     }).map(piece => {
                         if (piece.id === this.game.selectedPiece) {
-                            return new Piece(selectedOption.end, this.game.currentPlayer, piece.id, piece.king || becomeKing);
+                            return new Piece(selectedOption.end, this.game.currentPlayer, piece.id, piece.king || becomeKing, piece.color);
                         }
                         return piece;
                     });
     
                     const newPlayer = this.game.currentPlayer === 0 ? 1 : 0;
-                    const newOptions = this.generateOptions(newPieces, newPlayer);
+                    const newOptions = this.generateOptions(newPieces, newPlayer, [ 0, 1 ]);
             
                     return {
                         ...this.game,

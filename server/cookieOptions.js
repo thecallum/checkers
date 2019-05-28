@@ -16,7 +16,7 @@ const getTime = stayLoggedIn => {
 const options = stayLoggedIn => ({
     secure: process.env.development ? false : true,
     httpOnly: true,
-    domain: process.env.domain || 'localhost',
+    // domain: process.env.domain || 'localhost',
     expires: getTime(stayLoggedIn),
     signed: true
 });

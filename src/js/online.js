@@ -1,11 +1,9 @@
 console.log('APP RUNNING');
 
 import canvas from './components/canvas';
-// import Piece from './components/piece';
-// import generatePieces from './components/generatePieces';
 import modal from './components/modal';
-
 import io from 'socket.io-client';
+
 
 new Vue({
     el: '#app',

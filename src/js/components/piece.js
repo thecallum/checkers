@@ -14,7 +14,7 @@ const colors =  {
 // }
 
 
-function Piece( coords, player, id, isKing = false, color = white ) {
+function Piece( coords, player, id, isKing = false, color = 'white' ) {
     this.player = player;
     this.id = id;
     this.coords = coords;

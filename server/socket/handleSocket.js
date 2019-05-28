@@ -134,23 +134,28 @@ module.exports = io => {
 
                     // const newPlayer = game.currentPlayer === socket.id ? 1 : 0;
 
-                 
+                    console.log('ACCEPT', rooms[data.data.gameIndex].players)
 
-                    const newPieces = generatePieces(socket.id, otherPlayer);
-                    const newOptions = generateOptions(newPieces, socket.id, [
+                    const players = [
                         socket.id,
                         otherPlayer
-                    ]);
+                    ];
+
+                    const newPieces = generatePieces(socket.id, otherPlayer);
+                    const newOptions = generateOptions(newPieces, socket.id, players);
+
+                    
 
                     // console.log({ newOptions })
 
                     const game = {
                         pieces: newPieces,
                         options: newOptions,
-                        players: {
-                            [socket.id]: { username: clients[otherPlayer].username },
-                            [otherPlayer]: { username: clients[otherPlayer].username }
-                        },
+                        // players: {
+                        //     [socket.id]: { username: clients[otherPlayer].username },
+                        //     [otherPlayer]: { username: clients[otherPlayer].username }
+                        // },
+                        players,
                         currentPlayer: socket.id
                     }
 
@@ -254,12 +259,12 @@ module.exports = io => {
 
                    const otherPlayer = Object.keys(rooms[roomIndex].players).filter(id => id !== socket.id)[0];
                    
-                   const players = [
-                       socket.id,
-                       otherPlayer
-                   ]
+                //    const players = [
+                //        socket.id,
+                //        otherPlayer
+                //    ]
 
-                   games[roomIndex] = handleSelection(selectedOption, selectedOptionID, game.currentPlayer, players);
+                   games[roomIndex] = handleSelection(selectedOption, selectedOptionID, game.currentPlayer, games[roomIndex].players);
                    
 
                 //    console.log('UPDATEDGAME', games[roomIndex]);
