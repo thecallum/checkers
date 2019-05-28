@@ -1,12 +1,11 @@
 module.exports = ( pieces, currentPlayer, players ) => {
     const newOptions = {};
 
-    // console.log('GENREATE', currentPlayer)
+
     for (let piece of pieces) {     
         newOptions[piece.id] = [];
         if (piece.player !== currentPlayer) continue;
 
-        // console.log('PIECE', piece.player)
         const coords = piece.coords;
 
 

@@ -1,20 +1,9 @@
 const { Piece } = require('./piece');
-
-
-const colors = {
-    'yellow': 'hsl(60, 80%, 50%)',
-    'red': 'hsl(0, 50%, 50%)',
-    'green': 'hsl(100, 50%, 50%)',
-    'blue': 'hsl(220, 70%, 50%)',
-    'grey': 'hsl(220, 5%, 70%)',
-};
-
+const colors = require('./colors');
 
 const generatePieces = ( player1 = 0, player2 = 1 ) => {
     let id = 0;
     const pieces = [];
-
-    console.log({ player1, player2 })
 
     // bottom (first player in array)
     for (let row=0;row<3;row++) {

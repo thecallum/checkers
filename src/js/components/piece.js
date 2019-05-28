@@ -1,32 +1,19 @@
-const colors =  {
-    'yellow': 'hsl(60, 80%, 50%)',
-    'red': 'hsl(0, 50%, 50%)',
-    'green': 'hsl(100, 50%, 50%)',
-    'blue': 'hsl(220, 70%, 50%)',
-    'grey': 'hsl(220, 5%, 70%)',
-};
+const colors = require('./colors');
 
-// const Piece = ( coords, player, id, isKing = false ) => {
-//     this.player = player;
-//     this.id = id;
-//     this.coords = coords;
-//     this.king = isKing;
-// }
-
-
-function Piece( coords, player, id, isKing = false, color = 'white' ) {
-    this.player = player;
-    this.id = id;
-    this.coords = coords;
-    this.king = isKing;
-    this.color = color;
-  }
+class Piece {
+    constructor( coords, player, id, isKing = false, color = 'white' ) {
+        this.player = player;
+        this.id = id;
+        this.coords = coords;
+        this.king = isKing;
+        this.color = color;    
+    }
+}
  
 const draw = (piece, gridSize, ctx, validOptions, selected, color) => {
     const radius = (gridSize /2) - 6;
     const x = (piece.coords.x * gridSize) + (gridSize /2);
     const y = (piece.coords.y * gridSize) + (gridSize /2);
-    
     
     if (selected && !validOptions) {
         ctx.fillStyle = colors.grey;
@@ -34,7 +21,6 @@ const draw = (piece, gridSize, ctx, validOptions, selected, color) => {
         ctx.fillStyle = colors.green;
     } else {
         ctx.fillStyle = color;
-        // ctx.fillStyle = colors[piece.player === 0 ? 'red' : 'blue'];
     }
     
     ctx.beginPath();

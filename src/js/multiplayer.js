@@ -1,11 +1,12 @@
-console.log('APP RUNNING');
-
-const { Piece } = require('./components/piece')
 const generatePieces = require('./components/generatePieces');
 const generateOptions = require('./components/generateOptions');
+const findClickedPiece = require('./components/findClickedPiece');
+const updatePieces = require('./components/updatePieces');
+const nextPlayer = require('./components/nextPlayer');
+const checkOptionsClicked = require('./components/checkOptionsClicked');
 
-import canvas from './components/canvas';
-import modal from './components/modal';
+const canvas = require('./components/canvas');
+const modal = require('./components/modal');
 
 new Vue({
     el: '#app',
@@ -59,8 +60,6 @@ new Vue({
         },
 
         fetchCanvasControls({ update, preDraw }, canvasElement) {
-            console.log('Fetch, called from canvas component');
-
             // setup game env
             const newPieces = this.generatePieces();
             const newOptions = this.generateOptions(newPieces, 0, [ 0, 1 ]);
@@ -178,27 +177,7 @@ new Vue({
         },
 
         clickHandler({ offsetX, offsetY }) {
-            if (this.gameEnded) return;
-    
-            const checkOptionsClicked = (options, gridSize) => {
-                if (options.length === 0) return null;
-    
-                let selectedOption = null;
-    
-                for (let option of options) {
-                    if (
-                        offsetX > (option.end.x * gridSize) && 
-                        offsetX < (option.end.x * gridSize) + gridSize &&
-                        offsetY > (option.end.y * gridSize) && 
-                        offsetY < (option.end.y * gridSize) + gridSize 
-                    ) {
-                        selectedOption = option;
-                        break;
-                    }
-                }
-    
-                return selectedOption;
-            }
+            if (this.gameEnded) return;           
     
             // if no piece is selected, cannot select an option..
             let selectedOption = this.game.selectedPiece ===  null ? null : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize);       
@@ -209,67 +188,28 @@ new Vue({
                 // Move Piece and reset options
                 // Then update turn
     
-                const handleSelection = selectedOption => {
-                    const kill = selectedOption.hasOwnProperty('kill');
-                    const becomeKing = selectedOption.becomeKing;
-        
-                    const newPieces = this.game.pieces.filter(piece => {
-                        // remove killed piece
-                        return !(kill && piece.id === selectedOption.kill.id) 
-                    }).map(piece => {
-                        if (piece.id === this.game.selectedPiece) {
-                            return new Piece(selectedOption.end, this.game.currentPlayer, piece.id, piece.king || becomeKing, piece.color);
-                        }
-                        return piece;
-                    });
-    
-                    const newPlayer = this.game.currentPlayer === 0 ? 1 : 0;
-                    const newOptions = this.generateOptions(newPieces, newPlayer, [ 0, 1 ]);
-            
-                    return {
-                        ...this.game,
-                        pieces: newPieces,
-                        options: newOptions,
-                        selectedPiece: null,
-                        currentPlayer: newPlayer,
-                    }; 
-                }
-    
-                this.game = handleSelection(selectedOption);
-    
+                const newPieces = updatePieces(selectedOption, this.game.selectedPiece, this.game.pieces, this.game.currentPlayer);
+
+                const newPlayer = nextPlayer(this.game.currentPlayer, [0,1]);
+
+                const newOptions = this.generateOptions(newPieces, newPlayer, [ 0, 1 ]);
+
+                this.game =  {
+                    ...this.game,
+                    pieces: newPieces,
+                    options: newOptions,
+                    selectedPiece: null,
+                    currentPlayer: newPlayer,
+                }; 
+
                 this.callCanvasRedraw(this.game);    
     
                 this.endTurn();
     
             } else {
                 // player didnt't click an option, now check if a piece is selected
-    
-                const pieceClicked = (pieces, currentPlayer, gridSize, halfGridSize, offsetX, offsetY) => {
-                    let foundPiece = false;
-    
-                    for (let piece of pieces) {
-                        // ignore opponenets pieces
-                        if (piece.player !== currentPlayer) continue;
-            
-                        const centerCoords = {
-                            x: (piece.coords.x * gridSize) + halfGridSize -6,
-                            y: (piece.coords.y * gridSize) + halfGridSize -6
-                        }
-            
-                        const xDist = centerCoords.x > offsetX ? centerCoords.x - offsetX : offsetX - centerCoords.x;
-                        const yDist = centerCoords.y > offsetY ? centerCoords.y - offsetY : offsetY - centerCoords.y;
-            
-                        // distance from center determines if user has clicked in the piece
-                        if (xDist <= halfGridSize -6 && yDist <= halfGridSize -6) {
-                            foundPiece = piece;
-                            break;
-                        }
-                    }  
-    
-                    return foundPiece;
-                }
         
-                const foundPiece = pieceClicked(this.game.pieces, this.game.currentPlayer, this.canvas.gridSize, this.canvas.halfGridSize, offsetX, offsetY);
+                const foundPiece = findClickedPiece(this.game.pieces, this.game.currentPlayer, this.canvas.gridSize, this.canvas.halfGridSize, offsetX, offsetY);
     
                 if (!!foundPiece && foundPiece.id === this.game.selectedPiece) {
                     this.game.selectedPiece = null;

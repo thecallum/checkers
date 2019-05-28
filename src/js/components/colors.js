@@ -6,4 +6,4 @@ const colors =  {
     'grey': 'hsl(220, 5%, 70%)',
 };
 
-export default colors;
+module.exports = colors;

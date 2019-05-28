@@ -1,8 +1,6 @@
-// import loadFont from './loadFont';
-
 const loadFont = require('./loadFont')
 
-const { Piece, draw: drawPiece, drawOptions } = require('./piece');
+const { draw: drawPiece, drawOptions } = require('./piece');
 
 const canvas = {
     props: {
@@ -39,20 +37,13 @@ const canvas = {
     methods: {
 
         update(state) {
-
             this.gameState = state;
             this.clearCanvas();
             this.drawGrid();
             this.drawPieces();
+            this.drawOptions();
 
-            console.log({ currentPlayer: this.gameState.currentPlayer })
-
-            // if (this.gameState.clientUser === this.gameState.currentPlayer) {
-                console.log('Draw options');
-                this.drawOptions();
-
-                if (!!this.gameState.selectedPiece) this.drawSelectedPiece();
-            // }
+            if (!!this.gameState.selectedPiece) this.drawSelectedPiece();
         },
 
         preDraw() {
@@ -78,16 +69,11 @@ const canvas = {
             }
         },
 
-        drawPieces() {
-            console.log('options', this.gameState.options);
-    
+        drawPieces() {    
             this.gameState.pieces.map(piece => {
                 const isSelected = piece.id === this.gameState.selectedPiece;
                 const availableOptions = this.gameState.options[piece.id].length > 0;
-                // console.log('canvas draws pieces', piece)
-                // piece.draw(this.gridSize, this.ctx, availableOptions, isSelected);
 
-                // console.log('draw color', piece.color, piece.id)
                 drawPiece(piece, this.gridSize, this.ctx, availableOptions, isSelected, piece.color);
             });
         },
@@ -96,12 +82,8 @@ const canvas = {
             if (this.gameState.selectedPiece === null) return;
     
             const selectedPieceId = this.gameState.selectedPiece;
-
-            const selectedPiece = this.gameState.pieces.filter(piece => piece.id === selectedPieceId)[0];
-
             const selectedOptions = this.gameState.options[selectedPieceId];
             
-            // selectedPiece.drawOptions(this.ctx, selectedOptions, this.gridSize, this.halfGridSize);
             drawOptions(this.ctx, selectedOptions, this.gridSize, this.halfGridSize);
         },
 
@@ -109,7 +91,6 @@ const canvas = {
             const pieceID = this.gameState.selectedPiece;
             const availableOptions = this.gameState.options[pieceID].length > 0;
     
-            // this.gameState.pieces.filter(piece => piece.id === pieceID)[0].draw(this.gridSize, this.ctx, availableOptions, true);
             const selectedPiece = this.gameState.pieces.filter(piece => piece.id === pieceID)[0];
             drawPiece(selectedPiece, this.gridSize, this.ctx, availableOptions, true);
         }
@@ -123,10 +104,8 @@ const canvas = {
             :height='width'
 
             ref='canvas'
-        >
-
-        </canvas>
+        />
     `),
 }
 
-export default canvas;
+module.exports =  canvas;

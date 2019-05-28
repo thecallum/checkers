@@ -14,4 +14,4 @@ const modal = {
     `),
 }
 
-export default modal;
+module.expports = modal;
