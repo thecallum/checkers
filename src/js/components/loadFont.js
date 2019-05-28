@@ -6,7 +6,6 @@ const loadFont = (ctx, font, fontSize) => {
 
         if (hasFont('Special Elite')) {
             clearInterval(int);
-            console.log('FONT LOADED')
 
             // initialise font
             ctx.font = `${fontSize}px ${font}`;

@@ -18,7 +18,6 @@ const canvas = {
             
             canvas: null,
             ctx: null,
-
         }
     },
     mounted() {
@@ -46,22 +45,19 @@ const canvas = {
             this.drawGrid();
             this.drawPieces();
 
-            console.log({ clientUser: this.gameState.clientUser, currentPlayer: this.gameState.currentPlayer })
+            console.log({ currentPlayer: this.gameState.currentPlayer })
 
-            if (!this.gameState.clientUser || this.gameState.clientUser === this.gameState.currentPlayer) {
+            // if (this.gameState.clientUser === this.gameState.currentPlayer) {
                 console.log('Draw options');
                 this.drawOptions();
 
                 if (!!this.gameState.selectedPiece) this.drawSelectedPiece();
-
-            }
-            
+            // }
         },
 
         preDraw() {
             // only draw grid (before player starts game)
             this.drawGrid();
-
         },
 
         clearCanvas() {
@@ -83,14 +79,16 @@ const canvas = {
         },
 
         drawPieces() {
-            // console.log('Draw Pieces', this.gameState)
+            console.log('options', this.gameState.options);
+    
             this.gameState.pieces.map(piece => {
                 const isSelected = piece.id === this.gameState.selectedPiece;
                 const availableOptions = this.gameState.options[piece.id].length > 0;
                 // console.log('canvas draws pieces', piece)
                 // piece.draw(this.gridSize, this.ctx, availableOptions, isSelected);
 
-                drawPiece(piece, this.gridSize, this.ctx, availableOptions, isSelected);
+                // console.log('draw color', piece.color, piece.id)
+                drawPiece(piece, this.gridSize, this.ctx, availableOptions, isSelected, piece.color);
             });
         },
 

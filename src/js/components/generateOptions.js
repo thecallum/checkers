@@ -1,11 +1,12 @@
-module.exports = ( pieces, currentPlayer ) => {
+module.exports = ( pieces, currentPlayer, players ) => {
     const newOptions = {};
 
+    // console.log('GENREATE', currentPlayer)
     for (let piece of pieces) {     
         newOptions[piece.id] = [];
         if (piece.player !== currentPlayer) continue;
 
-
+        // console.log('PIECE', piece.player)
         const coords = piece.coords;
 
 
@@ -17,7 +18,7 @@ module.exports = ( pieces, currentPlayer ) => {
         // 2. else, if square !null (square exists on board), check if piece is enemy
         // 3. If piece is enemy, check if square behind is empty (so piece can jump/kill enemy)
     
-        if (piece.player === 0 || piece.king) {
+        if (piece.player === players[0] || piece.king) {
             const topRight = coords.x === 7 || coords.y === 0 ? null : pieces.filter(piece => piece.coords.x === coords.x +1 && piece.coords.y === coords.y -1)[0];
             const topLeft = coords.x === 0  || coords.y === 0 ? null : pieces.filter(piece => piece.coords.x === coords.x -1 && piece.coords.y === coords.y -1)[0];
     
@@ -60,7 +61,7 @@ module.exports = ( pieces, currentPlayer ) => {
             }
         }
     
-        if (piece.player === 1 || piece.king) {
+        if (piece.player === players[1] || piece.king) {
             const bottomRight = coords.x === 7 || coords.y === 7 ? null : pieces.filter(piece => piece.coords.x === coords.x +1 && piece.coords.y === coords.y +1)[0];
             const bottomLeft = coords.x === 0 || coords.y === 7 ? null : pieces.filter(piece => piece.coords.x === coords.x -1 && piece.coords.y === coords.y +1)[0];
     

@@ -14,14 +14,15 @@ const colors =  {
 // }
 
 
-function Piece( coords, player, id, isKing = false ) {
+function Piece( coords, player, id, isKing = false, color = white ) {
     this.player = player;
     this.id = id;
     this.coords = coords;
     this.king = isKing;
+    this.color = color;
   }
  
-const draw = (piece, gridSize, ctx, validOptions, selected) => {
+const draw = (piece, gridSize, ctx, validOptions, selected, color) => {
     const radius = (gridSize /2) - 6;
     const x = (piece.coords.x * gridSize) + (gridSize /2);
     const y = (piece.coords.y * gridSize) + (gridSize /2);
@@ -32,7 +33,8 @@ const draw = (piece, gridSize, ctx, validOptions, selected) => {
     } else if (selected) {
         ctx.fillStyle = colors.green;
     } else {
-        ctx.fillStyle = colors[piece.player === 0 ? 'red' : 'blue'];
+        ctx.fillStyle = color;
+        // ctx.fillStyle = colors[piece.player === 0 ? 'red' : 'blue'];
     }
     
     ctx.beginPath();

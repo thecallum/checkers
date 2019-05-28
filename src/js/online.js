@@ -1,9 +1,8 @@
 console.log('APP RUNNING');
 
 import canvas from './components/canvas';
-import Piece from './components/piece';
-import generatePieces from './components/generatePieces';
-
+// import Piece from './components/piece';
+// import generatePieces from './components/generatePieces';
 import modal from './components/modal';
 
 import io from 'socket.io-client';
@@ -13,9 +12,6 @@ new Vue({
     components: { canvasComponent: canvas, modal },
 
     data: {
-
-
-
         players: [
             { name: '', default: 'player 1', src: '#' },
             { name: '', default: 'player 2', src: '#' }
@@ -26,17 +22,12 @@ new Vue({
         gameStarted: false,
         enabledClickHandler: false, // prevent multiple handlers on rematch
 
-
-
-
         game: {
             pieces: [],
             options: {},
             currentPlayer: 0,
             selectedPiece: null
         },
-
-
 
         socket: null,
         connecting: true,
@@ -60,11 +51,8 @@ new Vue({
 
         update: null,
         preDraw: null,
-        canvasElement: null,
-
- 
+        canvasElement: null
     },
-
 
     mounted() {
         const width = window.innerWidth > this.canvas.maxWidth ? this.canvas.maxWidth : window.innerWidth - 20;
@@ -96,6 +84,12 @@ new Vue({
 
             if (data.state === 'queue') {
                 this.state = data.state;
+                this.accepted = false;
+                this.opponentAccepted = false;
+                this.foundGame = null;
+
+                this.preDraw();
+
                 return;
             }
 
@@ -117,16 +111,9 @@ new Vue({
                     selectedPiece: null
                 };
 
-                console.lo
-                // start canvas animation
-
-                // this.update({
-                //     ...this.game, 
-                //     clientUser: 1
-                // });
+                // console.log('BEFORE READY', this.game)
 
                 console.log('READY', data);
-
 
                 if (!this.enabledClickHandler) {
                     this.enabledClickHandler = true;
@@ -134,16 +121,28 @@ new Vue({
                 }
                 
                 this.gameStarted = true;
-        
+    
                 this.callCanvasRedraw();
-
-                // this.callCanvasRedraw();
                 return;
             }
 
+            if (data.state === 'new_turn') {
+                console.log('NEW TURN', data);
+
+
+            this.game = {
+                ...data.data.game,
+                selectedPiece: null   
+            };
+
+                this.callCanvasRedraw();
+                
+            }
+
             if (data.state === 'disconnect') {
-                alert('Opponent disconnected!');
                 this.state = data.state;
+
+                alert('Opponent disconnected!');
                 return;
             }
         })
@@ -151,14 +150,14 @@ new Vue({
 
     methods: {
         clickHandler({ offsetX, offsetY }) {
-            if (this.gameEnded) return;
+            if (this.gameEnded || this.game.currentPlayer !== this.socket.id) return;
             console.log('click')
     
             const checkOptionsClicked = (options, gridSize) => {
                 if (options.length === 0) return null;
     
                 let selectedOption = null;
-    
+
                 for (let option of options) {
                     if (
                         offsetX > (option.end.x * gridSize) && 
@@ -174,48 +173,30 @@ new Vue({
                 return selectedOption;
             }
     
-            console.log('check options', this.game, this.game.selectedPiece, this.game.options[this.game.selectedPiece], this.canvas.gridSize)
+            // console.log('check options', this.game.options[this.game.selectedPiece])
             // if no piece is selected, cannot select an option..
             let selectedOption = this.game.selectedPiece ===  null ? null : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize);       
             
             if (!!selectedOption) {
                 // Option is selected! 
                 // 
-                // Move Piece and reset options
-                // Then update turn
-    
-                alert('OPTION SELECTED, TELL SERVER TO START NEXT TURN');
-                const handleSelection = selectedOption => {
-                    const kill = selectedOption.hasOwnProperty('kill');
-                    const becomeKing = selectedOption.becomeKing;
-        
-                    const newPieces = this.game.pieces.filter(piece => {
-                        // remove killed piece
-                        return !(kill && piece.id === selectedOption.kill.id) 
-                    }).map(piece => {
-                        if (piece.id === this.game.selectedPiece) {
-                            return new Piece(selectedOption.end, this.game.currentPlayer, piece.id, piece.king || becomeKing);
-                        }
-                        return piece;
-                    });
-    
-                    const newPlayer = this.game.currentPlayer === 0 ? 1 : 0;
-                    const newOptions = this.generateOptions(newPieces, newPlayer);
-            
-                    this.game = {
-                        ...this.game,
-                        pieces: newPieces,
-                        options: newOptions,
-                        selectedPiece: null,
-                        currentPlayer: newPlayer,
-                    };
-                }
-    
-                handleSelection(selectedOption);
-    
-                this.callCanvasRedraw(this.game);    
-    
-                this.endTurn();
+                
+                console.log({ selectedOption })
+ 
+                // alert('OPTION SELECTED, TELL SERVER TO START NEXT TURN');
+
+                const move = {
+                    selectedOption,
+                    selectedPiece: this.game.selectedPiece 
+                };
+
+               // send data to server
+               this.socket.emit('game', {
+                    state: 'submit_turn',
+                    data: {
+                        move,
+                    }
+               });
     
             } else {
                 // player didnt't click an option, now check if a piece is selected
@@ -246,7 +227,8 @@ new Vue({
                 }
         
                 const foundPiece = pieceClicked(this.game.pieces, this.game.currentPlayer, this.canvas.gridSize, this.canvas.halfGridSize, offsetX, offsetY);
-    
+                console.log({ foundPiece })
+
                 if (!!foundPiece && foundPiece.id === this.game.selectedPiece) {
                     this.game.selectedPiece = null;
                 } else if (!!foundPiece) {
@@ -271,9 +253,11 @@ new Vue({
                 }
             })
         },
+
         rejectGame() {
             console.log('Game rejected');
         },
+
         joinQueue() {
             console.log('Clicked Join Queue');
             this.socket.emit('game', { state: 'join_queue' });
@@ -282,33 +266,18 @@ new Vue({
         fetchCanvasControls({ update, preDraw }, canvasElement) {
             console.log('Fetch, called from canvas component');
 
-            // setup game env
-            // const newPieces = this.generatePieces();
-            // const newOptions = this.generateOptions(newPieces, 0);
-
-            // this.game = {
-            //     ...this.game,
-            //     pieces: newPieces,
-            //     options: newOptions
-            // };
-
             this.update = update;
             this.preDraw = preDraw;
             this.canvasElement = canvasElement;
 
             this.preDraw();
-
-            // this.callCanvasRedraw();
         },
 
         callCanvasRedraw() {
-            // console.log('Call update', this.game)
-            this.update({
-                ...this.game, 
-                // clientUser: 1
-            });
+            this.update({ ...this.game });
         },
-        generatePieces: generatePieces,
+
+        // generatePieces: generatePieces,
         handleResize() {
             // 20px for padding
             const width = window.innerWidth > this.canvas.maxWidth ? this.canvas.maxWidth : window.innerWidth - 20;
@@ -316,10 +285,7 @@ new Vue({
             this.canvas.gridSize = width / 8;
             this.canvas.halfGridSize = width / 16;
 
-
             setTimeout(this.gameStarted ? this.callCanvasRedraw : this.preDraw, 0);
-
         },
-
     }
 })

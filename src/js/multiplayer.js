@@ -1,9 +1,6 @@
 console.log('APP RUNNING');
 
 import canvas from './components/canvas';
-// import Piece from './components/piece';
-// import generatePieces from './components/generatePieces';
-// import generateOptions from './components/generateOptions';
 
 const { Piece } = require('./components/piece')
 const generatePieces = require('./components/generatePieces');
@@ -231,16 +228,16 @@ new Vue({
                     const newPlayer = this.game.currentPlayer === 0 ? 1 : 0;
                     const newOptions = this.generateOptions(newPieces, newPlayer);
             
-                    this.game = {
+                    return {
                         ...this.game,
                         pieces: newPieces,
                         options: newOptions,
                         selectedPiece: null,
                         currentPlayer: newPlayer,
-                    };
+                    }; 
                 }
     
-                handleSelection(selectedOption);
+                this.game = handleSelection(selectedOption);
     
                 this.callCanvasRedraw(this.game);    
     
