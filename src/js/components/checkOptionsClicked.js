@@ -1,4 +1,4 @@
-const checkOptionsClicked = (options, gridSize) => {
+const checkOptionsClicked = (options, gridSize, offsetX, offsetY) => {
     if (options.length === 0) return null;
 
     let selectedOption = null;

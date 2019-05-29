@@ -180,7 +180,7 @@ new Vue({
             if (this.gameEnded) return;           
     
             // if no piece is selected, cannot select an option..
-            let selectedOption = this.game.selectedPiece ===  null ? null : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize);       
+            let selectedOption = this.game.selectedPiece ===  null ? null : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);       
             
             if (!!selectedOption) {
                 // Option is selected! 

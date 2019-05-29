@@ -132,6 +132,20 @@ new Vue({
     
                     this.callCanvasRedraw();
                 }
+
+                if (data.state === 'win') {
+                    this.state = data.state;
+
+                    console.log('game won');
+
+
+                    if (data.data.player === this.socket.id) {
+                        alert('You Won!');
+                    } else {
+                        alert('You lost!');
+                    }
+
+                }
     
                 if (data.state === 'disconnect') {
                     this.state = data.state;
@@ -145,7 +159,7 @@ new Vue({
             if (this.gameEnded || this.game.currentPlayer !== this.socket.id) return;
     
             // if no piece is selected, cannot select an option..
-            let selectedOption = this.game.selectedPiece ===  null ? null : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize);       
+            let selectedOption = this.game.selectedPiece ===  null ? null : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);       
             
             if (!!selectedOption) {
                 // Option is selected! 

@@ -189,22 +189,72 @@ module.exports = io => {
 
                     const newOptions = generateOptions(newPieces, newPlayer, games[roomIndex].players);
 
-                    games[roomIndex] =  {
-                        ...game,
-                        pieces: newPieces,
-                        options: newOptions,
-                        selectedPiece: null,
-                        currentPlayer: newPlayer,
-                    }; 
+                    
 
+                    // endturn()
 
-                    io.to(roomIndex).emit('game', { 
-                        state: 'new_turn', 
-                        data: {
-                            game: games[roomIndex]
+                    const checkWin = (newPieces, newPlayer, newOptions) => {
+
+                        const opponentHasPieces = newPieces.filter(piece => piece.player === newPlayer).length > 0;
+
+                        if (!opponentHasPieces) {
+                            // this.handleGameEnd('win');
+                            console.log('GAME END, OPPONENT HAS NO MORE PIECES')
+                            return 'Opponent has no pieces';
+                        } 
+
+                        let opponentHasOptions = false;
+                        for (let option of Object.keys(newOptions)) {
+                            const currentOption = newOptions[option];
+            
+                            if (currentOption.length > 0) {
+                                opponentHasOptions = true;
+                                break;
+                            }
                         }
-                    });
-                
+
+                        if (!opponentHasOptions) {
+                            // this.handleGameEnd('draw');
+                            console.log('GAME END, OPPONENT HAS NO MORE OPTIONS')
+                            return 'Opponent has no options -- draw';
+                        }
+
+                    }
+
+                    
+
+                    const gameWon = checkWin(newPieces, newPlayer, newOptions);
+        
+                    if (!!gameWon) {
+                        delete games[roomIndex];
+
+                        io.to(roomIndex).emit('game', { 
+                            state: 'win', 
+                            data: {
+                                type: 'win',
+                                player: socket.id,
+                                message: 'Player won!'
+                            }
+                        });
+
+                    } else {
+                        games[roomIndex] =  {
+                            ...game,
+                            pieces: newPieces,
+                            options: newOptions,
+                            selectedPiece: null,
+                            currentPlayer: newPlayer,
+                        }; 
+            
+    
+                        io.to(roomIndex).emit('game', { 
+                            state: 'new_turn', 
+                            data: {
+                                game: games[roomIndex]
+                            }
+                        });
+                    }
+                   
                }
             }
         })
