@@ -34,6 +34,7 @@ new Vue({
         game: null,
         foundGame: null,
         state: 'connecting',
+        players: [],
 
         accepted: false,
         opponentAccepted: false,
@@ -89,8 +90,11 @@ new Vue({
                     this.accepted = false;
                     this.opponentAccepted = false;
                     this.foundGame = null;
-    
+                    this.game = {};
+                    this.players = [];
                     this.preDraw();
+                    this.gameStarted = false;
+                    this.gameEnded = false;
     
                     return;
                 }
@@ -112,6 +116,8 @@ new Vue({
                         ...data.game,
                         selectedPiece: null
                     };
+
+                    this.players = data.game.players.map(player => this.foundGame.data[player]);
     
                     if (!this.enabledClickHandler) {
                         this.enabledClickHandler = true;
@@ -149,7 +155,7 @@ new Vue({
                     if (data.data.type === 'draw') {
                         this.winMessage = 'It\'s a draw!'; 
                     } else {
-                        this.winMessage = data.data.player === this.socket.id ? 'You won!' : 'You loose!';
+                        this.winMessage = data.data.player === this.socket.id ? 'You Win!' : 'You Lose!';
                     }
 
                     this.gameEnded = true;

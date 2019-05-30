@@ -91,60 +91,70 @@
 
 
     <div id="app">
-      <h2>{{ state }} - {{ connecting ? 'Connecting' : 'Connected' }}</h2>
-      <h1 v-if='socketerror'>Error: {{socketerror}}</h1>
 
-      <p>GameStarted: {{ gameStarted }}</p>
-      <p v-if='gameStarted'>Turn: {{ game.currentPlayer === socket.id ? 'Its your turn' : 'Its opponents turn' }}</p>
+        <p>{{ connecting ? 'Connecting' : 'Connected' }}</p>
+        <h1 v-if='socketerror'>Error: {{socketerror}}</h1>
 
+        <div class="container">
+            <div class='canvasView'>
+                <div class="canvas__players" v-if='gameStarted'>
+                    <div class='canvas__player' v-for='player in players'>
+                        <img v-bind:src="player.src" v-bind:alt="player.alt" class='canvas__playerImg'/>
+                        <p class='canvas__playerName'>{{ player.username }}</p>
+                    </div> 
+                </div>
 
-      <div class="box">
-        <h1 class='title'>Online</h1>
-
-          <div v-if='state === "connected" || state === "connecting" || state === "disconnect"'>
-              <button :disabled='state === "connecting"' @click='joinQueue'>Join Queue</button>
-            </div>
-      
-            <div v-if='state === "queue"' class="queue">
-              <h3>Queue</h3>
-              <p class="searching">Searching for players</p>
-            </div>
-      
-            <div v-if='state === "found"' class='queue'>
-              <h3>Queue</h3>
-
-              <p>Found an opponent</p>
-      
-               <div v-if='accepted && opponentAccepted'>
-                  <p class='searching'>Setting up game</p>
-               </div>
-               <div v-else>
-                  <p>Opponent: {{ foundGame.data[Object.keys(foundGame.data).filter(key => key !== socket.id)[0]].username }}</p>
-      
-                  <p v-if='accepted'>You have accepted</p>
-                  <p v-if='opponentAccepted'>Your opponent has accepted</p>
-          
-                  <div class="button__group">
-                      <button @click='acceptGame'>Accept</button>
-                      <button @click='acceptGame' disabled>Decline</button>
-                  </div>
-                  
-               </div>
-            </div>
-   
-
-
-            <canvas-component 
+                <canvas-component 
                   v-bind:width='canvas.width'  
                   v-bind:grid-size='canvas.gridSize'
                   v-bind:half-grid-size='canvas.halfGridSize'
 
                   :max-width='canvas.maxWidth'
                   :fetch-canvas-controls='fetchCanvasControls' 
-              />
+              ></canvas-component>
 
+                <div class="canvas__bottom" v-if='gameStarted'>
+                  <h3 class='canvas__message'>It's {{ game.currentPlayer === socket.id ? 'your' : foundGame.data[game.currentPlayer].username + '\'s' }} turn!</h3>
+                </div>
+            </div>
+        </div>
+
+
+          <!-- Game Setup Modal -->
+        <modal :show='!gameStarted'>
+            <div>
+                <div v-if='state === "connected" || state === "connecting" || state === "disconnect"'>
+                    <button :disabled='state === "connecting"' @click='joinQueue'>Join Queue</button>
+                  </div>
+            
+                  <div v-if='state === "queue"' class="queue">
+                    <h3>Queue</h3>
+                    <p class="searching">Searching for players</p>
+                  </div>
+            
+                  <div v-if='state === "found"' class='queue'>
+                    <h3>Queue</h3>
       
-          </div>
+                    <p>Found an opponent</p>
+            
+                     <div v-if='accepted && opponentAccepted'>
+                        <p class='searching'>Setting up game</p>
+                     </div>
+                     <div v-else>
+                        <p>Opponent: {{ foundGame.data[Object.keys(foundGame.data).filter(key => key !== socket.id)[0]].username }}</p>
+            
+                        <p v-if='accepted'>You have accepted</p>
+                        <p v-if='opponentAccepted'>Your opponent has accepted</p>
+                
+                        <div class="button__group">
+                            <button @click='acceptGame'>Accept</button>
+                            <button @click='acceptGame' disabled>Decline</button>
+                        </div>
+                        
+                     </div>
+                  </div>
+            </div>
+        </modal>
 
           <!-- Game End Modal -->
           <modal :show='gameEnded'>
@@ -157,8 +167,9 @@
                 <p class="modal__message">{{ winMessage }}</p>
 
                 <div class="modal__options">
-                  <button class="button modal__button">Rematch</button>
                   <a class="button modal__button" href='/'>Home</a>
+                  <a class="button modal__button" href='/leaderboard'>Leaderboard</a>
+                  <button class="button modal__button" @click='joinQueue'>Join Queue</button>
                 </div>
               </div>
             </div>

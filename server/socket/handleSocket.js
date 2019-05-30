@@ -1,76 +1,63 @@
-const cookieParser = require('cookie-parser');
-const cookie = require('cookie');
+const setupQueue = require('./setupQueue');
 
-const setup_queue = () => {
-    let queue = [];
-    const subscribeList = [];
-
-    const get = () => queue;
-
-    const add = id => {
-        queue.push(id);
-        emit();
-    };
-
-    const getPlayers = () => {
-        const spliced =  queue.splice(0,2);
-        emit();
-        return spliced;
-    }
-
-    const remove = id => {
-        queue = queue.filter(userID => userID !== id);
-        emit();
-    }
-
-    const subscribe = cb => subscribeList.push(cb);
-
-    const emit = () => subscribeList.map(cb => cb(queue));
-
-    return { queue, add, getPlayers, subscribe, remove, get };    
-}
-
-let roomID = 0;
-const rooms = {};
+// let roomID = 0;
+// const rooms = {};
 const games = {};
 
 const clients = {};
-const queue = setup_queue();
+const queue = setupQueue();
 
 const generatePieces = require('../../src/js/components/generatePieces');
 const generateOptions = require('../../src/js/components/generateOptions');
 const updatePieces = require('../../src/js/components/updatePieces');
 const nextPlayer = require('../../src/js/components/nextPlayer');
 
-module.exports = io => {
-    io.use((socket, next) => {
-        const data = socket.request;
+const protectSocket = require('./protectSocket');
 
-        if (!data.headers.cookie) return next(new Error('No cookie given.'));
+const setupRooms = () => {
+    let rooms = {};
+    let roomIndex = 0;
 
-        const getCookie = name => {
-            try {
-                let cookies = cookie.parse(data.headers.cookie);
-                cookies = cookieParser.signedCookies(cookies, process.env.COOKIE_SECRET);
-        
-                cookies = cookies[name];
-                cookies = JSON.parse(cookies);
+    const create = () => {
+
+    }
+
+    const join = data => {
+        const id = roomIndex++;
+        rooms[id] = {
+            ...data
+        };
+
+        return id;
+    }
+
+    const close = roomID => {
+        delete rooms[roomID];
+    }
+
+    const accept = (roomID, userID) => {
+        rooms[roomID].players[userID].accepted = true; 
     
-                return cookies;
-            } catch(e) {
-                return false;
-            }
-        }
+        const room = rooms[roomID];
+        const accepted = Object.keys(room.players).filter(key => room.players[key].accepted);
+    
+        return accepted.length === 2;
+    }
 
-        // const cookies = cookieParser.signedCookies(data.headers.cookie)
-        const sessionId__cookie = getCookie('sessionId');
+    return {
+        rooms,
+        create,
+        join,
+        close,
+        accept
+    }
+}
 
-        if (!sessionId__cookie) return next(new Error('Invalid cookie'));
+const rooms = setupRooms();
 
-        socket.request.user = sessionId__cookie;
-        
-        next();
-    });
+module.exports = io => {
+    console.log('HANDLE SOCKET')
+    io.use(protectSocket);
 
     io.on('connection', socket => {
         console.log('SOCKETIO CONNECTION');
@@ -82,17 +69,16 @@ module.exports = io => {
             console.log('SOCKET DISCONNECT')
             // if in queue, remove
             queue.remove(socket.id);
-        
-            // if in room, remove
-            // return;
 
             if (clients[socket.id].hasOwnProperty('room')) {
                 // client is in a room, must disconnect other player
                 const roomID = clients[socket.id].room;
+                rooms.close(roomID);
 
-                io.to(roomID).emit('game', { state: 'disconnect' });
-                                
-                delete rooms[roomID];
+                // set other player room property to null
+
+                io.to(roomID).emit('game', { state: 'disconnect' });      
+
             }
 
             // remove user
@@ -109,25 +95,16 @@ module.exports = io => {
             }
 
             if (data.state === 'accept') {
-                rooms[data.data.gameIndex].players[socket.id].accepted = true;
+                const bothAccepted = rooms.accept(data.data.gameIndex, socket.id);
 
-                // check if other player has accepted
-
-                const otherPlayer = Object.keys(rooms[data.data.gameIndex].players).filter(id => id !== socket.id)[0];
-
-                io.sockets.sockets[otherPlayer].emit('game', { state: 'accepted' });
-
-                if (rooms[data.data.gameIndex].players[otherPlayer].accepted) {
+                if (bothAccepted) {
                     // BOTH PLAYERS HAVE ACCEPTED!
                     // start game
 
-                    const players = [
-                        socket.id,
-                        otherPlayer
-                    ];
+                    const players = Object.keys(rooms.rooms[data.data.gameIndex].players);
 
-                    const newPieces = generatePieces(socket.id, otherPlayer);
-                    const newOptions = generateOptions(newPieces, socket.id, players);
+                    const newPieces = generatePieces(players[0], players[1]);
+                    const newOptions = generateOptions(newPieces, players[0], players);
 
                     const game = {
                         pieces: newPieces,
@@ -145,8 +122,8 @@ module.exports = io => {
                         roomIndex: data.data.gameIndex
                     }
 
-                    io.sockets.sockets[otherPlayer].request.user = {
-                        ...io.sockets.sockets[otherPlayer].request.user,
+                    io.sockets.sockets[players[1]].request.user = {
+                        ...io.sockets.sockets[players[1]].request.user,
                         roomIndex: data.data.gameIndex
                     }
 
@@ -259,20 +236,22 @@ module.exports = io => {
             
             // add new room object, and subscibe those users to that room object
             const players = queue.getPlayers();
-            const roomIndex = roomID++;
-
-            rooms[roomIndex] = {
+            const roomIndex = rooms.join({
                 players: {
                     [players[0]] : {
                         accepted: false,
                         username: clients[players[0]].username,
+                        src: '/',
+                        alt: 'user pic'
                     },
                     [players[1]] : {
                         accepted: false,
                         username: clients[players[1]].username,
+                        src: '/',
+                        alt: 'user pic'
                     },
                 }
-            }
+            })
 
             // players contain the socketid's
             // Add the players to the room

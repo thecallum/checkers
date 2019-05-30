@@ -104,7 +104,7 @@ const canvas = {
             :height='width'
 
             ref='canvas'
-        />
+        ></canvas>
     `),
 }
 

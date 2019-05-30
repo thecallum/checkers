@@ -169,11 +169,6 @@ new Vue({
             this.winMessage = '';
             this.gameStarted = false;
 
-            // this.setState({
-            //     gameEnded: false,
-            //     winMessage: '',
-            //     gameStarted: false
-            // });
         },
 
         clickHandler({ offsetX, offsetY }) {
