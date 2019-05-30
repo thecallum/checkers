@@ -131,10 +131,7 @@
                   
                </div>
             </div>
-<!--             
-            <div v-if='state === "ready"'>     
-              
-            </div> -->
+   
 
 
             <canvas-component 
@@ -148,6 +145,24 @@
 
       
           </div>
+
+          <!-- Game End Modal -->
+          <modal :show='gameEnded'>
+            <div>
+              <div class="modal__background"></div>
+
+              <div class="modal__body">
+                <h1 class="modal__title">Game Ended</h1>
+
+                <p class="modal__message">{{ winMessage }}</p>
+
+                <div class="modal__options">
+                  <button class="button modal__button">Rematch</button>
+                  <a class="button modal__button" href='/'>Home</a>
+                </div>
+              </div>
+            </div>
+          </modal>
 
       </div>
 

@@ -3,7 +3,7 @@ const modal = {
        show: { type: Boolean, required: true }
     },
 
-    template: (`
+    template: `
         <div class='modal' v-bind:class="{ 'modal__show': show }">
             <div class="modal__background"></div>
 
@@ -11,7 +11,7 @@ const modal = {
                 <slot></slot>
             </div>
         </div>
-    `),
+    `
 }
 
-module.expports = modal;
+module.exports = modal;

@@ -136,15 +136,23 @@ new Vue({
                 if (data.state === 'win') {
                     this.state = data.state;
 
-                    console.log('game won');
+                    console.log('game won', data.data);
 
+                    // update game first
+                    this.game = {
+                        ...data.data.game,
+                        selectedPiece: null
+                    };
 
-                    if (data.data.player === this.socket.id) {
-                        alert('You Won!');
+                    this.callCanvasRedraw();
+
+                    if (data.data.type === 'draw') {
+                        this.winMessage = 'It\'s a draw!'; 
                     } else {
-                        alert('You lost!');
+                        this.winMessage = data.data.player === this.socket.id ? 'You won!' : 'You loose!';
                     }
 
+                    this.gameEnded = true;
                 }
     
                 if (data.state === 'disconnect') {

@@ -168,6 +168,8 @@ module.exports = io => {
 
                const game = games[roomIndex];
 
+               if (game.won) return console.log('GAME ALREADY WON, CANNOT MAKE ANOTHER MOVE');
+
                const gameOptions = game.options[selectedOptionID];
 
                if (gameOptions.length === 0) return;
@@ -182,26 +184,13 @@ module.exports = io => {
                }
 
                 if (validOption) {
-
-                    const newPieces = updatePieces(selectedOption, selectedOptionID, game.pieces, game.currentPlayer);
-                    
+                    const newPieces = updatePieces(selectedOption, selectedOptionID, game.pieces, game.currentPlayer);                  
                     const newPlayer = nextPlayer(game.currentPlayer, games[roomIndex].players);
-
                     const newOptions = generateOptions(newPieces, newPlayer, games[roomIndex].players);
 
-                    
-
-                    // endturn()
-
                     const checkWin = (newPieces, newPlayer, newOptions) => {
-
                         const opponentHasPieces = newPieces.filter(piece => piece.player === newPlayer).length > 0;
-
-                        if (!opponentHasPieces) {
-                            // this.handleGameEnd('win');
-                            console.log('GAME END, OPPONENT HAS NO MORE PIECES')
-                            return 'Opponent has no pieces';
-                        } 
+                        if (!opponentHasPieces) return 'win';
 
                         let opponentHasOptions = false;
                         for (let option of Object.keys(newOptions)) {
@@ -213,45 +202,48 @@ module.exports = io => {
                             }
                         }
 
-                        if (!opponentHasOptions) {
-                            // this.handleGameEnd('draw');
-                            console.log('GAME END, OPPONENT HAS NO MORE OPTIONS')
-                            return 'Opponent has no options -- draw';
-                        }
-
+                        if (!opponentHasOptions) return 'draw';
+                        
+                        return false;
                     }
 
-                    
 
                     const gameWon = checkWin(newPieces, newPlayer, newOptions);
-        
+
+                    games[roomIndex] = {
+                        ...game,
+                        pieces: newPieces,
+                        options: newOptions,
+                        selectedPiece: null,
+                        currentPlayer: newPlayer,
+                        won: !!gameWon
+                    }; 
+
+                    const updatedGame = games[roomIndex];
+                    
+
                     if (!!gameWon) {
                         delete games[roomIndex];
 
-                        io.to(roomIndex).emit('game', { 
-                            state: 'win', 
+                        console.log('GAME WON', gameWon)
+
+                        io.to(roomIndex).emit('game', {
+                            state: 'win',
                             data: {
-                                type: 'win',
+                                type: gameWon,
                                 player: socket.id,
-                                message: 'Player won!'
+                                message: 'It\'s a draw!',
+                                game: {
+                                    ...updatedGame,
+                                    currentPlayer: socket.id
+                                }
                             }
                         });
 
                     } else {
-                        games[roomIndex] =  {
-                            ...game,
-                            pieces: newPieces,
-                            options: newOptions,
-                            selectedPiece: null,
-                            currentPlayer: newPlayer,
-                        }; 
-            
-    
                         io.to(roomIndex).emit('game', { 
                             state: 'new_turn', 
-                            data: {
-                                game: games[roomIndex]
-                            }
+                            data: { game: updatedGame }
                         });
                     }
                    
