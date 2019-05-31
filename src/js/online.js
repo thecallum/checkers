@@ -163,7 +163,8 @@ new Vue({
     
                 if (data.state === 'disconnect') {
                     this.state = data.state;
-    
+                    this.gameStarted = false;
+
                     alert('Opponent disconnected!');
                     return;
                 }
