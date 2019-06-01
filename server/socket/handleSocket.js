@@ -1,7 +1,5 @@
 const setupQueue = require('./setupQueue');
 
-// let roomID = 0;
-// const rooms = {};
 const games = {};
 
 const clients = {};

@@ -7,11 +7,10 @@ const asyncQuery = require('../db/asyncQuery');
 const bcrypt = require('bcrypt');
 const saltRounds = 15;
 
-const generateCookieOptions = require('../cookieOptions');
-
 router.get('/logout', (req, res) => {
-    res.cookie('sessionId', null);
-    res.redirect('/');
+    req.session.destroy(() => {
+        res.redirect('/');
+    })
 });
 
 router.post('/login', async (req, res) => {
@@ -30,7 +29,7 @@ router.post('/login', async (req, res) => {
             // otherwise, you can tell if an email address exists by the resposonse time
 
             const generic = '$2b$15$pKhBptaA7pMZeABdXYLSmOIRioJRINEB9wuwwwxJadNkptAo64Fwa';
-;
+
             await bcrypt.compare(password, generic);
 
             return res.status(401).send();
@@ -50,11 +49,14 @@ router.post('/login', async (req, res) => {
             stayLogged
         };
 
-        const payload = JSON.stringify(user);
+        req.session.save(() => {
+            req.session.user = user;
 
-        res.cookie('sessionId', payload, generateCookieOptions(stayLogged || false));
+            // If user has selected stayLogged, cookie will expire in 1 week
+            if (user.stayLogged) req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7;
+            res.status(200).send();
+        })
 
-        res.status(200).send();
 
     } catch(e) {
         console.log('login error', e);
@@ -82,10 +84,15 @@ router.post('/register', async (req, res) => {
             stayLogged
         };
 
-        const payload = JSON.stringify(user);
+        req.session.save(() => {
+            req.session.user = user;
 
-        res.cookie('sessionId', payload, generateCookieOptions(stayLogged || false));
-        res.status(200).send();
+            // If user has selected stayLogged, cookie will expire in 1 week
+            if (user.stayLogged) req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7;
+
+            res.status(200).send();
+        })
+
     } catch(e) {
         console.log('Register error', e)
         return res.status(500).send();

@@ -1,11 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const cookieEncrypter = require('cookie-encrypter');
 const helmet = require('helmet');
-
-// middleware
-const getUser = require('./middleware/getUser');
 
 const setupDatabase = require('./db/setup');
 
@@ -17,12 +12,16 @@ const fileName = path.basename(__filename);
 
 const server = require('http').createServer(app);
 
-// const cookieEncryptor = require('cookie-encrypter');
+const setupSession = require('./setupSession');
+var ios = require('socket.io-express-session');
 
 module.exports = async () => {
     await setupDatabase();
+    const session = setupSession(app);
 
     const io = require('./socket/io')(server);
+    io.use(ios(session));
+
     const handleSocket = require('./socket/handleSocket');
     handleSocket(io);
 
@@ -31,17 +30,12 @@ module.exports = async () => {
 
     app.use(helmet())
     app.use(bodyParser());
-    app.use(cookieParser(process.env.COOKIE_SECRET));
-    // app.use(cookieEncrypter(process.env.COOKIE_SECRET));
-
+    
     app.use('/js/', express.static('public/js/'));
     app.use('/css/', express.static('public/css/'));
     app.use('/assets/', express.static('public/assets/'));
 
     app.use(require('./routes/data'));  
-    
-    app.use(getUser);    
-
     app.use(require('./routes/auth'));  
     app.use(require('./routes/pages'));  
     
