@@ -256,9 +256,9 @@ $color_text: hsl(200, 20%, 20%);
 			font-size: 26px;
 		}
 		
-		// &.valid::before {
-		// 	color: hsl(144, 40%, 35%);
-		// }
+		&.valid::before {
+			color: hsl(144, 40%, 35%);
+		}
 		
 		// &.invalid::before {
 		// 	content: '\2716';

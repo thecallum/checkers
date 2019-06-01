@@ -1,5 +1,3 @@
-import validator from 'validator';
-
 new Vue({
     el: '#app',
     data: {
@@ -51,8 +49,8 @@ new Vue({
             },
             {
                 value: 'Allow letters, numbers and punctuation',
-                // test: str => str.match(/^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]$/)#
-                test: str => true,
+                test: str => str.match(/^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]*$/),
+                // test: str => true,
             }
         ],
 
@@ -106,6 +104,18 @@ new Vue({
                     this.loading = false;
                     if (res.status === 200) {
                         window.location = '/profile';
+                    } else if (res.status === 400) {
+                        //  check for message
+
+                        res.json()
+                        .then(res => {
+                            // console.log('404 res', res);
+                            this.main__error = res.message;
+                        }).catch(e => {
+                            // console.log('error parsing', e)
+                            this.main__error = res.status;
+
+                        })
                     } else {
                         this.main__error = res.status;
                     }
@@ -236,8 +246,8 @@ new Vue({
             return { valid, invalid: !valid && this.hasSubmitted }
         },
         rule_1_class() {
-            const valid = this.rule_1_met;
-            return { valid: (valid && this.password) || this.hasSubmitted, invalid: !valid }
+            const valid = this.rule_1_met && this.password !== '';
+            return { valid: (valid && this.password) }
         },
         rule_2_class() {
             const valid = this.rule_2_met;

@@ -1,5 +1,3 @@
-// import validator from 'validator';
-
 new Vue({
     el: "#app",
     data: {

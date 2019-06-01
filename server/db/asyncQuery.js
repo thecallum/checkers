@@ -1,6 +1,8 @@
 const asyncQuery = (con, query) => new Promise((resolve, reject) => {
     con.query(query, (err, queryResult) => {
-        if (err) resolve(new Error(err));
+        if (err) {
+            reject(new Error(err))
+        }
         resolve( queryResult )
     })
 });

@@ -21,7 +21,8 @@ const setup = () => new Promise(async (resolve, reject) => {
                 email VARCHAR(100) NOT NULL,
                 password VARCHAR(60) NOT NULL, 
                 username VARCHAR(30) NOT NULL,
-                UNIQUE(email)
+                UNIQUE(email),
+                UNIQUE(USERNAME)
             );
         `);
     }
