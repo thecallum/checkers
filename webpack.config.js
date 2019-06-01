@@ -17,11 +17,11 @@ module.exports = (undefined, argv) => {
             filename: 'js/[name].bundle.js',
         },
         resolve: {
-            alias: { vue: 'vue/dist/vue' }
+            alias: { vue: 'vue/dist/vue', validator: 'validator' }
         },
         plugins: [
             new MiniCssExtractPlugin({ filename: 'css/main.css' }),
-            new webpack.ProvidePlugin({ Vue: 'vue' })
+            new webpack.ProvidePlugin({ Vue: 'vue', validator: 'validator' })
         ],
      
         module: {

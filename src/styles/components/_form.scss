@@ -1,62 +1,279 @@
+* { box-sizing: border-box }
+
+$color_red: hsl(0, 50%, 50%);
+$color_green: hsl(120, 40%, 65%);
+$color_text: hsl(200, 20%, 20%);
+
+@mixin toggleLabel {
+	top: 0%;
+	font-size: 14px;
+	transition: all 0.3s cubic-bezier(0, 0.6, 0.8, 1);
+}
+
 .form {
-    background-color: #ccc;
-    width: 100%;
-    max-width: 600px;
-    margin: 50px auto 0;
+	width: 100%;
+	max-width: 750px;
+	margin: 20px auto;
+	background-color: hsl(200, 20%, 80%);
+	padding: 30px 50px;
+	border-radius: 3px;
+	font-family: sans-serif;
+	
+	label { color: $color_text }
+	*:focus { outline: none }
 
-.form__title {
-    font-weight: 100;
-    font-size: 30px;
+	&__tags {
+		display: flex;
+		justify-content: flex-start;
+		margin: 0;
+		padding: 0;
+	}
+
+	&__tag {
+		display: block;
+		margin-right: 20px;
+		border-radius: 4px;
+		width: 140px;
+		text-align: center;
+		cursor: pointer;
+		color: hsl(200, 10%, 20%);
+
+		&--active { background-color: hsl(200, 20%, 74%) }
+	}
+
+	&__title { font-weight: 100 }
+	
+	&__group {
+		width: 100%;
+		margin: 20px 0 0;
+		display: inline-block;
+	}
+
+	&__row {
+		width: 100%;
+		min-height: 70px;
+		margin: 20px 0;
+		position: relative;
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+	}
+
+	&__input {
+		width: 100%;
+		height: 50px;
+		background-color: transparent;
+		border: none;
+		border-bottom: 2px solid hsl(200, 20%, 90%);
+		margin-top: 22px; // for label
+		padding: 0 10px;
+		font-size: 20px;
+		line-height: 50px;
+		color: $color_text;
+
+		&:focus ~ label { @include toggleLabel }
+		&.valid { border-color: $color_green }
+		
+		&.invalid {
+			border-color: $color_red;
+			~ label { @include toggleLabel }
+		}
+	}
+	
+	&__input__username {
+		// background-color: red;
+		
+		position: relative;
+		padding-right: 50px;
+		
+		&__search {
+			position: absolute;
+			top: 30px;
+			right: 7px;
+			
+			width: 30px;
+			height: 30px;
+			// background-color: yellow;
+			border-radius: 50%;
+
+			&.valid {
+				background-color: green;
+			}
+			
+			&.invalid {
+				background-color: red;
+			}
+			
+			&.loading {
+				background-color: transparent;
+				border: 2px solid #444;
+				border-top: 3px solid #000;
+
+				animation: username_loader 1s infinite linear;
+			}
+		}
+	}
+
+	&__error,
+	&__message {
+		position: absolute;
+		right: 0;
+		top: 100%;
+		margin-top: 4px;
+		font-size: 14px;
+		color: $color_red;
+		text-transform: uppercase;
+	}
+
+	&__errpr {
+		color: $color_red;		
+	}
+
+	&__message {
+		color: $color_green;
+	}
+
+	&__label {
+		position: absolute;
+		margin-top: (22px /2);
+		display: block;
+		top: 50%;
+		left: 10px;
+		transform: translateY(-50%);
+		transition: all 0.3s cubic-bezier(0, 0.2, 0.4, 1);
+
+		&.notempty { @include toggleLabel }
+	}
+	
+	&__checkbox {
+		width: 26px;
+		height: 26px;
+		position: relative;
+		visibility: hidden;
+		border-radius: 5px;
+		cursor: pointer;
+		margin-right: 10px;
+		
+		~ label {
+			height: 30px;
+			line-height: 30px;
+			display: inline-block;
+		}
+		
+		&::before,
+		&::after {
+			content: '';
+			display: block;	
+		}
+		
+		&::before {
+			background-color: hsl(200, 20%, 90%);
+			visibility: visible;
+			width: 100%;
+			height: 100%;
+		}
+		
+		&::after {
+			background-color: hsl(200, 20%, 20%);
+			visibility: visible;
+			border-radius: 2px;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%) rotate(0deg);
+			opacity: 0;
+			width: 1px;
+			height: 1px;
+			transition: all .1s ease-out .1s;
+		}
+		&:checked::after {
+			opacity: 1;
+			width: 16px;
+			height: 16px;
+			transform: translate(-50%, -50%) rotate(90deg);
+			transition: all .1s ease-in;
+		}
+	}
+	
+	&__submit {
+		width: 100%;
+		height: 50px;
+		border: none;
+		background-color: hsl(200, 20%, 20%);
+		cursor: pointer;
+		color: hsl(200, 20%, 90%);
+		text-transform: uppercase;
+		font-weight: 100;
+		font-size: 24px;
+		letter-spacing: 4px;
+		border-radius: 4px;
+		position: relative;
+		
+		&::after {
+				content: '';
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				// color: white;
+				border: 2px solid #bbb;
+				border-top: 3px solid #fff;
+				border-radius: 50%;
+				width: 30px;
+				height: 30px;
+				animation: loading 1s infinite linear;
+				opacity: 0;
+			}
+		
+		&:hover { background-color: hsl(200, 20%, 23%) }
+		&.loading::after { opacity: 1 }
+	}
+	
+	&__requesterror {
+		border: 0px solid hsl(0, 50%, 50%);
+		border-width: 2px 0;
+		padding: 10px 20px;
+		width: 100%;
+		
+		> strong { color: hsl(0, 50%, 50%) }
+	}
+	
+	&__rules {
+		background-color: hsl(200, 20%, 70%);
+		padding: 10px;
+		margin-top: 20px;
+		width: 100%;
+
+	}
+	&__rule {
+		display: block;
+		color: $color_text;
+		
+		&::before {
+			content: '\2714';
+			margin-right: 5px;
+			color: hsl(200, 17%, 52%);
+			font-size: 26px;
+		}
+		
+		// &.valid::before {
+		// 	color: hsl(144, 40%, 35%);
+		// }
+		
+		// &.invalid::before {
+		// 	content: '\2716';
+		// 	color: hsl(0, 40%, 35%);
+		// 	// margin-right: 4.5px;
+		// }
+	}
 }
 
-.form__group {
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto 20px;
-    /* background-color: orange; */
-    padding: 10px 20px;
-
+@keyframes loading {
+	0% { transform: translate(-50%, -50%) rotate(0deg) }
+	100% { transform: translate(-50%, -50%) rotate(360deg) }
 }
 
-input {
-    width: 100%;
-    height: 50px;
-
-    margin: 0 auto;
-    display: block;
-    border-radius: 4px;
-    border: none;
-    padding: 0 10px;
-    font-size: 16px;
-
+@keyframes username_loader {
+	0% { transform: rotate(0deg) }
+	100% { transform: rotate(360deg) }
 }
-
-button {
-    width: 100%;
-    height: 50px;
-
-    border-radius: 4px;
-    border: none;
-    background-color: hsl(128, 86%, 45%);
-    color: white;
-    text-transform: uppercase;
-    font-weight: 100;
-    font-size: 20px;
-    line-height: 50px;
-    cursor: pointer;
-}
-
-.form__error {
-    color: hsl(0, 50%, 50%);
-    background-color: hsl(0, 50%, 70%);
-    border: 1px solid hsl(0, 50%, 50%);
-    border-radius: 4px;
-    padding: 4px 8px;
-    /* width: 100%; */
-    /* display: block; */
-}
-
-
-}
-
-[v-cloak] { display: none; }
