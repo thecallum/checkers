@@ -1,7 +1,10 @@
 const Session = require('express-session');
-const Store = require('express-mysql-session')(Session);
-const con = require('./db/connection');
-const sessionStore = new Store({}, con);
+
+const RedisStore = require('connect-redis')(Session);
+const sessionStore = new RedisStore({
+    host: 'localhost',
+    port: 6379
+});
 
 const setupSession = app =>  {
     const session = Session({
