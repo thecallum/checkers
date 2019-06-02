@@ -5,17 +5,15 @@ const helmet = require('helmet');
 const setupDatabase = require('./db/setup');
 
 const app = express();
-const PORT = 4000 || process.env.PORT;
-
-const path = require('path');
-const fileName = path.basename(__filename);
 
 const server = require('http').createServer(app);
 
 const setupSession = require('./setupSession');
 var ios = require('socket.io-express-session');
 
-module.exports = async () => {
+module.exports = () => new Promise(async resolve => {
+    console.log('Starting server');
+
     await setupDatabase();
     const session = setupSession(app);
 
@@ -39,5 +37,6 @@ module.exports = async () => {
     app.use(require('./routes/auth'));  
     app.use(require('./routes/pages'));  
     
-    server.listen(PORT, () => console.log(`${fileName} is running on https://localhost:${PORT}`));
-}
+
+    resolve(server);
+});

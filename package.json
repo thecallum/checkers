@@ -14,6 +14,7 @@
     "express-session": "^1.16.1",
     "has-font": "^1.0.2",
     "helmet": "^3.18.0",
+    "jest": "^24.8.0",
     "mini-css-extract-plugin": "^0.6.0",
     "mysql": "^2.17.1",
     "node-sass": "^4.12.0",
@@ -27,9 +28,13 @@
   },
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "start": "node --require dotenv/config app.js"
+    "start": "node --require dotenv/config app.js",
+    "test": "jest"
   },
   "devDependencies": {
+    "expect": "^24.8.0",
+    "mocha": "^6.1.4",
+    "supertest": "^4.0.2",
     "webpack-cli": "^3.3.2"
   }
 }
