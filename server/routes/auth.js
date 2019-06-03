@@ -20,7 +20,7 @@ router.post('/login', async (req, res) => {
     if (!email || !password) return res.status(400).send();
 
     try {
-        if (!validator.isEmail(email)) throw 'invalid email';
+        // if (!validator.isEmail(email)) throw 'invalid email';
 
         const query = `SELECT id, username, password FROM user WHERE email = '${email}';`;
 
@@ -99,7 +99,7 @@ router.post('/register', async (req, res) => {
         if (!username.match(/^.{2,14}$/)) throw 'Username invalid length';
         if (!username.match(/^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]*$/)) throw 'Username invalid characters';
 
-        const hash = bcrypt.hashSync(password, saltRounds);
+        const hash = await bcrypt.hash(password, saltRounds);
 
         const query = `INSERT INTO user (username, email, password) VALUES ('${username}','${email}','${hash}');`;
 
@@ -126,7 +126,7 @@ router.post('/register', async (req, res) => {
     } catch(e) {
         // console.log('Register error', e.message, !!e.message.includes('ER_DUP_ENTRY'))
 
-        if (e.message.includes('ER_DUP_ENTRY') && e.message.includes('email')) {
+        if (!!e.message && e.message.includes('ER_DUP_ENTRY') && e.message.includes('email')) {
             return res.status(400).json({
                 message: 'Email taken'
             })
