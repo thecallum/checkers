@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const checkUsernameAvailable = require('../../controllers/checkUsernameAvailable');
+const { checkUsernameAvailable } = require('../../models/user');
 
 router.post('/data/usernames', async (req, res) => {
     const { username } = req.body;

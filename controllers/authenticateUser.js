@@ -1,14 +1,11 @@
 const bcrypt = require('bcrypt');
 const saltRounds = 15;
 
-const con = require('../server/db/connection');
-const asyncQuery = require('../server/db/asyncQuery');
-
-const getUserWithEmail = require('./getUserWithEmail');
+const { login } = require('../models/user');
 
 const authenticateUser = (email, password) => new Promise(async (resolve, reject) => {
 
-    const user = await getUserWithEmail(email);
+    const user = await login(email);
 
     if (!user) {
         // user doesnt exist
