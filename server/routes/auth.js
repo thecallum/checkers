@@ -8,51 +8,9 @@ const asyncQuery = require('../db/asyncQuery');
 const bcrypt = require('bcrypt');
 const saltRounds = 15;
 
+const registerUser = require('../../controllers/registerUser');
 
-
-
-
-
-
-
-const { RateLimiterRedis } = require('rate-limiter-flexible');
-const Redis = require('ioredis');
-const redisClient = new Redis({ enableOfflineQueue: false });
-
-
-// rate limiter
-const maxWrongAttemptsByIPperDay = 100;
-const maxConsecutiveFailsByUsernameAndIP = 10;
-
-const limiterSlowBruteByIP = new RateLimiterRedis({
-    storeClient: redisClient,
-    keyPrefix: 'login_fail_ip_per_day',
-    points: maxWrongAttemptsByIPperDay,
-    duration: 60 * 60 * 24,
-    blockDuration: 60 * 60 * 24, // Block for 1 day, if 100 wrong attempts per day
-});
-
-
-const limiterConsecutiveFailsByUsernameAndIP = new RateLimiterRedis({
-    storeClient: redisClient,
-    keyPrefix: 'login_fail_consecutive_username_and_ip',
-    points: maxConsecutiveFailsByUsernameAndIP,
-    duration: 60 * 60 * 24 * 90, // Store number for 90 days since first fail
-    blockDuration: 60 * 60, // Block for 1 hour
-});
-
-const getUsernameIPkey = (username, ip) => `${username}_${ip}`;
-
-
-////////////////////
-
-
-
-
-
-
-
-
+const authenticateUser = require('../../controllers/authenticateUser');
 
 router.get('/logout', (req, res) => {
     req.session.destroy(() => {
@@ -61,59 +19,35 @@ router.get('/logout', (req, res) => {
 });
 
 
+// https://www.terlici.com/2014/08/25/best-practices-express-structure.html
+
+
+
+
 
 router.post('/login', async (req, res) => {
     const { email, password, stayLogged } = req.body;
 
-    // const ipAddr = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0] : req.connection.remoteAddress;
-
-
-    console.log('login ip', req.remoteAddress, req.headers['x-forwarded-for'] || req.connection.remoteAddress)
-    // https://www.reddit.com/r/node/comments/6e18uk/help_node_cant_get_the_users_ip_address/
-
     if (!email || !password) return res.status(400).send();
 
     try {
-        // if (!validator.isEmail(email)) throw 'invalid email';
+        const user = await authenticateUser(email, password);
+        if (!user) return res.status(401).send();
 
-        const query = `SELECT id, username, password FROM user WHERE email = '${email}';`;
-
-        const queryResponse = await asyncQuery(con, query);
-
-        if (queryResponse.length === 0) {
-            // invalid email
-            // going to decrypt a random password to simulate the time
-            // otherwise, you can tell if an email address exists by the resposonse time
-
-            const generic = '$2b$15$pKhBptaA7pMZeABdXYLSmOIRioJRINEB9wuwwwxJadNkptAo64Fwa';
-
-            await bcrypt.compare(password, generic);
-
-            return res.status(401).send();
-        }
-
-        const { password: res_password, id: res_id, username: res_username } = queryResponse[0];
-
-        const validPassword = await bcrypt.compare(password, res_password);
-        if (!validPassword) return res.status(401).send();
-
-        // login successful 
-
-        const user = {
+        const sessionUser = {
             email,
-            username: res_username,
-            id: res_id,
+            username: user.username,
+            id: user.id,
             stayLogged
         };
 
         req.session.save(() => {
-            req.session.user = user;
+            req.session.user = sessionUser;
 
             // If user has selected stayLogged, cookie will expire in 1 week
             if (user.stayLogged) req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7;
             res.status(200).send();
         })
-
 
     } catch(e) {
         // console.log('login error', e);
@@ -153,23 +87,22 @@ router.post('/register', async (req, res) => {
         if (!username.match(/^.{2,14}$/)) throw 'Username invalid length';
         if (!username.match(/^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]*$/)) throw 'Username invalid characters';
 
-        const hash = await bcrypt.hash(password, saltRounds);
+        const passwordHash = await bcrypt.hash(password, saltRounds);
 
-        const query = `INSERT INTO user (username, email, password) VALUES ('${username}','${email}','${hash}');`;
+        const newUser = await registerUser(username, email, passwordHash)
 
-        const queryResponse = await asyncQuery(con, query);
-    
+        if (!user) throw 'Error creating user';
         
         // register successful 
-        const user = {
+        const sessionUser = {
             email,
             username,
-            id: queryResponse.insertId,
+            id: newUser.insertId,
             stayLogged
         };
 
         req.session.save(() => {
-            req.session.user = user;
+            req.session.user = sessionUser;
 
             // If user has selected stayLogged, cookie will expire in 1 week
             if (user.stayLogged) req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7;
@@ -178,8 +111,6 @@ router.post('/register', async (req, res) => {
         })
 
     } catch(e) {
-        // console.log('Register error', e.message, !!e.message.includes('ER_DUP_ENTRY'))
-
         if (!!e.message && e.message.includes('ER_DUP_ENTRY') && e.message.includes('email')) {
             return res.status(400).json({
                 message: 'Email taken'
