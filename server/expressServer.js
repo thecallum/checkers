@@ -28,15 +28,19 @@ module.exports = () => new Promise(async resolve => {
 
     app.use(helmet())
     app.use(bodyParser());
-    
+
     app.use('/js/', express.static('public/js/'));
     app.use('/css/', express.static('public/css/'));
     app.use('/assets/', express.static('public/assets/'));
 
-    app.use(require('./routes/data'));  
-    app.use(require('./routes/auth'));  
-    app.use(require('./routes/pages'));  
-    
+
+    app.use(require('./routes/data'));
+
+    // app.use(rateLimit);
+
+    app.use(require('./routes/auth'));
+    app.use(require('./routes/pages'));
+
 
     resolve(server);
 });

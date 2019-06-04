@@ -8,14 +8,68 @@ const asyncQuery = require('../db/asyncQuery');
 const bcrypt = require('bcrypt');
 const saltRounds = 15;
 
+
+
+
+
+
+
+
+const { RateLimiterRedis } = require('rate-limiter-flexible');
+const Redis = require('ioredis');
+const redisClient = new Redis({ enableOfflineQueue: false });
+
+
+// rate limiter
+const maxWrongAttemptsByIPperDay = 100;
+const maxConsecutiveFailsByUsernameAndIP = 10;
+
+const limiterSlowBruteByIP = new RateLimiterRedis({
+    storeClient: redisClient,
+    keyPrefix: 'login_fail_ip_per_day',
+    points: maxWrongAttemptsByIPperDay,
+    duration: 60 * 60 * 24,
+    blockDuration: 60 * 60 * 24, // Block for 1 day, if 100 wrong attempts per day
+});
+
+
+const limiterConsecutiveFailsByUsernameAndIP = new RateLimiterRedis({
+    storeClient: redisClient,
+    keyPrefix: 'login_fail_consecutive_username_and_ip',
+    points: maxConsecutiveFailsByUsernameAndIP,
+    duration: 60 * 60 * 24 * 90, // Store number for 90 days since first fail
+    blockDuration: 60 * 60, // Block for 1 hour
+});
+
+const getUsernameIPkey = (username, ip) => `${username}_${ip}`;
+
+
+////////////////////
+
+
+
+
+
+
+
+
+
 router.get('/logout', (req, res) => {
     req.session.destroy(() => {
         res.redirect('/');
     })
 });
 
+
+
 router.post('/login', async (req, res) => {
     const { email, password, stayLogged } = req.body;
+
+    // const ipAddr = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0] : req.connection.remoteAddress;
+
+
+    console.log('login ip', req.remoteAddress, req.headers['x-forwarded-for'] || req.connection.remoteAddress)
+    // https://www.reddit.com/r/node/comments/6e18uk/help_node_cant_get_the_users_ip_address/
 
     if (!email || !password) return res.status(400).send();
 
