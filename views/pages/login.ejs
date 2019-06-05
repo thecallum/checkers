@@ -1,53 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <% include ../components/head %>
-    <title>Login | Checkers</title>
+        <title>Login | Checkers</title>
 </head>
+
 <body>
 
     <%- include('../components/header', { auth: auth }); %>
 
-    <div id="app">
-        <form class="form" @submit='handleSubmit'>
-            <ul class="form__tags">
-                <li class='form__tag form__tag--active'>
-                    <h1 class="form__title">Login</h1>
-                </li>
-                <li class='form__tag'>
-                    <h1 class="form__title">Register</h1>
-                </li>
-            </ul>
+        <div id="app">
+            <form class="form" @submit='handleSubmit'>
+                <ul class="form__tags">
+                    <li class='form__tag form__tag--active'>
+                        <h1 class="form__title">Login</h1>
+                    </li>
+                    <li class='form__tag'>
+                        <h1 class="form__title">Register</h1>
+                    </li>
+                </ul>
 
-            <div class="form__row">
-                <input type="text" name="email" id="input__email" v-model='email' v-bind:class='email__class' class='form__input'>
-                <label class='form__label' for="input__email" v-bind:class='{notempty: email}'>Email</label>
-                <span class="form__error" v-if='email__error'>{{ email__error }}</span>
-            </div>
-
-            <div class="form__row">
-                <input type="password" name="password" id="input__password" v-model='password' v-bind:class='password__class' class='form__input'>
-                <label class='form__label' for="input__password" v-bind:class='{notempty: password}'>Password</label>
-                <span class="form__error" v-if='password__error'>{{ password__error }}</span>
-            </div>
-
-            <div class="form__row">
-                <input type="checkbox" name="stay_logged" id="input_stay_logged" class='form__checkbox' v-model='stayLogged'>
-                <label for="input_stay_logged">Stay Logged In</label>
-            </div>
-            <div class="form__row" v-if='request__error'>
-                <div class="form__requesterror">
-                    <strong>Error: </strong> {{ request__error }}
+                <div class="form__row">
+                    <input type="text" name="email" id="input__email" v-model='email' v-bind:class='email__class' class='form__input'>
+                    <label class='form__label' for="input__email" v-bind:class='{notempty: email}'>Email</label>
+                    <span class="form__error" v-if='email__error'>{{ email__error }}</span>
                 </div>
-            </div>
 
-            <div class="form__row">
-                <button type="submit" class='form__submit' v-bind:class='{loading: loading}'>{{ loading ? '' : 'Login' }}</button>
-            </div>
+                <div class="form__row">
+                    <input type="password" name="password" id="input__password" v-model='password' v-bind:class='password__class' class='form__input'>
+                    <label class='form__label' for="input__password" v-bind:class='{notempty: password}'>Password</label>
+                    <span class="form__error" v-if='password__error'>{{ password__error }}</span>
+                </div>
 
-        </form>
-    </div>
-    
-    <script src="/js/login.bundle.js"></script>
+                <div class="form__row">
+                    <input type="checkbox" name="stay_logged" id="input_stay_logged" class='form__checkbox' v-model='stayLogged'>
+                    <label for="input_stay_logged">Stay Logged In</label>
+                </div>
+                <div class="form__row" v-if='request__error'>
+                    <div class="form__requesterror">
+                        <strong>Error: </strong> {{ request__error }}
+                    </div>
+                </div>
+
+                <div class="form__row">
+                    <button type="submit" class='form__submit' v-bind:class='{loading: loading}'>{{ loading ? '' : 'Login' }}</button>
+                </div>
+
+            </form>
+        </div>
+
+        <script src="/js/validator.bundle.js"></script>
+        <script src="/js/vue.bundle.js"></script>
+        <script src="/js/login.bundle.js"></script>
 </body>
+
 </html>

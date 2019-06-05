@@ -11,6 +11,7 @@ const updatePieces = require('../src/js/components/updatePieces');
 const nextPlayer = require('../src/js/components/nextPlayer');
 
 const protectSocket = require('./protectSocket');
+const ios = require('socket.io-express-session');
 
 const setupRooms = () => {
     let rooms = {};
@@ -54,8 +55,9 @@ const setupRooms = () => {
 
 const rooms = setupRooms();
 
-module.exports = io => {
+module.exports = (io, session) => {
     console.log('HANDLE SOCKET')
+    io.use(ios(session));
     io.use(protectSocket);
 
     io.on('connection', socket => {
@@ -198,7 +200,7 @@ module.exports = io => {
                     const updatedGame = games[roomIndex];
 
 
-                    if (!!gameWon) {
+                    if (gameWon) {
                         delete games[roomIndex];
 
                         console.log('GAME WON', gameWon)
