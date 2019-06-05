@@ -36,13 +36,13 @@ module.exports = {
             Vue: 'vue',
             validator: 'validator'
         }),
-        // new CompressionPlugin({
-        //     // asset: "[path].gz[query]",
-        //     algorithm: "gzip",
-        //     test: /\.js$|\.css$|\.html$/,
-        //     // threshold: 10240,
-        //     minRatio: 0.8
-        // }),
+        new CompressionPlugin({
+            // asset: "[path].gz[query]",
+            algorithm: "gzip",
+            test: /\.js$|\.css$|\.html$/,
+            // threshold: 10240,
+            minRatio: 0.8
+        }),
     ],
 
     module: {
@@ -89,32 +89,32 @@ module.exports = {
         },
 
         minimizer: [
-            // new UglifyJsPlugin({
-            //     test: /\.js(\?.*)?$/i,
-            //     uglifyOptions: {
-            //         comments: false, // remove comments
-            //         compress: {
-            //             unused: true,
-            //             dead_code: true, // big one--strip code that will never execute
-            //             drop_debugger: true,
-            //             conditionals: true,
-            //             evaluate: true,
-            //             drop_console: true, // strips console statements
-            //             sequences: true,
-            //             booleans: true,
-            //         }
-            //     }
-            // }),
-            // new OptimizeCSSAssetsPlugin({
-            //     cssProcessorPluginOptions: {
-            //         preset: ['default', {
-            //             discardComments: {
-            //                 removeAll: true
-            //             }
-            //         }],
-            //     },
-            //     canPrint: true
-            // })
+            new UglifyJsPlugin({
+                test: /\.js(\?.*)?$/i,
+                uglifyOptions: {
+                    comments: false, // remove comments
+                    compress: {
+                        unused: true,
+                        dead_code: true, // big one--strip code that will never execute
+                        drop_debugger: true,
+                        conditionals: true,
+                        evaluate: true,
+                        drop_console: true, // strips console statements
+                        sequences: true,
+                        booleans: true,
+                    }
+                }
+            }),
+            new OptimizeCSSAssetsPlugin({
+                cssProcessorPluginOptions: {
+                    preset: ['default', {
+                        discardComments: {
+                            removeAll: true
+                        }
+                    }],
+                },
+                canPrint: true
+            })
         ],
     },
 

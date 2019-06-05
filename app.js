@@ -3,32 +3,29 @@ console.time('Start Server');
 const express = require('express');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
-// const compression = require('compression');
+const compression = require('compression');
 const setupSession = require('./setupSession');
 
 
-// const socketio = require('./socket/io');
+const socketio = require('./socket/io');
 
-// const handleSocket = require('./socket/handleSocket');
+const handleSocket = require('./socket/handleSocket');
 const path = require('path');
 
 const app = express();
-const server = require('http').createServer(app);
+// const server = require('http').createServer(app);
 
 if (!process.env.PORT) throw 'PORT UNDEFINED';
 
 const session = setupSession();
 
-// const io = socketio(server);
 
-// handleSocket(io, session);
 
-const socketIO = require('socket.io');
+// const socketIO = require('socket.io');
 
 // let io;
 
 // module.exports = server => {
-const io = socketIO(server);
 // return io;
 // }
 
@@ -46,14 +43,11 @@ app.use((req, res, next) => {
     next();
 })
 
-io.on('connection', socket => {
-    console.log('SOCKETIO CONNECTION,', socket.id);
 
-})
 
 app.use(session);
 app.use(express.static('node_modules'));
-// app.use(compression());
+app.use(compression());
 
 // app.use()
 
@@ -65,7 +59,17 @@ app.use(require('./controllers/routes/data'));
 app.use(require('./controllers/routes/auth'));
 app.use(require('./controllers/routes/pages'));
 
-app.listen(process.env.PORT, () => console.log(`${ path.basename(__filename) } is running on https://localhost:${ process.env.PORT }`));
+const ttt = app.listen(process.env.PORT, () => console.log(`${ path.basename(__filename) } is running on https://localhost:${ process.env.PORT }`));
+
+const io = socketio(ttt);
+
+handleSocket(io, session);
+// const io = socketIO(ttt);
+
+// io.on('connection', socket => {
+//     console.log('SOCKETIO CONNECTION,', socket.id);
+
+// })
 
 console.timeEnd('Start Server');
 
