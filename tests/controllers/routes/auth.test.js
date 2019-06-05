@@ -11,7 +11,7 @@ const app = require('../../../app');
 const asyncQuery = require('../../../helpers/asyncQuery');
 const con = require('../../../db/connection');
 
-const truncateUserTable = require('../../utils/truncateUserTable');
+const truncateUserTable = require('../../testUtils/truncateUserTable');
 
 describe('POST /login', () => {
     const user = {
@@ -21,14 +21,14 @@ describe('POST /login', () => {
         username: 'username1234'
     };
 
-    beforeAll(() => new Promise(async resolve => {
+    beforeAll(async done => {
         await truncateUserTable();
 
         const query2 = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.hash}','${user.username}');`;
         await asyncQuery(con, query2);
 
-        resolve();
-    }));
+        done();
+    });
 
     test('Valid user', done => {
         request(app)
@@ -99,12 +99,6 @@ describe('POST /login', () => {
     });
 })
 
-
-
-
-
-
-
 describe('POST /register', () => {
     const user = {
         email: 'email@email.com',
@@ -120,13 +114,13 @@ describe('POST /register', () => {
         username: 'username12345'
     };
 
-    beforeAll(() => new Promise(async resolve => {
+    beforeAll(async done => {
         await truncateUserTable();
 
         const query2 = `INSERT INTO user (email, password, username) VALUES ('${existing.email}','${existing.hash}','${existing.username}');`;
         await asyncQuery(con, query2);
-        resolve();
-    }));
+        done();
+    });
 
     describe('Password Rules', () => {
         test('Too short', done => {

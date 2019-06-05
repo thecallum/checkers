@@ -2,54 +2,60 @@ const validator = require('validator');
 const bcrypt = require('bcrypt');
 const saltRounds = 15;
 
-
 const { register } = require('../models/user');
 
-const registerUser = (username, email, password) => new Promise(async (resolve, reject) => {
+const validateEmail = email => !!validator.isEmail(email);
 
-       try {
-            // verify details
-        // these should already have been validated clientside
-        // therefore, if they are incorrect, they wil recieve a generic response
+const validatePassword = password => {
+    if (!password.match(/^.{10,128}$/)) return false
+    if (!!password.match(/(.)\1{2,}/)) return false
 
-        // email
-        if (!validator.isEmail(email)) return reject('Invalid email address');
+    // password matches min 3 of following rules
+    let rulesMet = 0;
 
-        // password
-        if (!password.match(/^.{10,128}$/)) return reject('Password invalid length');
-        if (!!password.match(/(.)\1{2,}/)) return reject('Password more than 2 identical characters');
+    if (password.match(/[A-Z]/)) rulesMet++; // 'At least 1 uppercase character (A-Z)'
+    if (password.match(/[a-z]/)) rulesMet++; // 'At least 1 lowercase character (a-z)'
+    if (password.match(/[0-9]/)) rulesMet++; // 'At least 1 digit (0-9)'
+    if (password.match(/[!@#$%^&*(),.?":{}|<> ]/)) rulesMet++; // 'At least 1 special character (punctuation and space count as special characters)'
 
-        // password matches min 3 of following rules
-        let rulesMet = 0;
+    if (rulesMet < 3) return false;
 
-        if (password.match(/[A-Z]/)) rulesMet++;                   // 'At least 1 uppercase character (A-Z)'
-        if (password.match(/[a-z]/)) rulesMet++;                   // 'At least 1 lowercase character (a-z)'
-        if (password.match(/[0-9]/)) rulesMet++;                   // 'At least 1 digit (0-9)'
-        if (password.match(/[!@#$%^&*(),.?":{}|<> ]/)) rulesMet++; // 'At least 1 special character (punctuation and space count as special characters)'
+    // is valid
+    return true;
+}
 
-        if (rulesMet < 3) return reject('Password Min 3/4 rules met');
+const validateUsername = username => {
+    if (!username.match(/^.{2,14}$/)) return false;
+    if (!username.match(/^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]*$/)) return false;
 
-        // username
-        if (!username.match(/^.{2,14}$/)) return reject('Username invalid length');
-        if (!username.match(/^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]*$/)) return reject('Username invalid characters');
+    // is valid
+    return true;
+}
 
+const registerUser = (username, email, password) => new Promise(async(resolve, reject) => {
+    // verify details
+    // these should already have been validated clientside
+    // therefore, if they are incorrect, they wil recieve a generic response
 
-        const passwordHash = await bcrypt.hash(password, saltRounds);
+    if (!validateEmail(email) || !validatePassword(password) || !validateUsername(username)) return resolve({ success: false, message: 'invalid' });
 
-        const newUser = await register(username, email, passwordHash)
+    const passwordHash = await bcrypt.hash(password, saltRounds);
 
-        if (!newUser) {
-            console.log('NEW USER ERREE', newUser)
-            reject('Error creating user');
-        }
+    register(username, email, passwordHash)
+        .then(newUser => resolve({ success: true, newUser }))
+        .catch(e => {
+            console.log('err', e.message)
 
-        resolve(newUser)
-       } catch(e) {
-           console.log('register error');
-           resolve(null)
-       }
+            if (!!e.message && e.message.includes('ER_DUP_ENTRY') && e.message.includes('email')) {
+                return resolve({ success: false, message: 'Email taken' });
+            }
 
+            if (!!e.message && e.message.includes('ER_DUP_ENTRY') && e.message.includes('username')) {
+                return resolve({ success: false, message: 'Username taken' });
+            }
 
+            reject(err.message)
+        });
 });
 
 module.exports = registerUser;

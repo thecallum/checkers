@@ -30,7 +30,7 @@
     "scripts": {
         "build": "webpack --config webpack.config.js",
         "start": "node --require dotenv/config app.js",
-        "test": "jest"
+        "test": "jest --forceExit"
     },
     "devDependencies": {
         "jest": "^24.8.0",
