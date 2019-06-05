@@ -8,7 +8,7 @@ const validateEmail = email => !!validator.isEmail(email);
 
 const validatePassword = password => {
     if (!password.match(/^.{10,128}$/)) return false
-    if (!!password.match(/(.)\1{2,}/)) return false
+    if (password.match(/(.)\1{2,}/)) return false
 
     // password matches min 3 of following rules
     let rulesMet = 0;
@@ -44,8 +44,6 @@ const registerUser = (username, email, password) => new Promise(async(resolve, r
     register(username, email, passwordHash)
         .then(newUser => resolve({ success: true, newUser }))
         .catch(e => {
-            console.log('err', e.message)
-
             if (!!e.message && e.message.includes('ER_DUP_ENTRY') && e.message.includes('email')) {
                 return resolve({ success: false, message: 'Email taken' });
             }
@@ -54,7 +52,7 @@ const registerUser = (username, email, password) => new Promise(async(resolve, r
                 return resolve({ success: false, message: 'Username taken' });
             }
 
-            reject(err.message)
+            reject(e.message);
         });
 });
 

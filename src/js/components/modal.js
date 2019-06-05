@@ -1,6 +1,6 @@
 const modal = {
     props: {
-       show: { type: Boolean, required: true }
+        show: { type: Boolean, required: true }
     },
 
     template: `

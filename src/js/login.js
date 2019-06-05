@@ -26,23 +26,23 @@ new Vue({
             const body = { email: this.email, password: this.password, stayLogged: this.stayLogged };
 
             fetch('/login', {
-                method: 'POST',
-                body: JSON.stringify(body),
-                headers: { "Content-Type": "application/json" }
-            })
-            .then(res => {
-                this.loading = false;
-                if (res.status === 200) {
-                    window.location = '/profile';
-                } else {
-                    this.request__error = res.status;
-                }
-            })
-            .catch(e => {
-                console.error('Login error', e)
-                this.request__error = 'Fetch error!'; 
-                this.loading = false; 
-            });
+                    method: 'POST',
+                    body: JSON.stringify(body),
+                    headers: { "Content-Type": "application/json" }
+                })
+                .then(res => {
+                    this.loading = false;
+                    if (res.status === 200) {
+                        window.location = '/profile';
+                    } else {
+                        this.request__error = res.status;
+                    }
+                })
+                .catch(e => {
+                    console.error('Login error', e)
+                    this.request__error = 'Fetch error!';
+                    this.loading = false;
+                });
 
         }
     },

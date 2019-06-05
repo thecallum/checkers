@@ -1,4 +1,4 @@
-const colors =  {
+const colors = {
     'yellow': 'hsl(60, 80%, 50%)',
     'red': 'hsl(0, 50%, 50%)',
     'green': 'hsl(100, 50%, 50%)',

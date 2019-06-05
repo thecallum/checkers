@@ -31,10 +31,8 @@ new Vue({
         connecting: true,
         socketerror: null,
 
-        game: null,
         foundGame: null,
         state: 'connecting',
-        players: [],
 
         accepted: false,
         opponentAccepted: false,
@@ -44,7 +42,7 @@ new Vue({
             width: 500,
             maxWidth: 500,
             gridSize: 500 / 8,
-            halfGridSize: 500 /16,
+            halfGridSize: 500 / 16,
         },
         // =============
 
@@ -71,12 +69,12 @@ new Vue({
             this.socket.on('error', error => {
                 this.socketerror = error;
             })
-    
+
             this.socket.on('connect', () => {
                 this.connecting = false;
                 this.state = 'connected';
             });
-    
+
             this.socket.on('disconnect', () => {
                 this.connecting = true;
                 this.state = 'connecting';
@@ -84,7 +82,7 @@ new Vue({
 
             this.socket.on('game', data => {
                 if (!data.hasOwnProperty('state')) return;
-    
+
                 if (data.state === 'queue') {
                     this.state = data.state;
                     this.accepted = false;
@@ -95,21 +93,21 @@ new Vue({
                     this.preDraw();
                     this.gameStarted = false;
                     this.gameEnded = false;
-    
+
                     return;
                 }
-    
+
                 if (data.state === 'found') {
                     this.foundGame = data;
                     this.state = data.state;
                     return;
                 }
-    
+
                 if (data.state === 'accepted') {
                     this.opponentAccepted = true;
                     return;
                 }
-    
+
                 if (data.state === 'ready') {
                     this.state = data.state;
                     this.game = {
@@ -118,24 +116,24 @@ new Vue({
                     };
 
                     this.players = data.game.players.map(player => this.foundGame.data[player]);
-    
+
                     if (!this.enabledClickHandler) {
                         this.enabledClickHandler = true;
                         this.canvasElement.addEventListener('click', this.clickHandler);
                     }
-                    
+
                     this.gameStarted = true;
-        
+
                     this.callCanvasRedraw();
                     return;
                 }
-    
+
                 if (data.state === 'new_turn') {
                     this.game = {
                         ...data.data.game,
-                        selectedPiece: null   
+                        selectedPiece: null
                     };
-    
+
                     this.callCanvasRedraw();
                 }
 
@@ -153,14 +151,14 @@ new Vue({
                     this.callCanvasRedraw();
 
                     if (data.data.type === 'draw') {
-                        this.winMessage = 'It\'s a draw!'; 
+                        this.winMessage = 'It\'s a draw!';
                     } else {
                         this.winMessage = data.data.player === this.socket.id ? 'You Win!' : 'You Lose!';
                     }
 
                     this.gameEnded = true;
                 }
-    
+
                 if (data.state === 'disconnect') {
                     this.state = data.state;
                     this.gameStarted = false;
@@ -172,27 +170,27 @@ new Vue({
         },
         clickHandler({ offsetX, offsetY }) {
             if (this.gameEnded || this.game.currentPlayer !== this.socket.id) return;
-    
+
             // if no piece is selected, cannot select an option..
-            let selectedOption = this.game.selectedPiece ===  null ? null : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);       
-            
-            if (!!selectedOption) {
+            let selectedOption = this.game.selectedPiece === null ? null : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);
+
+            if (selectedOption) {
                 // Option is selected! 
                 // 
-                
+
                 const move = {
                     selectedOption,
-                    selectedPiece: this.game.selectedPiece 
+                    selectedPiece: this.game.selectedPiece
                 };
 
-               // send data to server
-               this.socket.emit('game', {
+                // send data to server
+                this.socket.emit('game', {
                     state: 'submit_turn',
                     data: {
                         move,
                     }
-               });
-    
+                });
+
             } else {
                 // player didnt't click an option, now check if a piece is selected
 
@@ -200,13 +198,13 @@ new Vue({
 
                 if (!!foundPiece && foundPiece.id === this.game.selectedPiece) {
                     this.game.selectedPiece = null;
-                } else if (!!foundPiece) {
+                } else if (foundPiece) {
                     this.game.selectedPiece = foundPiece.id;
                 } else {
                     this.game.selectedPiece = null;
-                }   
-    
-                this.callCanvasRedraw(this.game);    
+                }
+
+                this.callCanvasRedraw(this.game);
             }
         },
 
@@ -239,7 +237,7 @@ new Vue({
         },
 
         callCanvasRedraw() {
-            this.update({ ...this.game });
+            this.update({...this.game });
         },
 
         // generatePieces: generatePieces,

@@ -29,7 +29,7 @@ router.post('/login', (req, res) => {
                 })
 
             })
-            .catch(() => response.status(500).send());
+            .catch(() => res.status(500).send());
 
 
 
@@ -48,7 +48,7 @@ router.post('/register', (req, res) => {
             if (!success) {
                 // show message if the message isnt invalid
                 return res.status(400).json({...message !== 'invalid' && message });
-            };
+            }
 
             // register successful 
             const sessionUser = { email, username, id: newUser.insertId, stayLogged };
@@ -63,7 +63,7 @@ router.post('/register', (req, res) => {
             })
 
         })
-        .catch(e => {
+        .catch(() => {
 
             res.status(500).send();
 

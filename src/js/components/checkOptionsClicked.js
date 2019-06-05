@@ -5,10 +5,10 @@ const checkOptionsClicked = (options, gridSize, offsetX, offsetY) => {
 
     for (let option of options) {
         if (
-            offsetX > (option.end.x * gridSize) && 
+            offsetX > (option.end.x * gridSize) &&
             offsetX < (option.end.x * gridSize) + gridSize &&
-            offsetY > (option.end.y * gridSize) && 
-            offsetY < (option.end.y * gridSize) + gridSize 
+            offsetY > (option.end.y * gridSize) &&
+            offsetY < (option.end.y * gridSize) + gridSize
         ) {
             selectedOption = option;
             break;

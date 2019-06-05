@@ -33,8 +33,38 @@
         "test": "jest --forceExit"
     },
     "devDependencies": {
+        "eslint": "^5.16.0",
+        "eslint-plugin-vue": "^5.2.2",
         "jest": "^24.8.0",
         "supertest": "^4.0.2",
         "webpack-cli": "^3.3.2"
+    },
+    "eslintConfig": {
+        "env": {
+            "node": true,
+            "commonjs": true,
+            "es6": true,
+            "browser": true,
+            "jest": true
+        },
+        "extends": [
+            "eslint:recommended",
+            "plugin:vue/essential"
+        ],
+        "globals": {
+            "Atomics": "readonly",
+            "SharedArrayBuffer": "readonly",
+            "Vue": true,
+            "validator": true
+        },
+        "parserOptions": {
+            "ecmaVersion": 2018
+        },
+        "plugins": [
+            "vue"
+        ],
+        "rules": {
+            "no-console": "off"
+        }
     }
 }

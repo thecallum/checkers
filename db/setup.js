@@ -2,7 +2,7 @@ const con = require('./connection');
 
 const asyncQuery = require('./asyncQuery');
 
-const setup = () => new Promise(async (resolve, reject) => {
+const setup = () => new Promise(async resolve => {
     await con.connect();
     console.log('Connected to database!');
 
@@ -26,7 +26,6 @@ const setup = () => new Promise(async (resolve, reject) => {
             );
         `);
     }
-
 
     resolve();
 });

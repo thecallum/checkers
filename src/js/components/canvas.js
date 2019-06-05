@@ -8,12 +8,12 @@ const canvas = {
         width: { type: Number, required: true },
         gridSize: { type: Number, required: true },
         halfGridSize: { type: Number, required: true },
-        maxWidth: { type: Number, required: true },        
+        maxWidth: { type: Number, required: true },
     },
     data: function() {
         return {
             gameState: {}, // passed in when game is to be updated
-            
+
             canvas: null,
             ctx: null,
         }
@@ -24,7 +24,7 @@ const canvas = {
 
         // load font
         loadFont(this.ctx, 'Special Elite', 36);
-        
+
         // controlls passed back to app to rerender the canvas
         const controls = {
             update: this.update,
@@ -43,7 +43,7 @@ const canvas = {
             this.drawPieces();
             this.drawOptions();
 
-            if (!!this.gameState.selectedPiece) this.drawSelectedPiece();
+            if (this.gameState.selectedPiece) this.drawSelectedPiece();
         },
 
         preDraw() {
@@ -52,7 +52,7 @@ const canvas = {
         },
 
         clearCanvas() {
-            this.ctx.clearRect(0,0, this.width, this.width);
+            this.ctx.clearRect(0, 0, this.width, this.width);
         },
 
         drawGrid() {
@@ -60,16 +60,16 @@ const canvas = {
             this.ctx.fillRect(0, 0, this.width, this.width);
 
             this.ctx.fillStyle = 'black';
-            for (let row=0;row<8;row++) {
-                for (let col=0;col<8;col++) {
-                    if ((row%2===0 && col%2===0) || (row%2===1 && col%2===1)) {
-                        this.ctx.fillRect(this.gridSize * col ,row*this.gridSize,this.gridSize,this.gridSize);
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if ((row % 2 === 0 && col % 2 === 0) || (row % 2 === 1 && col % 2 === 1)) {
+                        this.ctx.fillRect(this.gridSize * col, row * this.gridSize, this.gridSize, this.gridSize);
                     }
                 }
             }
         },
 
-        drawPieces() {    
+        drawPieces() {
             this.gameState.pieces.map(piece => {
                 const isSelected = piece.id === this.gameState.selectedPiece;
                 const availableOptions = this.gameState.options[piece.id].length > 0;
@@ -80,17 +80,17 @@ const canvas = {
 
         drawOptions() {
             if (this.gameState.selectedPiece === null) return;
-    
+
             const selectedPieceId = this.gameState.selectedPiece;
             const selectedOptions = this.gameState.options[selectedPieceId];
-            
+
             drawOptions(this.ctx, selectedOptions, this.gridSize, this.halfGridSize);
         },
 
         drawSelectedPiece() {
             const pieceID = this.gameState.selectedPiece;
             const availableOptions = this.gameState.options[pieceID].length > 0;
-    
+
             const selectedPiece = this.gameState.pieces.filter(piece => piece.id === pieceID)[0];
             drawPiece(selectedPiece, this.gridSize, this.ctx, availableOptions, true);
         }
@@ -108,4 +108,4 @@ const canvas = {
     `),
 }
 
-module.exports =  canvas;
+module.exports = canvas;

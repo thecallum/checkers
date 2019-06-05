@@ -19,7 +19,7 @@ if (!process.env.PORT) throw 'PORT UNDEFINED';
 
 const session = setupSession();
 
-io = socketio(server);
+const io = socketio(server);
 io.use(ios(session));
 handleSocket(io);
 

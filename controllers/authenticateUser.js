@@ -1,9 +1,8 @@
 const bcrypt = require('bcrypt');
-const saltRounds = 15;
 
 const { login } = require('../models/user');
 
-const authenticateUser = (email, password) => new Promise(async (resolve, reject) => {
+const authenticateUser = (email, password) => new Promise(async resolve => {
 
     const user = await login(email);
 
@@ -17,7 +16,7 @@ const authenticateUser = (email, password) => new Promise(async (resolve, reject
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) return resolve(null);
-    
+
     // login successful
     resolve(user);
 });

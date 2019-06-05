@@ -1,6 +1,6 @@
 const con = require('../db/connection');
 
-exports.checkUsernameAvailable = username => new Promise(async(resolve, reject) => {
+exports.checkUsernameAvailable = username => new Promise(async resolve => {
     const query = `SELECT id FROM user WHERE username = '${username}';`;
 
     con.query(query, (err, response) => {
@@ -17,7 +17,7 @@ exports.register = (username, email, passwordHash) => new Promise(async(resolve,
     });
 });
 
-exports.login = email => new Promise(async(resolve, reject) => {
+exports.login = email => new Promise(async resolve => {
     const query = `SELECT id, username, password FROM user WHERE email = '${email}';`;
 
     con.query(query, (err, response) => {

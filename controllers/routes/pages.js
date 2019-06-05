@@ -33,7 +33,7 @@ router.get('/play/online', auth, (req, res) => {
 
 router.get('/leaderboard', (req, res) => {
     res.render('pages/leaderboard', { auth: !!req.session.user });
-});  
+});
 
 router.get('*', (req, res) => {
     res.render('pages/pageNotFound', { auth: !!req.session.user });

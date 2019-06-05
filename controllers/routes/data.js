@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { checkUsernameAvailable } = require('../../models/user');
 
-router.post('/data/usernames', async (req, res) => {
+router.post('/data/usernames', async(req, res) => {
     const { username } = req.body;
 
     // must receive username to check

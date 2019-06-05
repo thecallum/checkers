@@ -14,8 +14,7 @@ new Vue({
         stayLogged: false,
         // ================================
 
-        password_rules: [
-            {
+        password_rules: [{
                 value: 'Between 10-128 characters',
                 test: str => str.match(/^.{10,128}$/)
             },
@@ -41,11 +40,10 @@ new Vue({
             }
         ],
 
-        username__rules: [
-            {
+        username__rules: [{
                 value: 'Between 2-14 characters',
                 test: str => str.match(/^.{2,14}$/)
-                // test: str => true,
+                    // test: str => true,
             },
             {
                 value: 'Allow letters, numbers and punctuation',
@@ -96,10 +94,10 @@ new Vue({
             const body = { email: this.email, password: this.password, username: this.username, stayLogged: this.stayLogged };
 
             fetch('/register', {
-                method: 'POST',
-                body: JSON.stringify(body),
-                headers: { "Content-Type": "application/json" }
-            })
+                    method: 'POST',
+                    body: JSON.stringify(body),
+                    headers: { "Content-Type": "application/json" }
+                })
                 .then(res => {
                     this.loading = false;
                     if (res.status === 200) {
@@ -108,14 +106,14 @@ new Vue({
                         //  check for message
 
                         res.json()
-                        .then(res => {
-                            // console.log('404 res', res);
-                            this.main__error = res.message;
-                        }).catch(e => {
-                            // console.log('error parsing', e)
-                            this.main__error = res.status;
+                            .then(res => {
+                                // console.log('404 res', res);
+                                this.main__error = res.message;
+                            }).catch(() => {
+                                // console.log('error parsing', e)
+                                this.main__error = res.status;
 
-                        })
+                            })
                     } else {
                         this.main__error = res.status;
                     }
@@ -125,7 +123,7 @@ new Vue({
                     this.error = 'Fetch error!';
                     this.main__error = false;
                 });
-            
+
 
         },
     },
@@ -276,8 +274,7 @@ new Vue({
         }
     },
     watch: {
-        username(val) {
-
+        username() {
             if (this.username__error || !this.username) {
                 clearTimeout(this.username_timeout);
                 this.username_search_valid = undefined;
@@ -296,15 +293,15 @@ new Vue({
                 // set result to valid
 
                 fetch('/data/usernames', {
-                    method: 'POST',
-                    body: JSON.stringify({ username: this.username }),
-                    headers: { "Content-Type": "application/json" }
-                })
-                .then(res => res.json())
-                .then(res => {
-                    this.username_search_valid = !res.exists;
-                })
-                .catch(err => console.error('Fetch username err', err))
+                        method: 'POST',
+                        body: JSON.stringify({ username: this.username }),
+                        headers: { "Content-Type": "application/json" }
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        this.username_search_valid = !res.exists;
+                    })
+                    .catch(err => console.error('Fetch username err', err))
 
             }, 500);
 
