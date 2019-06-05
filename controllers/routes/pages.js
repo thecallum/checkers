@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const protectedRoute = require('../middleware/protectedRoute');
+const auth = require('../../middleware/auth');
 
 router.get('/', (req, res) => {
     res.render('pages/index', { auth: !!req.session.user });
@@ -15,7 +15,7 @@ router.get('/register', (req, res) => {
     res.render('pages/register', { auth: !!req.session.user });
 });
 
-router.get('/profile', protectedRoute, (req, res) => {
+router.get('/profile', auth, (req, res) => {
     res.render('pages/profile', { auth: !!req.session.user, username: req.session.user.username, email: req.session.user.email });
 });
 
@@ -27,7 +27,7 @@ router.get('/play/multiplayer', (req, res) => {
     res.render('pages/playMultiPlayer', { auth: !!req.session.user });
 });
 
-router.get('/play/online', protectedRoute, (req, res) => {
+router.get('/play/online', auth, (req, res) => {
     res.render('pages/playOnline', { auth: !!req.session.user });
 });
 

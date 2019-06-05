@@ -1,8 +1,6 @@
-const protectedRoute = (req, res, next) => {
-
+const auth = (req, res, next) => {
     if (!!req.session && !!req.session.user) return next();
-
     res.redirect(`/login`);
-}
+};
 
-module.exports = protectedRoute;
+module.exports = auth;

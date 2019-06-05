@@ -1,4 +1,3 @@
-// const expect = require('expect');
 const request = require('supertest');
 const bcrypt = require('bcrypt');
 const saltRounds = 15;
@@ -7,19 +6,12 @@ require('dotenv').config();
 
 process.env.TESTING = true;
 
-const expressServer = require('../../../server/expressServer');
-const asyncQuery = require('../../../server/db/asyncQuery');
-const con = require('../../../server/db/connection');
+const app = require('../../../app');
 
-let app;
+const asyncQuery = require('../../../helpers/asyncQuery');
+const con = require('../../../db/connection');
 
-beforeAll(() => new Promise(async (resolve, reject) => {
-    const server = await expressServer();
-    app = server;
-    app.listen(4000);
-
-    resolve();
-}));
+const truncateUserTable = require('../../utils/truncateUserTable');
 
 describe('POST /login', () => {
     const user = {
@@ -30,8 +22,7 @@ describe('POST /login', () => {
     };
 
     beforeAll(() => new Promise(async resolve => {
-        const query = `TRUNCATE user;`;
-        await asyncQuery(con, query);
+        await truncateUserTable();
 
         const query2 = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.hash}','${user.username}');`;
         await asyncQuery(con, query2);
@@ -46,7 +37,7 @@ describe('POST /login', () => {
                 email: user.email,
                 password: user.password
             })
-            .then(response => {               
+            .then(response => {
                 expect(response.status).toBe(200);
                 done();
             })
@@ -114,13 +105,6 @@ describe('POST /login', () => {
 
 
 
-
-
-
-
-
-
-
 describe('POST /register', () => {
     const user = {
         email: 'email@email.com',
@@ -137,8 +121,7 @@ describe('POST /register', () => {
     };
 
     beforeAll(() => new Promise(async resolve => {
-        const query = `TRUNCATE user;`;
-        await asyncQuery(con, query);
+        await truncateUserTable();
 
         const query2 = `INSERT INTO user (email, password, username) VALUES ('${existing.email}','${existing.hash}','${existing.username}');`;
         await asyncQuery(con, query2);
@@ -328,7 +311,7 @@ describe('POST /register', () => {
                 .catch(e => done(e));
         });
 
-        
+
     })
 
     test('Existing username', done => {

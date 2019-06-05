@@ -5,10 +5,10 @@ const games = {};
 const clients = {};
 const queue = setupQueue();
 
-const generatePieces = require('../../src/js/components/generatePieces');
-const generateOptions = require('../../src/js/components/generateOptions');
-const updatePieces = require('../../src/js/components/updatePieces');
-const nextPlayer = require('../../src/js/components/nextPlayer');
+const generatePieces = require('../src/js/components/generatePieces');
+const generateOptions = require('../src/js/components/generateOptions');
+const updatePieces = require('../src/js/components/updatePieces');
+const nextPlayer = require('../src/js/components/nextPlayer');
 
 const protectSocket = require('./protectSocket');
 
@@ -19,7 +19,7 @@ const setupRooms = () => {
     const create = () => {
 
     }
-    
+
 
     const join = data => {
         const id = roomIndex++;
@@ -35,11 +35,11 @@ const setupRooms = () => {
     }
 
     const accept = (roomID, userID) => {
-        rooms[roomID].players[userID].accepted = true; 
-    
+        rooms[roomID].players[userID].accepted = true;
+
         const room = rooms[roomID];
         const accepted = Object.keys(room.players).filter(key => room.players[key].accepted);
-    
+
         return accepted.length === 2;
     }
 
@@ -60,13 +60,13 @@ module.exports = io => {
 
     io.on('connection', socket => {
         console.log('SOCKETIO CONNECTION');
-        
+
         // connect client 
-        clients[socket.id] = { ...socket.request.user, room: null };
-        
+        clients[socket.id] = {...socket.request.user, room: null };
+
         socket.on('disconnect', () => {
             console.log('SOCKET DISCONNECT')
-            // if in queue, remove
+                // if in queue, remove
             queue.remove(socket.id);
 
             if (clients[socket.id].hasOwnProperty('room')) {
@@ -76,7 +76,7 @@ module.exports = io => {
 
                 // set other player room property to null
 
-                io.to(roomID).emit('game', { state: 'disconnect' });      
+                io.to(roomID).emit('game', { state: 'disconnect' });
 
             }
 
@@ -131,36 +131,36 @@ module.exports = io => {
             }
 
             if (data.state === 'submit_turn') {
-               // player has made turn
-               
-               // check that correct player made the mode
-               // and that the move is a valid option
-               const roomIndex = socket.request.user.roomIndex;
+                // player has made turn
 
-               if (socket.id !== games[roomIndex].currentPlayer) return;
+                // check that correct player made the mode
+                // and that the move is a valid option
+                const roomIndex = socket.request.user.roomIndex;
 
-               const selectedOption = data.data.move.selectedOption;
-               const selectedOptionID = data.data.move.selectedPiece;
+                if (socket.id !== games[roomIndex].currentPlayer) return;
 
-               const game = games[roomIndex];
+                const selectedOption = data.data.move.selectedOption;
+                const selectedOptionID = data.data.move.selectedPiece;
 
-               if (game.won) return console.log('GAME ALREADY WON, CANNOT MAKE ANOTHER MOVE');
+                const game = games[roomIndex];
 
-               const gameOptions = game.options[selectedOptionID];
+                if (game.won) return console.log('GAME ALREADY WON, CANNOT MAKE ANOTHER MOVE');
 
-               if (gameOptions.length === 0) return;
+                const gameOptions = game.options[selectedOptionID];
 
-               let validOption = false;
+                if (gameOptions.length === 0) return;
 
-               for (let option of gameOptions) {
-                   if (JSON.stringify(option) === JSON.stringify(selectedOption)) {
-                       validOption = true;
-                       break;
-                   }
-               }
+                let validOption = false;
+
+                for (let option of gameOptions) {
+                    if (JSON.stringify(option) === JSON.stringify(selectedOption)) {
+                        validOption = true;
+                        break;
+                    }
+                }
 
                 if (validOption) {
-                    const newPieces = updatePieces(selectedOption, selectedOptionID, game.pieces, game.currentPlayer);                  
+                    const newPieces = updatePieces(selectedOption, selectedOptionID, game.pieces, game.currentPlayer);
                     const newPlayer = nextPlayer(game.currentPlayer, games[roomIndex].players);
                     const newOptions = generateOptions(newPieces, newPlayer, games[roomIndex].players);
 
@@ -171,7 +171,7 @@ module.exports = io => {
                         let opponentHasOptions = false;
                         for (let option of Object.keys(newOptions)) {
                             const currentOption = newOptions[option];
-            
+
                             if (currentOption.length > 0) {
                                 opponentHasOptions = true;
                                 break;
@@ -179,7 +179,7 @@ module.exports = io => {
                         }
 
                         if (!opponentHasOptions) return 'draw';
-                        
+
                         return false;
                     }
 
@@ -193,10 +193,10 @@ module.exports = io => {
                         selectedPiece: null,
                         currentPlayer: newPlayer,
                         won: !!gameWon
-                    }; 
+                    };
 
                     const updatedGame = games[roomIndex];
-                    
+
 
                     if (!!gameWon) {
                         delete games[roomIndex];
@@ -217,13 +217,13 @@ module.exports = io => {
                         });
 
                     } else {
-                        io.to(roomIndex).emit('game', { 
-                            state: 'new_turn', 
+                        io.to(roomIndex).emit('game', {
+                            state: 'new_turn',
                             data: { game: updatedGame }
                         });
                     }
-                   
-               }
+
+                }
             }
         })
     });
@@ -232,18 +232,18 @@ module.exports = io => {
         console.log('Queue update', currentQueue);
 
         if (currentQueue.length >= 2) {
-            
+
             // add new room object, and subscibe those users to that room object
             const players = queue.getPlayers();
             const roomIndex = rooms.join({
                 players: {
-                    [players[0]] : {
+                    [players[0]]: {
                         accepted: false,
                         username: clients[players[0]].username,
                         src: '/',
                         alt: 'user pic'
                     },
-                    [players[1]] : {
+                    [players[1]]: {
                         accepted: false,
                         username: clients[players[1]].username,
                         src: '/',
@@ -267,10 +267,10 @@ module.exports = io => {
                 state: 'found',
                 roomIndex,
                 data: {
-                    [players[0]] : {
+                    [players[0]]: {
                         username: clients[players[0]].username,
                     },
-                    [players[1]] : {
+                    [players[1]]: {
                         username: clients[players[1]].username,
                     },
                 }
