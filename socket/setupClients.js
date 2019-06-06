@@ -4,9 +4,10 @@ const setupClients = () => {
     const add = socket => clients[socket.id] = {...socket.request.user, room: null };
 
     const remove = (socket) => {
-        console.log('SOCKET DISCONNECT')
+        console.log('SOCKET DISCONNECT');
+        const client = clients[socket.id];
         delete clients[socket.id];
-        return clients[socket.id];
+        return client;
     }
 
     const get = id => JSON.parse(JSON.stringify(clients[id]));
