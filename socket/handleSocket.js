@@ -10,30 +10,22 @@ const generateOptions = require('../src/js/components/generateOptions');
 const updatePieces = require('../src/js/components/updatePieces');
 const nextPlayer = require('../src/js/components/nextPlayer');
 
-const protectSocket = require('./protectSocket');
+const protectSocket = require('./middleware/protectSocket');
 const ios = require('socket.io-express-session');
+
+const socketIO = require('socket.io');
 
 const setupRooms = () => {
     let rooms = {};
     let roomIndex = 0;
 
-    const create = () => {
-
-    }
-
-
     const join = data => {
         const id = roomIndex++;
-        rooms[id] = {
-            ...data
-        };
-
+        rooms[id] = { ...data };
         return id;
     }
 
-    const close = roomID => {
-        delete rooms[roomID];
-    }
+    const close = roomID => delete rooms[roomID];
 
     const accept = (roomID, userID) => {
         rooms[roomID].players[userID].accepted = true;
@@ -44,47 +36,45 @@ const setupRooms = () => {
         return accepted.length === 2;
     }
 
-    return {
-        rooms,
-        create,
-        join,
-        close,
-        accept
-    }
+    return { rooms, join, close, accept }
 }
 
 const rooms = setupRooms();
 
-module.exports = (io, session) => {
-    console.log('HANDLE SOCKET')
+const addClient = socket => {
+    clients[socket.id] = {...socket.request.user, room: null };
+}
+
+const removeClient = socket => {
+    console.log('SOCKET DISCONNECT')
+        // if in queue, remove
+    queue.remove(socket.id);
+
+    if (clients[socket.id].hasOwnProperty('room')) {
+        // client is in a room, must disconnect other player
+        const roomID = clients[socket.id].room;
+        rooms.close(roomID);
+
+        // set other player room property to null
+
+        io.to(roomID).emit('game', { state: 'disconnect' });
+
+    }
+
+    // remove user
+    delete clients[socket.id];
+}
+
+module.exports = (server, session) => {
+    const io = socketIO(server);
+    // allows ws to access sessions
     io.use(ios(session));
     io.use(protectSocket);
 
     io.on('connection', socket => {
-        console.log('SOCKETIO CONNECTION');
+        addClient(socket);
 
-        // connect client 
-        clients[socket.id] = {...socket.request.user, room: null };
-
-        socket.on('disconnect', () => {
-            console.log('SOCKET DISCONNECT')
-                // if in queue, remove
-            queue.remove(socket.id);
-
-            if (clients[socket.id].hasOwnProperty('room')) {
-                // client is in a room, must disconnect other player
-                const roomID = clients[socket.id].room;
-                rooms.close(roomID);
-
-                // set other player room property to null
-
-                io.to(roomID).emit('game', { state: 'disconnect' });
-
-            }
-
-            // remove user
-            delete clients[socket.id];
-        });
+        socket.on('disconnect', () => removeClient(socket));
 
         socket.on('game', data => {
 
