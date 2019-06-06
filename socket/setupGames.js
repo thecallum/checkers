@@ -46,16 +46,33 @@ const setupGames = () => {
         return false;
     }
 
+    const updateGame = (game, selectedOption, selectedOptionID) => {
+        const newPieces = updatePieces(selectedOption, selectedOptionID, game.pieces, game.currentPlayer);
+        const newPlayer = nextPlayer(game.currentPlayer, game.players);
+        const newOptions = generateOptions(newPieces, newPlayer, game.players);
+
+        const gameWon = checkWin(newPieces, newPlayer, newOptions);
+
+        return {
+            ...game,
+            pieces: newPieces,
+            options: newOptions,
+            selectedPiece: null,
+            currentPlayer: newPlayer,
+            won: !!gameWon
+        }
+    }
+
     const submitTurn = (id, userID, { selectedOption, selectedPiece: selectedOptionID }) => {
         const game = games[id];
-
+        // check that correct player made the mode
         if (userID !== game.currentPlayer) return null;
-
-        if (game.won) return null; // game already won, cannot make another move
+        // game already won, cannot make another move
+        if (game.won) return null;
 
         const gameOptions = game.options[selectedOptionID];
-
-        if (gameOptions.length === 0) return; // there must be options
+        // there must be options
+        if (gameOptions.length === 0) return;
 
         let validOption = false;
 
@@ -68,25 +85,11 @@ const setupGames = () => {
 
         if (!validOption) return null;
 
+        const updatedGame = updateGame(game, selectedOption, selectedOptionID);
 
-        const newPieces = updatePieces(selectedOption, selectedOptionID, game.pieces, game.currentPlayer);
-        const newPlayer = nextPlayer(game.currentPlayer, game.players);
-        const newOptions = generateOptions(newPieces, newPlayer, game.players);
+        games[id] = updatedGame;
 
-        const gameWon = checkWin(newPieces, newPlayer, newOptions);
-
-        games[id] = {
-            ...game,
-            pieces: newPieces,
-            options: newOptions,
-            selectedPiece: null,
-            currentPlayer: newPlayer,
-            won: !!gameWon
-        };
-
-        const updatedGame = games[id];
-
-        return { updatedGame, gameWon }
+        return updatedGame;
     }
 
     const close = id => delete games[id];

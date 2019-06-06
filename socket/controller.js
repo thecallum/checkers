@@ -71,16 +71,11 @@ module.exports = (server, session) => {
             }
 
             if (data.state === 'submit_turn') {
-                // player has made turn
-
-                // check that correct player made the mode
-                // and that the move is a valid option
                 const id = socket.request.user.roomIndex;
-
                 const result = games.submitTurn(id, socket.id, data.data.move);
                 if (!result) return;
 
-                if (result.gameWon) {
+                if (result.won) {
                     games.close(id);
 
                     io.to(id).emit('game', {
@@ -90,7 +85,7 @@ module.exports = (server, session) => {
                             player: socket.id,
                             message: 'It\'s a draw!',
                             game: {
-                                ...result.updatedGame,
+                                ...result,
                                 currentPlayer: socket.id // game updated player, but current player has won
                             }
                         }
@@ -100,7 +95,7 @@ module.exports = (server, session) => {
                     io.to(id).emit('game', {
                         state: 'new_turn',
                         data: {
-                            game: result.updatedGame
+                            game: result
                         }
                     });
                 }
