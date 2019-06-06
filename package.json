@@ -40,7 +40,9 @@
     },
     "scripts": {
         "build": "webpack --config webpack.config.js",
+        "build-dev": "webpack --config webpack.config.js --env.development",
         "start": "node --require dotenv/config app.js",
+        "dev": "webpack-dev-server --env.development",
         "test": "jest --forceExit"
     },
     "devDependencies": {
@@ -48,7 +50,8 @@
         "eslint-plugin-vue": "^5.2.2",
         "jest": "^24.8.0",
         "supertest": "^4.0.2",
-        "webpack-cli": "^3.3.2"
+        "webpack-cli": "^3.3.2",
+        "webpack-dev-server": "^3.6.0"
     },
     "eslintConfig": {
         "env": {
