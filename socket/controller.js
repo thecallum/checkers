@@ -11,14 +11,14 @@ const setupClients = require('./setupClients');
 const clients = setupClients();
 
 const socketio = require('socket.io');
-const protectSocket = require('./middleware/protectSocket');
+const auth = require('./middleware/auth');
 const ios = require('socket.io-express-session');
 
 module.exports = (server, session) => {
     const io = socketio(server);
     // allows ws to access sessions
     io.use(ios(session));
-    io.use(protectSocket);
+    io.use(auth);
 
     io.on('connection', socket => {
         clients.add(socket);
