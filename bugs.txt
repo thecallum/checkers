@@ -1,0 +1,1 @@
+player starts as blue, cannot make turn (online). (a join queue, b join queue, a accept, b accept)

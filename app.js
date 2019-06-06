@@ -7,7 +7,7 @@ const compression = require('compression');
 const path = require('path');
 
 const setupSession = require('./setupSession');
-const handleSocket = require('./socket/handleSocket');
+const controller = require('./socket/controller');
 
 const app = express();
 const session = setupSession();
@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 app.use(session);
 app.use(express.static('node_modules'));
 app.use(compression());
- 
+
 app.use('/js/', express.static('public/js/'));
 app.use('/css/', express.static('public/css/'));
 app.use('/assets/', express.static('public/assets/'));
@@ -33,6 +33,7 @@ app.use(require('./controllers/routes/pages'));
 
 const server = app.listen(process.env.PORT, () => console.log(`${ path.basename(__filename) } is running on https://localhost:${ process.env.PORT }`));
 
-handleSocket(server, session);
+// start websocket controller;
+controller(server, session);
 
 module.exports = app;

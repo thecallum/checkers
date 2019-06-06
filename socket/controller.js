@@ -1,8 +1,6 @@
-const setupQueue = require('./setupQueue');
-
 const games = {};
 
-const clients = {};
+const setupQueue = require('./setupQueue');
 const queue = setupQueue();
 
 const generatePieces = require('../src/js/components/generatePieces');
@@ -13,75 +11,50 @@ const nextPlayer = require('../src/js/components/nextPlayer');
 const protectSocket = require('./middleware/protectSocket');
 const ios = require('socket.io-express-session');
 
-const socketIO = require('socket.io');
-
-const setupRooms = () => {
-    let rooms = {};
-    let roomIndex = 0;
-
-    const join = data => {
-        const id = roomIndex++;
-        rooms[id] = { ...data };
-        return id;
-    }
-
-    const close = roomID => delete rooms[roomID];
-
-    const accept = (roomID, userID) => {
-        rooms[roomID].players[userID].accepted = true;
-
-        const room = rooms[roomID];
-        const accepted = Object.keys(room.players).filter(key => room.players[key].accepted);
-
-        return accepted.length === 2;
-    }
-
-    return { rooms, join, close, accept }
-}
-
+const setupRooms = require('./setupRooms');
 const rooms = setupRooms();
 
-const addClient = socket => {
-    clients[socket.id] = {...socket.request.user, room: null };
-}
+const setupClients = require('./setupClients');
+const clients = setupClients();
 
-const removeClient = socket => {
-    console.log('SOCKET DISCONNECT')
-        // if in queue, remove
-    queue.remove(socket.id);
-
-    if (clients[socket.id].hasOwnProperty('room')) {
-        // client is in a room, must disconnect other player
-        const roomID = clients[socket.id].room;
-        rooms.close(roomID);
-
-        // set other player room property to null
-
-        io.to(roomID).emit('game', { state: 'disconnect' });
-
-    }
-
-    // remove user
-    delete clients[socket.id];
-}
+const socketio = require('socket.io');
 
 module.exports = (server, session) => {
-    const io = socketIO(server);
+    const io = socketio(server);
     // allows ws to access sessions
     io.use(ios(session));
     io.use(protectSocket);
 
     io.on('connection', socket => {
-        addClient(socket);
+        clients.add(socket);
 
-        socket.on('disconnect', () => removeClient(socket));
+        socket.on('disconnect', () => {
+            const client = clients.remove(socket, io);
+
+            queue.remove(socket.id);
+
+            if (client.hasOwnProperty('room')) {
+                // client is in a room, must disconnect other player
+                const roomID = client.room;
+                rooms.close(roomID);
+
+                // set other player room property to null
+
+                io.to(roomID).emit('game', {
+                    state: 'disconnect'
+                });
+
+            }
+        });
 
         socket.on('game', data => {
 
             if (!data.hasOwnProperty('state')) return;
 
             if (data.state === 'join_queue') {
-                socket.emit('game', { state: 'queue' });
+                socket.emit('game', {
+                    state: 'queue'
+                });
                 queue.add(socket.id);
             }
 
@@ -118,7 +91,10 @@ module.exports = (server, session) => {
                         roomIndex: data.data.gameIndex
                     }
 
-                    io.to(data.data.gameIndex).emit('game', { state: 'ready', game });
+                    io.to(data.data.gameIndex).emit('game', {
+                        state: 'ready',
+                        game
+                    });
                 }
             }
 
@@ -211,7 +187,9 @@ module.exports = (server, session) => {
                     } else {
                         io.to(roomIndex).emit('game', {
                             state: 'new_turn',
-                            data: { game: updatedGame }
+                            data: {
+                                game: updatedGame
+                            }
                         });
                     }
 
@@ -231,13 +209,13 @@ module.exports = (server, session) => {
                 players: {
                     [players[0]]: {
                         accepted: false,
-                        username: clients[players[0]].username,
+                        username: clients.get(players[0]).username,
                         src: '/',
                         alt: 'user pic'
                     },
                     [players[1]]: {
                         accepted: false,
-                        username: clients[players[1]].username,
+                        username: clients.get(players[1]).username,
                         src: '/',
                         alt: 'user pic'
                     },
@@ -248,25 +226,20 @@ module.exports = (server, session) => {
             // Add the players to the room
 
             players.map(player => {
+                clients.updateRoom(player, roomIndex);
                 io.sockets.sockets[player].join(roomIndex);
-                clients[player] = {
-                    ...clients[player],
-                    room: roomIndex
-                }
             });
 
-            io.to(roomIndex).emit('game', {
-                state: 'found',
-                roomIndex,
-                data: {
-                    [players[0]]: {
-                        username: clients[players[0]].username,
-                    },
-                    [players[1]]: {
-                        username: clients[players[1]].username,
-                    },
-                }
-            })
+            const gameData = {
+                [players[0]]: {
+                    username: clients.get(players[0]).username
+                },
+                [players[1]]: {
+                    username: clients.get(players[1]).username
+                },
+            }
+
+            io.to(roomIndex).emit('game', { state: 'found', roomIndex, data: gameData })
         }
     });
 }
