@@ -7,7 +7,6 @@ const setupGames = () => {
     const games = {};
 
     const create = (id, players, currentPlayerID) => {
-
         const newPieces = generatePieces(players[0], players[1]);
         const newOptions = generateOptions(newPieces, players[0], players);
 
@@ -22,10 +21,7 @@ const setupGames = () => {
         return game;
     }
 
-
-    const getCurrentPlayer = id => {
-        return games[id].currentPlayer
-    }
+    const getCurrentPlayer = id => games[id].currentPlayer;
 
     const checkWin = (newPieces, newPlayer, newOptions) => {
         const opponentHasPieces = newPieces.filter(piece => piece.player === newPlayer).length > 0;
@@ -42,7 +38,6 @@ const setupGames = () => {
         }
 
         if (!opponentHasOptions) return 'draw';
-
         return false;
     }
 
@@ -84,17 +79,14 @@ const setupGames = () => {
         }
 
         if (!validOption) return null;
-
         const updatedGame = updateGame(game, selectedOption, selectedOptionID);
-
         games[id] = updatedGame;
-
         return updatedGame;
     }
 
     const close = id => delete games[id];
 
-    return { games, create, getCurrentPlayer, submitTurn, close };
+    return { create, getCurrentPlayer, submitTurn, close };
 }
 
 module.exports = setupGames;

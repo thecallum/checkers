@@ -2,15 +2,13 @@ const setupQueue = () => {
     let queue = [];
     const subscribeList = [];
 
-    const get = () => queue;
-
     const add = id => {
         queue.push(id);
         emit();
     };
 
     const getPlayers = () => {
-        const spliced =  queue.splice(0,2);
+        const spliced = queue.splice(0, 2);
         emit();
         return spliced;
     }
@@ -24,7 +22,7 @@ const setupQueue = () => {
 
     const emit = () => subscribeList.map(cb => cb(queue));
 
-    return { queue, add, getPlayers, subscribe, remove, get };    
+    return { add, getPlayers, subscribe, remove };
 }
 
 module.exports = setupQueue;

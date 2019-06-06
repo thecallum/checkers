@@ -25,15 +25,12 @@ module.exports = (server, session) => {
 
         socket.on('disconnect', () => {
             const client = clients.remove(socket, io);
-
             queue.remove(socket.id);
 
             if (client.hasOwnProperty('room')) {
                 // client is in a room, must disconnect other player
                 const roomID = client.room;
                 rooms.close(roomID);
-
-                // set other player room property to null
                 io.to(roomID).emit('game', { state: 'disconnect' });
             }
         });
@@ -42,32 +39,29 @@ module.exports = (server, session) => {
             if (!data.hasOwnProperty('state')) return;
 
             if (data.state === 'join_queue') {
-                socket.emit('game', { state: 'queue' });
                 queue.add(socket.id);
+                socket.emit('game', { state: 'queue' });
             }
 
             if (data.state === 'accept') {
-                const bothAccepted = rooms.accept(data.data.gameIndex, socket.id);
+                const id = data.data.gameIndex;
+                const bothAccepted = rooms.accept(id, socket.id);
 
-                if (bothAccepted) {
-                    // BOTH PLAYERS HAVE ACCEPTED!
-                    // start game
+                if (!bothAccepted) return;
 
-                    const players = Object.keys(rooms.rooms[data.data.gameIndex].players);
-                    const id = data.data.gameIndex;
+                // start game
+                const players = rooms.getPlayerIDs(id);
+                const game = games.create(id, players, socket.id);
 
-                    const game = games.create(id, players, socket.id);
+                // set roomid to socket.request.user object
+                players.map(player => {
+                    io.sockets.sockets[player].request.user = {
+                        ...io.sockets.sockets[player].request.user,
+                        roomIndex: id
+                    }
+                });
 
-                    // set roomid to socket.request.user object
-                    players.map(player => {
-                        io.sockets.sockets[player].request.user = {
-                            ...io.sockets.sockets[player].request.user,
-                            roomIndex: data.data.gameIndex
-                        }
-                    });
-
-                    io.to(data.data.gameIndex).emit('game', { state: 'ready', game });
-                }
+                io.to(id).emit('game', { state: 'ready', game });
             }
 
             if (data.state === 'submit_turn') {
@@ -99,7 +93,6 @@ module.exports = (server, session) => {
                         }
                     });
                 }
-
             }
         })
     });
