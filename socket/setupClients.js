@@ -18,20 +18,11 @@ const setupClients = () => {
         return client;
     }
 
-    const get = id => {
-        return JSON.parse(JSON.stringify(clients[id]))
-    }
+    const get = id => JSON.parse(JSON.stringify(clients[id]));
 
-    const updateRoom = (id, room) => {
-        clients[id] = {...clients[id], room };
-    }
+    const updateRoom = (id, room) => clients[id] = {...clients[id], room };
 
-    return {
-        add,
-        remove,
-        get,
-        updateRoom,
-    }
+    return { add, remove, get, updateRoom }
 }
 
 module.exports = setupClients;
