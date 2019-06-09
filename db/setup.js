@@ -2,20 +2,23 @@ const con = require('./connection');
 
 const asyncQuery = require('./asyncQuery');
 
-const setup = () => new Promise(async resolve => {
-    await con.connect();
-    console.log('Connected to database!');
+const setup = () =>
+	new Promise(async resolve => {
+		await con.connect();
+		console.log('Connected to database!');
 
-    let tables = await asyncQuery(con, 'SHOW TABLES;');
-    console.log('TABLES', tables)
+		let tables = await asyncQuery(con, 'SHOW TABLES;');
+		console.log('TABLES', tables);
 
-    tables = tables.map(item => {
-        const key = Object.keys(item);
-        return item[key];
-    })
+		tables = tables.map(item => {
+			const key = Object.keys(item);
+			return item[key];
+		});
 
-    if (tables.indexOf('user') === -1) {
-        await asyncQuery(con, `
+		if (tables.indexOf('user') === -1) {
+			await asyncQuery(
+				con,
+				`
             CREATE TABLE user (
                 id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
                 email VARCHAR(100) NOT NULL,
@@ -24,10 +27,11 @@ const setup = () => new Promise(async resolve => {
                 UNIQUE(email),
                 UNIQUE(USERNAME)
             );
-        `);
-    }
+        `
+			);
+		}
 
-    resolve();
-});
+		resolve();
+	});
 
 module.exports = setup;

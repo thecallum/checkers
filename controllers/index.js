@@ -11,7 +11,7 @@ const server = require('http').createServer(app);
 const setupSession = require('./setupSession');
 var ios = require('socket.io-express-session');
 
-if (!process.env.PORT) throw 'PORT UNDEFINED'
+if (!process.env.PORT) throw 'PORT UNDEFINED';
 
 const path = require('path');
 
@@ -25,24 +25,22 @@ handleSocket(io);
 
 app.set('view engine', 'ejs');
 app.set('view options', {
-    rmWhitespace: true
+	rmWhitespace: true,
 });
 
-app.use(helmet())
+app.use(helmet());
 app.use(bodyParser());
 
 app.use('/js/', express.static('public/js/'));
 app.use('/css/', express.static('public/css/'));
 app.use('/assets/', express.static('public/assets/'));
 
-
 app.use(require('./routes/data'));
 
 app.use(require('./routes/auth'));
 app.use(require('./routes/pages'));
 
-
-app.listen(process.env.PORT, () => console.log(`${ path.basename(__filename) } is running on https://localhost:${ process.env.PORT }`));
+app.listen(process.env.PORT, () => console.log(`${path.basename(__filename)} is running on https://localhost:${process.env.PORT}`));
 console.timeEnd('Start Server');
 
 module.exports = app;

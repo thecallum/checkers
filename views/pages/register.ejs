@@ -1,92 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<% include ../components/head %>
+		<title>Register | Checkers</title>
+	</head>
 
-<head>
-    <% include ../components/head %>
-        <title>Register | Checkers</title>
-</head>
+	<body>
+		<%- include('../components/header', { auth: auth }); %>
 
-<body>
-    <%- include('../components/header', { auth: auth }); %>
+		<div id="app" class="form">
+			<ul class="form__tags">
+				<li class="form__tag form__tag--active">
+					<h1 class="form__title">Register</h1>
+				</li>
+				<li class="form__tag">
+					<h1 class="form__title">Login</h1>
+				</li>
+			</ul>
+			<form @submit="handleSubmit">
+				<div class="form__row">
+					<input
+						type="text"
+						name="username"
+						id="input__username"
+						v-model="username"
+						v-bind:class="username__class"
+						class="form__input form__input__username"
+					/>
+					<label class="form__label" for="input__username" v-bind:class="{notempty: username}">Username</label>
+					<span class="form__input__username__search" v-bind:class="{loading: username_search_loading}"></span>
+					<span class="form__error" v-if="(username__error || username__search__error) && !username_search_loading">{{
+						username__error || username__search__error
+					}}</span>
+					<span class="form__message" v-if="!username_search_loading && !username__search__error && !username__error && username"
+						>{{ username }} is available</span
+					>
+				</div>
 
-        <div id="app" class='form'>
-            <ul class="form__tags">
-                <li class='form__tag form__tag--active'>
-                    <h1 class="form__title">Register</h1>
-                </li>
-                <li class='form__tag'>
-                    <h1 class="form__title">Login</h1>
-                </li>
-            </ul>
-            <form @submit='handleSubmit'>
+				<div class="form__row">
+					<input type="text" name="email" id="input__email" v-model="email" v-bind:class="email__class" class="form__input" />
+					<label class="form__label" for="input__email" v-bind:class="{notempty: email}">Email</label>
+					<span class="form__error" v-if="email__error">{{ email__error }}</span>
+				</div>
 
-                <div class="form__row">
-                    <input type="text" name="username" id="input__username" v-model='username' v-bind:class='username__class' class='form__input form__input__username'>
-                    <label class='form__label' for="input__username" v-bind:class='{notempty: username}'>Username</label>
-                    <span class="form__input__username__search" v-bind:class='{loading: username_search_loading}'></span>
-                    <span class="form__error" v-if='(username__error || username__search__error) && !username_search_loading'>{{ username__error || username__search__error }}</span>
-                    <span class="form__message" v-if='!username_search_loading && !username__search__error && !username__error && username'>{{ username }} is available</span>
-                </div>
+				<div class="form__row">
+					<input type="text" name="email__comf" id="input__email__conf" v-model="email__conf" v-bind:class="email__conf__class" class="form__input" />
+					<label class="form__label" for="input__email__conf" v-bind:class="{notempty: email__conf}">Confirm Email</label>
+					<span class="form__error" v-if="email__conf__error">{{ email__conf__error }}</span>
+				</div>
 
-                <div class="form__row">
-                    <input type="text" name="email" id="input__email" v-model='email' v-bind:class='email__class' class='form__input'>
-                    <label class='form__label' for="input__email" v-bind:class='{notempty: email}'>Email</label>
-                    <span class="form__error" v-if='email__error'>{{ email__error }}</span>
-                </div>
+				<div class="form__row">
+					<input type="password" name="password" id="input__password" v-model="password" v-bind:class="password__class" class="form__input" />
+					<label class="form__label" for="input__password" v-bind:class="{notempty: password}">Password</label>
+					<span class="form__error" v-if="password__error">{{ password__error }}</span>
+				</div>
 
-                <div class="form__row">
-                    <input type="text" name="email__comf" id="input__email__conf" v-model='email__conf' v-bind:class='email__conf__class' class='form__input'>
-                    <label class='form__label' for="input__email__conf" v-bind:class='{notempty: email__conf}'>Confirm Email</label>
-                    <span class="form__error" v-if='email__conf__error'>{{ email__conf__error }}</span>
-                </div>
+				<div class="form__row">
+					<input
+						type="password"
+						name="password__conf"
+						id="input__password__conf"
+						v-model="password__conf"
+						v-bind:class="password__conf__class"
+						class="form__input"
+					/>
+					<label class="form__label" for="input__password__conf" v-bind:class="{notempty: password__conf}">Confirm Password</label>
+					<span class="form__error" v-if="password__conf__error">{{ password__conf__error }}</span>
+				</div>
 
-                <div class="form__row">
-                    <input type="password" name="password" id="input__password" v-model='password' v-bind:class='password__class' class='form__input'>
-                    <label class='form__label' for="input__password" v-bind:class='{notempty: password}'>Password</label>
-                    <span class="form__error" v-if='password__error'>{{ password__error }}</span>
-                </div>
+				<div class="form__row">
+					<ul class="form__rules">
+						<h4>Password Rules</h4>
 
-                <div class="form__row">
-                    <input type="password" name="password__conf" id="input__password__conf" v-model='password__conf' v-bind:class='password__conf__class' class='form__input'>
-                    <label class='form__label' for="input__password__conf" v-bind:class='{notempty: password__conf}'>Confirm Password</label>
-                    <span class="form__error" v-if='password__conf__error'>{{ password__conf__error }}</span>
-                </div>
+						<li class="form__rule" v-bind:class="rule_0_class">
+							Between 10-128 Characters
+						</li>
+						<li class="form__rule" v-bind:class="rule_1_class">
+							Not more than 2 identical characters in a row (e.g., 111 not allowed)
+						</li>
 
-                <div class="form__row">
-                    <ul class="form__rules">
-                        <h4>Password Rules</h4>
+						<h4 class="form__rule__heading">
+							Must meet at least 3 of the following 4 complexity rules:
+						</h4>
 
-                        <li class='form__rule' v-bind:class='rule_0_class'>Between 10-128 Characters</li>
-                        <li class='form__rule' v-bind:class='rule_1_class'>Not more than 2 identical characters in a row (e.g., 111 not allowed)</li>
+						<li class="form__rule" v-bind:class="rule_2_class">
+							At least 1 uppercase character (A-Z)
+						</li>
+						<li class="form__rule" v-bind:class="rule_3_class">
+							At least 1 lowercase character (a-z)
+						</li>
+						<li class="form__rule" v-bind:class="rule_4_class">
+							At least 1 digit (0-9)
+						</li>
+						<li class="form__rule" v-bind:class="rule_5_class">
+							At least 1 special character (punctuation, space counts as special characters)
+						</li>
+					</ul>
+				</div>
 
-                        <h4 class='form__rule__heading'>Must meet at least 3 of the following 4 complexity rules:</h4>
+				<div class="form__row">
+					<input type="checkbox" name="stay_logged" id="input_stay_logged" class="form__checkbox" v-model="stayLogged" />
+					<label for="input_stay_logged">Stay Logged In</label>
+				</div>
+				<div class="form__row" v-if="main__error">
+					<div class="form__requesterror"><strong>Error: </strong> {{ main__error }}</div>
+				</div>
 
-                        <li class='form__rule' v-bind:class='rule_2_class'>At least 1 uppercase character (A-Z)</li>
-                        <li class='form__rule' v-bind:class='rule_3_class'>At least 1 lowercase character (a-z)</li>
-                        <li class='form__rule' v-bind:class='rule_4_class'>At least 1 digit (0-9)</li>
-                        <li class='form__rule' v-bind:class='rule_5_class'>At least 1 special character (punctuation, space counts as special characters)</li>
-                    </ul>
-                </div>
-
-                <div class="form__row">
-                    <input type="checkbox" name="stay_logged" id="input_stay_logged" class='form__checkbox' v-model='stayLogged'>
-                    <label for="input_stay_logged">Stay Logged In</label>
-                </div>
-                <div class="form__row" v-if='main__error'>
-                    <div class="form__requesterror">
-                        <strong>Error: </strong> {{ main__error }}
-                    </div>
-                </div>
-
-                <div class="form__row">
-                    <button type="submit" class='form__submit' v-bind:class='{loading: loading}'>{{ loading ? '' : 'Login' }}</button>
-                </div>
-
-            </form>
-        </div>
-        <script src="/js/validator.bundle.js"></script>
-        <script src="/js/vue.bundle.js"></script>
-        <script src="/js/register.bundle.js"></script>
-</body>
-
+				<div class="form__row">
+					<button type="submit" class="form__submit" v-bind:class="{loading: loading}">
+						{{ loading ? '' : 'Login' }}
+					</button>
+				</div>
+			</form>
+		</div>
+		<script src="/js/validator.bundle.js"></script>
+		<script src="/js/vue.bundle.js"></script>
+		<script src="/js/register.bundle.js"></script>
+	</body>
 </html>

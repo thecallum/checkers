@@ -1,80 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<% include ../components/head %>
+		<title>MultiPlayer | Checkers</title>
+		<link href="https://fonts.googleapis.com/css?family=Audiowide|Indie+Flower|Special+Elite" rel="stylesheet" />
+	</head>
 
-<head>
-    <% include ../components/head %>
-        <title>MultiPlayer | Checkers</title>
-        <link href="https://fonts.googleapis.com/css?family=Audiowide|Indie+Flower|Special+Elite" rel="stylesheet">
-</head>
+	<body>
+		<%- include('../components/header', { auth: auth }); %>
 
-<body>
+		<div id="app">
+			<button @click="toggleWin">WIN</button>
 
-    <%- include('../components/header', { auth: auth }); %>
+			<div class="container">
+				<div class="canvasView">
+					<div class="canvas__players">
+						<div class="canvas__player" v-for="player in players">
+							<img v-bind:src="player.src" v-bind:alt="player.name" class="canvas__playerImg" />
+							<p class="canvas__playerName">
+								{{ !!player.name ? player.name : player.default }}
+							</p>
+						</div>
+					</div>
 
-        <div id="app">
+					<canvas-component
+						v-bind:width="canvas.width"
+						v-bind:grid-size="canvas.gridSize"
+						v-bind:half-grid-size="canvas.halfGridSize"
+						:max-width="canvas.maxWidth"
+						:fetch-canvas-controls="fetchCanvasControls"
+					></canvas-component>
 
-            <button @click='toggleWin'>WIN</button>
+					<div class="canvas__bottom">
+						<h3 class="canvas__message">It's {{ players[game.currentPlayer].name }}'s turn!</h3>
+					</div>
+				</div>
+			</div>
 
-            <div class="container">
-                <div class='canvasView'>
-                    <div class="canvas__players">
-                        <div class='canvas__player' v-for='player in players'>
-                            <img v-bind:src="player.src" v-bind:alt="player.name" class='canvas__playerImg' />
-                            <p class='canvas__playerName'>{{ !!player.name ? player.name : player.default }}</p>
-                        </div>
-                    </div>
+			<!-- Game Setup Modal -->
+			<modal :show="!gameStarted">
+				<div>
+					<h1 class="modal__title">Select Player Names</h1>
 
-                    <canvas-component v-bind:width='canvas.width' v-bind:grid-size='canvas.gridSize' v-bind:half-grid-size='canvas.halfGridSize' :max-width='canvas.maxWidth' :fetch-canvas-controls='fetchCanvasControls'></canvas-component>
+					<div class="modal__form">
+						<div class="modal__formRow" v-for="(player, index) in players">
+							<div class="modal__piece" v-bind:class='{ "modal__piece--red" : index === 0, "modal__piece--blue" : index === 1 }'></div>
+							<input type="text" class="modal__input" :name="index" :placeholder="player.default" v-model="player.name" />
+						</div>
+					</div>
 
-                    <div class="canvas__bottom">
-                        <h3 class='canvas__message'>It's {{ players[game.currentPlayer].name }}'s turn!</h3>
-                    </div>
-                </div>
-            </div>
+					<div class="modal__options">
+						<button class="button modal__button" @click="startGame">
+							Start
+						</button>
+					</div>
+				</div>
+			</modal>
 
-            <!-- Game Setup Modal -->
-            <modal :show='!gameStarted'>
-                <div>
-                    <h1 class="modal__title">Select Player Names</h1>
+			<!-- Game End Modal -->
+			<modal :show="gameEnded">
+				<div>
+					<div class="modal__background"></div>
 
-                    <div class="modal__form">
+					<div class="modal__body">
+						<h1 class="modal__title">Game Ended</h1>
 
-                        <div class='modal__formRow' v-for='(player, index) in players'>
-                            <div class="modal__piece" v-bind:class='{ "modal__piece--red" : index === 0, "modal__piece--blue" : index === 1 }'></div>
-                            <input type="text" class="modal__input" :name='index' :placeholder='player.default' v-model='player.name' />
-                        </div>
+						<p class="modal__message">{{ winMessage }}</p>
 
-                    </div>
+						<div class="modal__options">
+							<button class="button modal__button" @click="handleRematch">
+								Rematch
+							</button>
+							<a class="button modal__button" href="/">Home</a>
+						</div>
+					</div>
+				</div>
+			</modal>
+		</div>
 
-                    <div class="modal__options">
-                        <button class="button modal__button" @click='startGame'>Start</button>
-                    </div>
-                </div>
-            </modal>
-
-            <!-- Game End Modal -->
-            <modal :show='gameEnded'>
-                <div>
-                    <div class="modal__background"></div>
-
-                    <div class="modal__body">
-                        <h1 class="modal__title">Game Ended</h1>
-
-                        <p class="modal__message">{{ winMessage }}</p>
-
-                        <div class="modal__options">
-                            <button class="button modal__button" @click='handleRematch'>Rematch</button>
-                            <a class="button modal__button" href='/'>Home</a>
-                        </div>
-                    </div>
-                </div>
-            </modal>
-
-        </div>
-
-        <script src="/js/vue.bundle.js"></script>
-        <script src="/js/multiplayer.bundle.js"></script>
-
-</body>
-
+		<script src="/js/vue.bundle.js"></script>
+		<script src="/js/multiplayer.bundle.js"></script>
+	</body>
 </html>

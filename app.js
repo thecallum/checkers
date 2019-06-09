@@ -15,7 +15,7 @@ const session = setupSession();
 app.set('view engine', 'ejs');
 app.set('view options', { rmWhitespace: true });
 
-app.use(helmet())
+app.use(helmet());
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
@@ -31,7 +31,7 @@ app.use(require('./controllers/routes/data'));
 app.use(require('./controllers/routes/auth'));
 app.use(require('./controllers/routes/pages'));
 
-const server = app.listen(process.env.PORT, () => console.log(`${ path.basename(__filename) } is running on https://localhost:${ process.env.PORT }`));
+const server = app.listen(process.env.PORT, () => console.log(`${path.basename(__filename)} is running on https://localhost:${process.env.PORT}`));
 
 // start websocket controller;
 controller(server, session);

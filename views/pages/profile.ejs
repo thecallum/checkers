@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <% include ../components/head %>
-    <title>Profile | Checkers</title>
-</head>
-<body>
+	<head>
+		<% include ../components/head %>
+		<title>Profile | Checkers</title>
+	</head>
+	<body>
+		<%- include('../components/header', { auth: auth }); %>
 
-    <%- include('../components/header', { auth: auth }); %>
+		<h3>Profile</h3>
 
-    <h3>Profile</h3>
-
-    <p>Username: <%= username %></p>
-    <p>Email: <%= email %></p>
-
-</body>
+		<p>Username: <%= username %></p>
+		<p>Email: <%= email %></p>
+	</body>
 </html>

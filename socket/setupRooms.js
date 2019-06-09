@@ -1,25 +1,25 @@
 const setupRooms = () => {
-    let rooms = {};
-    let roomIndex = 0;
+	let rooms = {};
+	let roomIndex = 0;
 
-    const join = data => {
-        const id = roomIndex++;
-        rooms[id] = {...data };
-        return id;
-    }
+	const join = data => {
+		const id = roomIndex++;
+		rooms[id] = { ...data };
+		return id;
+	};
 
-    const close = roomID => delete rooms[roomID];
+	const close = roomID => delete rooms[roomID];
 
-    const accept = (roomID, userID) => {
-        const room = rooms[roomID];
-        room.players[userID].accepted = true;
-        const playersAccepted = getPlayerIDs(roomID).filter(key => room.players[key].accepted);
-        return playersAccepted.length === 2;
-    }
+	const accept = (roomID, userID) => {
+		const room = rooms[roomID];
+		room.players[userID].accepted = true;
+		const playersAccepted = getPlayerIDs(roomID).filter(key => room.players[key].accepted);
+		return playersAccepted.length === 2;
+	};
 
-    const getPlayerIDs = id => Object.keys(rooms[id].players);
+	const getPlayerIDs = id => Object.keys(rooms[id].players);
 
-    return { join, close, accept, getPlayerIDs }
-}
+	return { join, close, accept, getPlayerIDs };
+};
 
 module.exports = setupRooms;

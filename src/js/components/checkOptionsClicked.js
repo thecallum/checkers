@@ -1,21 +1,21 @@
 const checkOptionsClicked = (options, gridSize, offsetX, offsetY) => {
-    if (options.length === 0) return null;
+	if (options.length === 0) return null;
 
-    let selectedOption = null;
+	let selectedOption = null;
 
-    for (let option of options) {
-        if (
-            offsetX > (option.end.x * gridSize) &&
-            offsetX < (option.end.x * gridSize) + gridSize &&
-            offsetY > (option.end.y * gridSize) &&
-            offsetY < (option.end.y * gridSize) + gridSize
-        ) {
-            selectedOption = option;
-            break;
-        }
-    }
+	for (let option of options) {
+		if (
+			offsetX > option.end.x * gridSize &&
+			offsetX < option.end.x * gridSize + gridSize &&
+			offsetY > option.end.y * gridSize &&
+			offsetY < option.end.y * gridSize + gridSize
+		) {
+			selectedOption = option;
+			break;
+		}
+	}
 
-    return selectedOption;
-}
+	return selectedOption;
+};
 
 module.exports = checkOptionsClicked;
