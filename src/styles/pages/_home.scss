@@ -1,0 +1,120 @@
+.home {
+    &__container {
+        background-color: hsl(200, 20%, 95%);
+        padding: 50px 20px;
+        margin-top: 100px;
+        border-radius: $border-radius;
+    }
+    &__title {
+        font-size: 80px;
+        font-weight: 100;
+        text-align: center;
+        margin: 0;
+        padding: 50px 0;
+        color: $color_header_main;
+    }
+    &__subtitle {
+        font-size: 30px;
+        font-weight: 300;
+        text-align: center;
+        padding: 50px 0;
+        margin: 0;
+    }
+    &__optionContainer {
+        display: flex;
+        justify-content: center;
+        margin-top: 100px;
+        flex-wrap: wrap;
+    }
+    &__option {
+        display: block;
+        margin: 0 10px;
+        padding: 10px 0;
+    }
+
+    &__button {
+        width: 280px;
+        height: 140px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        color: inherit;
+        text-decoration: none;
+    }
+
+    &__buttonIcon {
+        width: 60px;
+    }
+    &__buttonIcon--globe {
+        width: 80px;
+    }
+
+    &__buttonVs,
+    &__buttonOnline {
+        margin: 0 10px;
+        font-size: 34px;
+        flex-grow: 1;
+    }
+}
+
+@media (max-width: 1000px) {
+    .home {
+        &__container {
+            margin: 0;
+        }
+    }
+}
+
+@media (max-width: 950px) {
+    .home {
+        &__optionContainer {
+            margin-top: 50px;
+        }
+        &__subtitle {
+            padding: 30px 0;
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .home {
+        &__container {
+            padding: 20px;
+        }
+        &__title {
+            padding: 30px 0;
+        }
+        &__subtitle {
+            font-size: 25px;
+            padding: 20px 0;
+        }
+        &__optionContainer {
+            margin-top: 30px;
+        }
+    }
+}
+
+@media (max-width: 500px) {
+    .home {
+        &__title {
+            font-size: 60px;
+            padding: 20px 0;
+        }
+        &__subtitle {
+            font-size: 23px;
+            padding: 10px 0;
+        }
+        &__optionContainer {
+            margin-top: 20px;
+        }
+    }
+}
+
+@media (max-width: 400px) {
+    .home {
+        &__title {
+            font-size: 48px;
+        }
+    }
+}

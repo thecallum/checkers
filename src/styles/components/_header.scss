@@ -49,7 +49,7 @@
 
         > span {
             width: 100%;
-            background-color: $color_black_main;
+            background-color: $color_black_primary;
             height: 4px;
             display: block;
             border-radius: $border-radius;
@@ -71,7 +71,7 @@
         margin: 0 5px;
         font-size: 20px;
         &:hover {
-            color: lighten($color: $color_black_main, $amount: 10%);
+            color: lighten($color: $color_black_primary, $amount: 10%);
         }
     }
 }
