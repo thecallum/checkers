@@ -15,128 +15,192 @@ const auth = require('./middleware/auth');
 const ios = require('socket.io-express-session');
 
 module.exports = (server, session) => {
-	const io = socketio(server);
-	// allows ws to access sessions
-	io.use(ios(session));
-	io.use(auth);
+    const io = socketio(server);
+    // allows ws to access sessions
+    io.use(ios(session));
+    io.use(auth);
 
-	io.on('connection', socket => {
-		clients.add(socket);
+    io.on('connection', socket => {
+        clients.add(socket);
 
-		socket.on('disconnect', () => {
-			const client = clients.remove(socket, io);
-			queue.remove(socket.id);
+        socket.on('disconnect', () => {
+            // const client = clients.remove(socket, io);
+            queue.remove(socket.id);
 
-			if (client.hasOwnProperty('room')) {
-				// client is in a room, must disconnect other player
-				const roomID = client.room;
-				rooms.close(roomID);
-				io.to(roomID).emit('game', { state: 'disconnect' });
-			}
-		});
+            // if (client.hasOwnProperty('room')) {
+            //     // client is in a room, must disconnect other player
+            //     const roomID = client.room;
+            //     rooms.close(roomID);
+            //     io.to(roomID).emit('game', { state: 'disconnect' });
+            // }
 
-		socket.on('game', data => {
-			if (!data.hasOwnProperty('state')) return;
+            const room = clients.get(socket.id).room;
 
-			if (data.state === 'join_queue') {
-				queue.add(socket.id);
-				socket.emit('game', { state: 'queue' });
-			}
+            // console.log({ room });
+            if (room !== null) {
+                // tell opponent that you've left
+                const opponent = rooms.getOpponentID(room, socket.id);
 
-			if (data.state === 'accept') {
-				const id = data.data.gameIndex;
-				const bothAccepted = rooms.accept(id, socket.id);
+                // const players = rooms.getPlayerIDs(room);
 
-				if (!bothAccepted) return;
+                io.sockets.sockets[opponent].leave(room);
 
-				// start game
-				const players = rooms.getPlayerIDs(id);
-				const game = games.create(id, players, socket.id);
+                rooms.close(room);
 
-				// set roomid to socket.request.user object
-				players.map(player => {
-					io.sockets.sockets[player].request.user = {
-						...io.sockets.sockets[player].request.user,
-						roomIndex: id,
-					};
-				});
+                clients.updateRoom(opponent, null);
 
-				io.to(id).emit('game', { state: 'ready', game });
-			}
+                io.sockets.sockets[opponent].emit('game', {
+                    state: 'opponent_left',
+                });
+            }
+        });
 
-			if (data.state === 'submit_turn') {
-				const id = socket.request.user.roomIndex;
-				const result = games.submitTurn(id, socket.id, data.data.move);
-				if (!result) return;
+        socket.on('game', (data, cb) => {
+            if (!data.hasOwnProperty('state')) return;
 
-				if (result.won) {
-					games.close(id);
+            if (data.state === 'join_queue') {
+                queue.add(socket.id);
+                cb();
+            }
 
-					io.to(id).emit('game', {
-						state: 'win',
-						data: {
-							type: result.gameWon,
-							player: socket.id,
-							message: "It's a draw!",
-							game: {
-								...result,
-								currentPlayer: socket.id, // game updated player, but current player has won
-							},
-						},
-					});
-				} else {
-					io.to(id).emit('game', {
-						state: 'new_turn',
-						data: {
-							game: result,
-						},
-					});
-				}
-			}
-		});
-	});
+            if (data.state === 'leave_queue') {
+                queue.remove(socket.id);
 
-	queue.subscribe(currentQueue => {
-		console.log('Queue update', currentQueue);
+                const room = clients.get(socket.id).room;
 
-		if (currentQueue.length >= 2) {
-			// add new room object, and subscibe those users to that room object
-			const players = queue.getPlayers();
-			const roomIndex = rooms.join({
-				players: {
-					[players[0]]: {
-						accepted: false,
-						username: clients.get(players[0]).username,
-						src: '/',
-						alt: 'user pic',
-					},
-					[players[1]]: {
-						accepted: false,
-						username: clients.get(players[1]).username,
-						src: '/',
-						alt: 'user pic',
-					},
-				},
-			});
+                // console.log({ room });
+                if (room !== null) {
+                    // tell opponent that you've left
+                    const opponent = rooms.getOpponentID(room, socket.id);
 
-			// players contain the socketid's
-			// Add the players to the room
+                    const players = rooms.getPlayerIDs(room);
 
-			players.map(player => {
-				clients.updateRoom(player, roomIndex);
-				io.sockets.sockets[player].join(roomIndex);
-			});
+                    players.forEach(player => {
+                        io.sockets.sockets[player].leave(room);
+                    });
 
-			const gameData = {
-				[players[0]]: { username: clients.get(players[0]).username },
-				[players[1]]: { username: clients.get(players[1]).username },
-			};
+                    rooms.close(room);
 
-			io.to(roomIndex).emit('game', {
-				state: 'found',
-				roomIndex,
-				data: gameData,
-			});
-		}
-	});
+                    clients.updateRoom(opponent, null);
+
+                    io.sockets.sockets[opponent].emit('game', {
+                        state: 'opponent_left',
+                    });
+                }
+
+                cb();
+            }
+
+            if (data.state === 'accept') {
+                // console.log('accept', socket)
+
+                const { room } = clients.get(socket.id);
+
+                console.log('accpet', socket.id, room);
+
+                if (room === null) return;
+                // const id = data.data.gameIndex;
+                const bothAccepted = rooms.accept(room, socket.id);
+
+                if (!bothAccepted) return cb();
+
+                // start game
+                const players = rooms.getPlayerIDs(room);
+                const game = games.create(room, players, socket.id);
+
+                // console.log('players accepted', players);
+                // set roomid to socket.request.user object
+                players.map(player => {
+                    io.sockets.sockets[player].request.user = {
+                        ...io.sockets.sockets[player].request.user,
+                        roomIndex: room,
+                    };
+                });
+
+                io.to(room).emit('game', { state: 'ready', game });
+            }
+
+            if (data.state === 'submit_turn') {
+                // const id = socket.request.user.roomIndex;
+
+                const { room } = clients.get(socket.id);
+                if (room === null) return;
+
+                const result = games.submitTurn(room, socket.id, data.data.move);
+                if (!result) return;
+
+                if (result.won) {
+                    games.close(room);
+
+                    io.to(room).emit('game', {
+                        state: 'win',
+                        data: {
+                            type: result.gameWon,
+                            player: socket.id,
+                            message: "It's a draw!",
+                            game: {
+                                ...result,
+                                currentPlayer: socket.id, // game updated player, but current player has won
+                            },
+                        },
+                    });
+                } else {
+                    io.to(room).emit('game', {
+                        state: 'new_turn',
+                        data: {
+                            game: result,
+                        },
+                    });
+                }
+            }
+        });
+    });
+
+    queue.subscribe(currentQueue => {
+        console.log('Queue update', currentQueue);
+
+        if (currentQueue.length >= 2) {
+            // add new room object, and subscibe those users to that room object
+            const players = queue.getPlayers();
+            const roomIndex = rooms.join({
+                players: {
+                    [players[0]]: {
+                        accepted: false,
+                        username: clients.get(players[0]).username,
+                        src: '/',
+                        alt: 'user pic',
+                    },
+                    [players[1]]: {
+                        accepted: false,
+                        username: clients.get(players[1]).username,
+                        src: '/',
+                        alt: 'user pic',
+                    },
+                },
+            });
+
+            console.log('new ROom', roomIndex);
+
+            // players contain the socketid's
+            // Add the players to the room
+
+            players.map(player => {
+                clients.updateRoom(player, roomIndex);
+                io.sockets.sockets[player].join(roomIndex);
+            });
+
+            const gameData = {
+                [players[0]]: { username: clients.get(players[0]).username },
+                [players[1]]: { username: clients.get(players[1]).username },
+            };
+
+            setTimeout(() => {
+                io.to(roomIndex).emit('game', {
+                    state: 'found',
+                    roomIndex,
+                    data: gameData,
+                });
+            }, 0);
+        }
+    });
 };

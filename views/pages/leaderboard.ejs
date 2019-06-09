@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<% include ../components/head %>
-		<title>Leaderboard | Checkers</title>
-	</head>
-	<body>
-		<%- include('../components/header', { auth: auth }); %>
+    <head>
+        <% include ../components/head %>
+        <title>Leaderboard | Checkers</title>
+    </head>
+    <body>
+        <%- include('../components/header', { auth: auth }); %>
 
-		<p>Leaderboard</p>
-	</body>
+        <div class="container">
+            <div class="leaderboard__container">
+                <p>Leaderboard</p>
+            </div>
+        </div>
+    </body>
 </html>

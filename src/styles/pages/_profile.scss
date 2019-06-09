@@ -1,0 +1,9 @@
+.profile {
+    &__container {
+        background-color: orange;
+        padding: 50px 20px;
+        border-radius: $border_radius;
+
+        margin-top: 100px;
+    }
+}

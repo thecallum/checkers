@@ -9,7 +9,14 @@
     text-decoration: none;
     color: inherit;
     text-align: center;
+    font-weight: 100;
+    // text-transform: uppercase;
+    // letter-spacing: 2px;
 
-    &:hover { border-color:$color_button_border }
-    &:focus { outline: none }
+    &:hover {
+        border-color: $color_button_border;
+    }
+    &:focus {
+        outline: none;
+    }
 }

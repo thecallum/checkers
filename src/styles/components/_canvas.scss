@@ -3,6 +3,38 @@
     display: block;
     background-color: #ddd;
 
+    &__title {
+        font-size: 40px;
+        font-weight: 100;
+        text-align: center;
+        margin: 0;
+        padding: 50px 0;
+    }
+
+    &__subtitle {
+        text-align: center;
+        margin: 0;
+        padding: 30px 0 50px;
+    }
+
+    &__button {
+        margin: 50px auto 30px;
+        display: block;
+        font-size: 40px;
+        // padding: 20px 50px;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    &__view {
+        // height: 100%;
+        margin-top: 100px;
+        padding: 50px 20px;
+        background-color: $color_white_secondary;
+        // background-color: orange;
+        border-radius: $border-radius;
+    }
+
     &__players {
         display: flex;
         justify-content: space-between;

@@ -1,0 +1,56 @@
+@keyframes searching-dots {
+    0% {
+        content: '';
+    }
+    25% {
+        content: '.';
+    }
+    50% {
+        content: '..';
+    }
+    75% {
+        content: '...';
+    }
+}
+
+.online {
+    &__box {
+        border: 1px solid black;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 10px 20px;
+        min-height: 100px;
+        box-sizing: border-box;
+    }
+
+    &__title {
+        text-align: center;
+        font-weight: 100;
+    }
+
+    &__queue {
+        background-color: hsl(200, 20%, 60%);
+        box-sizing: border-box;
+        height: 300px;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+    }
+
+    &__searching {
+        &::after {
+            content: '';
+            animation: searching-dots 2s linear infinite;
+        }
+    }
+
+    &__button__group {
+        display: flex;
+
+        > * {
+            flex-grow: 1;
+            flex-shrink: 1;
+        }
+    }
+}

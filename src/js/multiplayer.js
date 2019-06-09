@@ -9,215 +9,225 @@ const canvas = require('./components/canvas');
 const modal = require('./components/modal');
 
 new Vue({
-	el: '#app',
-	components: { canvasComponent: canvas, modal },
-	data: {
-		players: [{ name: '', default: 'player 1', src: '#' }, { name: '', default: 'player 2', src: '#' }],
+    el: '#app',
+    components: { canvasComponent: canvas, modal },
+    data: {
+        players: [{ name: '', default: 'player 1', src: '#' }, { name: '', default: 'player 2', src: '#' }],
 
-		gameEnded: false,
-		winMessage: '',
-		gameStarted: false,
-		enabledClickHandler: false, // prevent multiple handlers on rematch
+        toggleSetup: false,
+        gameEnded: false,
+        winMessage: '',
+        gameStarted: false,
 
-		// =============
-		canvas: {
-			width: 500,
-			maxWidth: 500,
-			gridSize: 500 / 8,
-			halfGridSize: 500 / 16,
-		},
-		// =============
+        // =============
+        canvas: {
+            width: 500,
+            maxWidth: 500,
+            gridSize: 500 / 8,
+            halfGridSize: 500 / 16,
+        },
+        // =============
 
-		update: null,
-		preDraw: null,
-		canvasElement: null,
+        update: null,
+        preDraw: null,
+        canvasElement: null,
 
-		game: {
-			pieces: [],
-			options: {},
-			currentPlayer: 0,
-			selectedPiece: null,
-		},
-	},
+        game: {
+            pieces: [],
+            options: {},
+            currentPlayer: 0,
+            selectedPiece: null,
+        },
+    },
 
-	mounted() {
-		const width = window.innerWidth > this.canvas.maxWidth ? this.canvas.maxWidth : window.innerWidth - 20;
-		this.canvas.width = width;
-		this.canvas.gridSize = width / 8;
-		this.canvas.halfGridSize = width / 16;
+    mounted() {
+        const width = window.innerWidth > this.canvas.maxWidth ? this.canvas.maxWidth : window.innerWidth - 20;
+        this.canvas.width = width;
+        this.canvas.gridSize = width / 8;
+        this.canvas.halfGridSize = width / 16;
 
-		window.addEventListener('resize', this.handleResize);
-	},
+        window.addEventListener('resize', this.handleResize);
+    },
 
-	methods: {
-		toggleWin() {
-			this.winMessage = 'Test win';
-			this.gameEnded = true;
-		},
+    methods: {
+        beginSetup() {
+            this.toggleSetup = true;
+        },
+        cancelSetup() {
+            // remove player names entered
+            this.players = this.players.map(player => ({ ...player, name: '' }));
+            this.toggleSetup = false;
+        },
+        toggleWin() {
+            this.handleGameEnd('win');
+        },
 
-		fetchCanvasControls({ update, preDraw }, canvasElement) {
-			// setup game env
-			const newPieces = this.generatePieces();
-			const newOptions = this.generateOptions(newPieces, 0, [0, 1]);
+        handleGameEnd(winType) {
+            let winMessage;
 
-			this.game = {
-				...this.game,
-				pieces: newPieces,
-				options: newOptions,
-			};
+            if (winType === 'draw') {
+                winMessage = "It's a draw!";
+            } else {
+                const player = this.players[this.game.currentPlayer === 0 ? 1 : 0];
+                const name = player.name ? player.name : player.default;
+                winMessage = `${name} has won!`;
+            }
 
-			this.update = update;
-			this.preDraw = preDraw;
-			this.canvasElement = canvasElement;
+            this.gameEnded = true;
+            this.winMessage = winMessage;
+        },
 
-			this.preDraw();
-		},
+        startGame() {
+            console.log('start game');
 
-		callCanvasRedraw() {
-			this.update(this.game);
-		},
+            this.gameStarted = true;
 
-		generatePieces: generatePieces,
-		generateOptions: generateOptions,
+            setTimeout(() => {
+                // canvas was destroyed, need to create new clickHandler
+                this.canvasElement.addEventListener('click', this.clickHandler);
 
-		endTurn() {
-			// 1. if opponent has no new Pieces, win game
-			// 2. if oppornent has no options, draw
-			// 3. otherwise, it comes next players turn
+                this.callCanvasRedraw();
+            }, 0);
+        },
 
-			const opponentHasPieces = this.game.pieces.filter(piece => piece.player === this.game.currentPlayer).length > 0;
+        handleRematch() {
+            // reset default variables except from name
 
-			if (!opponentHasPieces) {
-				this.handleGameEnd('win');
-				return;
-			}
+            const newPieces = this.generatePieces();
+            const newOptions = this.generateOptions(newPieces, 0, [0, 1]);
 
-			let opponentHasOptions = false;
-			for (let option in this.game.options) {
-				const currentOption = this.game.options[option];
+            this.game = {
+                ...this.game,
 
-				if (currentOption.length > 0) {
-					opponentHasOptions = true;
-					break;
-				}
-			}
+                currentPlayer: 0,
+                pieces: newPieces,
+                options: newOptions,
+                selectedPiece: null,
+            };
 
-			if (!opponentHasOptions) {
-				this.handleGameEnd('draw');
-				return;
-			}
-		},
+            this.gameEnded = false;
+            this.winMessage = '';
+            this.gameStarted = false;
+        },
+        fetchCanvasControls({ update, preDraw }, canvasElement) {
+            // setup game env
+            const newPieces = this.generatePieces();
+            const newOptions = this.generateOptions(newPieces, 0, [0, 1]);
 
-		handleGameEnd(winType) {
-			let winMessage;
+            this.game = {
+                ...this.game,
+                pieces: newPieces,
+                options: newOptions,
+            };
 
-			if (winType === 'draw') {
-				winMessage = "It's a draw!";
-			} else {
-				const player = this.players[this.game.currentPlayer === 0 ? 1 : 0];
-				const name = player.name ? player.name : player.default;
-				winMessage = `${name} has won!`;
-			}
+            this.update = update;
+            this.preDraw = preDraw;
+            this.canvasElement = canvasElement;
 
-			this.gameEnded = true;
-			this.winMessage = winMessage;
-		},
+            this.preDraw();
+        },
 
-		startGame() {
-			if (!this.enabledClickHandler) {
-				this.enabledClickHandler = true;
-				this.canvasElement.addEventListener('click', this.clickHandler);
-			}
+        callCanvasRedraw() {
+            this.update(this.game);
+        },
 
-			this.gameStarted = true;
+        generatePieces: generatePieces,
+        generateOptions: generateOptions,
 
-			this.callCanvasRedraw();
-		},
+        endTurn() {
+            // 1. if opponent has no new Pieces, win game
+            // 2. if oppornent has no options, draw
+            // 3. otherwise, it comes next players turn
 
-		handleResize() {
-			// 20px for padding
-			const width = window.innerWidth > this.canvas.maxWidth ? this.canvas.maxWidth : window.innerWidth - 20;
-			this.canvas.width = width;
-			this.canvas.gridSize = width / 8;
-			this.canvas.halfGridSize = width / 16;
+            const opponentHasPieces = this.game.pieces.filter(piece => piece.player === this.game.currentPlayer).length > 0;
 
-			setTimeout(this.gameStarted ? this.callCanvasRedraw : this.preDraw, 0);
-		},
+            if (!opponentHasPieces) {
+                this.handleGameEnd('win');
+                return;
+            }
 
-		handleRematch() {
-			// reset default variables except from name
+            let opponentHasOptions = false;
+            for (let option in this.game.options) {
+                const currentOption = this.game.options[option];
 
-			const newPieces = this.generatePieces();
-			const newOptions = this.generateOptions(newPieces, 0);
+                if (currentOption.length > 0) {
+                    opponentHasOptions = true;
+                    break;
+                }
+            }
 
-			this.game = {
-				...this.game,
+            if (!opponentHasOptions) {
+                this.handleGameEnd('draw');
+                return;
+            }
+        },
 
-				currentPlayer: 0,
-				pieces: newPieces,
-				options: newOptions,
-				selectedPiece: null,
-			};
+        handleResize() {
+            const maxWidth = this.canvas.maxWidth;
+            // 20px for padding
+            const width = window.innerWidth > maxWidth ? maxWidth : window.innerWidth - 20;
+            this.canvas.width = width;
+            this.canvas.gridSize = width / 8;
+            this.canvas.halfGridSize = width / 16;
 
-			this.gameEnded = false;
-			this.winMessage = '';
-			this.gameStarted = false;
-		},
+            setTimeout(this.gameStarted ? this.callCanvasRedraw : this.preDraw, 0);
+        },
 
-		clickHandler({ offsetX, offsetY }) {
-			if (this.gameEnded) return;
+        clickHandler({ offsetX, offsetY }) {
+            console.log('click');
+            if (this.gameEnded) return;
 
-			// if no piece is selected, cannot select an option..
-			let selectedOption =
-				this.game.selectedPiece === null
-					? null
-					: checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);
+            // if no piece is selected, cannot select an option..
+            let selectedOption =
+                this.game.selectedPiece === null
+                    ? null
+                    : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);
 
-			if (selectedOption) {
-				// Option is selected!
-				//
-				// Move Piece and reset options
-				// Then update turn
+            if (selectedOption) {
+                // Option is selected!
+                //
+                // Move Piece and reset options
+                // Then update turn
 
-				const newPieces = updatePieces(selectedOption, this.game.selectedPiece, this.game.pieces, this.game.currentPlayer);
+                const newPieces = updatePieces(selectedOption, this.game.selectedPiece, this.game.pieces, this.game.currentPlayer);
 
-				const newPlayer = nextPlayer(this.game.currentPlayer, [0, 1]);
+                const newPlayer = nextPlayer(this.game.currentPlayer, [0, 1]);
 
-				const newOptions = this.generateOptions(newPieces, newPlayer, [0, 1]);
+                const newOptions = this.generateOptions(newPieces, newPlayer, [0, 1]);
 
-				this.game = {
-					...this.game,
-					pieces: newPieces,
-					options: newOptions,
-					selectedPiece: null,
-					currentPlayer: newPlayer,
-				};
+                this.game = {
+                    ...this.game,
+                    pieces: newPieces,
+                    options: newOptions,
+                    selectedPiece: null,
+                    currentPlayer: newPlayer,
+                };
 
-				this.callCanvasRedraw(this.game);
+                this.callCanvasRedraw(this.game);
 
-				this.endTurn();
-			} else {
-				// player didnt't click an option, now check if a piece is selected
+                this.endTurn();
+            } else {
+                // player didnt't click an option, now check if a piece is selected
 
-				const foundPiece = findClickedPiece(
-					this.game.pieces,
-					this.game.currentPlayer,
-					this.canvas.gridSize,
-					this.canvas.halfGridSize,
-					offsetX,
-					offsetY
-				);
+                const foundPiece = findClickedPiece(
+                    this.game.pieces,
+                    this.game.currentPlayer,
+                    this.canvas.gridSize,
+                    this.canvas.halfGridSize,
+                    offsetX,
+                    offsetY
+                );
 
-				if (!!foundPiece && foundPiece.id === this.game.selectedPiece) {
-					this.game.selectedPiece = null;
-				} else if (foundPiece) {
-					this.game.selectedPiece = foundPiece.id;
-				} else {
-					this.game.selectedPiece = null;
-				}
+                if (!!foundPiece && foundPiece.id === this.game.selectedPiece) {
+                    this.game.selectedPiece = null;
+                } else if (foundPiece) {
+                    this.game.selectedPiece = foundPiece.id;
+                } else {
+                    this.game.selectedPiece = null;
+                }
 
-				this.callCanvasRedraw(this.game);
-			}
-		},
-	},
+                this.callCanvasRedraw(this.game);
+            }
+        },
+    },
 });
