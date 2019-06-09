@@ -22,7 +22,7 @@
         max-width: calc(100vw - 20px);
         min-height: 400px;
         padding: 10px;
-        border-radius: 5px;
+        border-radius: $border-radius;
         background-color: $color_white-secondary;
     }
 
@@ -71,7 +71,7 @@
         flex-grow: 1;
         margin-left: 20px;
         border: none;
-        border-radius: 5px;
+        border-radius: $border-radius;
         font-size: 22px;
         padding: 0 20px;
         width: 100%;
