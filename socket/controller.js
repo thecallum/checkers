@@ -83,7 +83,7 @@ module.exports = (server, session) => {
                 if (!bothAccepted) return cb();
 
                 // start game
-                const players = rooms.getPlayerIDs(room);
+                const players = [socket.id, rooms.getOpponentID(room, socket.id)];
                 const game = games.create(room, players, socket.id);
 
                 players.map(player => {

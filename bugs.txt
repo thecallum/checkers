@@ -1,5 +1,0 @@
-player starts as blue, cannot make turn (online). (a join queue, b join queue, a accept, b accept)
-
-In queue, Only one user gets queue notification
-
-opponent cannot accept game after multiple accepts and rejects (ws request isnt recieved on server)
