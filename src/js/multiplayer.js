@@ -4,6 +4,7 @@ const findClickedPiece = require('./components/findClickedPiece');
 const updatePieces = require('./components/updatePieces');
 const nextPlayer = require('./components/nextPlayer');
 const checkOptionsClicked = require('./components/checkOptionsClicked');
+const setCanvasWidth = require('./components/setCanvasWidth');
 
 const canvas = require('./components/canvas');
 const modal = require('./components/modal');
@@ -41,15 +42,17 @@ new Vue({
     },
 
     mounted() {
-        const width = window.innerWidth > this.canvas.maxWidth ? this.canvas.maxWidth : window.innerWidth - 20;
-        this.canvas.width = width;
-        this.canvas.gridSize = width / 8;
-        this.canvas.halfGridSize = width / 16;
+        // this.setCanvasWidth = this.setCanvasWidth.bind(this);
 
+        this.setCanvasWidth();
         window.addEventListener('resize', this.handleResize);
     },
 
     methods: {
+        setCanvasWidth: setCanvasWidth,
+        generatePieces: generatePieces,
+        generateOptions: generateOptions,
+
         beginSetup() {
             this.toggleSetup = true;
         },
@@ -131,9 +134,6 @@ new Vue({
             this.update(this.game);
         },
 
-        generatePieces: generatePieces,
-        generateOptions: generateOptions,
-
         endTurn() {
             // 1. if opponent has no new Pieces, win game
             // 2. if oppornent has no options, draw
@@ -163,13 +163,7 @@ new Vue({
         },
 
         handleResize() {
-            const maxWidth = this.canvas.maxWidth;
-            // 20px for padding
-            const width = window.innerWidth > maxWidth ? maxWidth : window.innerWidth - 20;
-            this.canvas.width = width;
-            this.canvas.gridSize = width / 8;
-            this.canvas.halfGridSize = width / 16;
-
+            this.setCanvasWidth();
             setTimeout(this.gameStarted ? this.callCanvasRedraw : this.preDraw, 0);
         },
 

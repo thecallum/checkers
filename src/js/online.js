@@ -4,6 +4,7 @@ const io = require('socket.io-client');
 
 const findClickedPiece = require('./components/findClickedPiece');
 const checkOptionsClicked = require('./components/checkOptionsClicked');
+const setCanvasWidth = require('./components/setCanvasWidth');
 
 new Vue({
     el: '#app',
@@ -50,19 +51,15 @@ new Vue({
     },
 
     mounted() {
-        const width = window.innerWidth > this.canvas.maxWidth ? this.canvas.maxWidth : window.innerWidth - 20;
-        this.canvas.width = width;
-        this.canvas.gridSize = width / 8;
-        this.canvas.halfGridSize = width / 16;
-
+        this.setCanvasWidth();
         window.addEventListener('resize', this.handleResize);
-
         this.socket = io.connect('/');
-
         this.handleSocket();
     },
 
     methods: {
+        setCanvasWidth,
+
         beginSetup() {
             this.toggleSetup = true;
             this.joinQueue();
@@ -255,12 +252,7 @@ new Vue({
 
         // generatePieces: generatePieces,
         handleResize() {
-            // 20px for padding
-            const width = window.innerWidth > this.canvas.maxWidth ? this.canvas.maxWidth : window.innerWidth - 20;
-            this.canvas.width = width;
-            this.canvas.gridSize = width / 8;
-            this.canvas.halfGridSize = width / 16;
-
+            this.setCanvasWidth();
             setTimeout(this.gameStarted ? this.callCanvasRedraw : this.preDraw, 0);
         },
     },
