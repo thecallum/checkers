@@ -25,7 +25,7 @@
 
                         <button class="button canvas__button" @click="beginSetup">Play</button>
                     </div>
-                    <div v-if="gameStarted">
+                    <div v-if="gameStarted" v-cloak>
                         <div class="canvas__players" v-if="gameStarted">
                             <div class="canvas__player" v-for="player in players">
                                 <img v-bind:src="player.src" v-bind:alt="player.alt" class="canvas__playerImg" />
@@ -59,6 +59,7 @@
                 <h3>Queue</h3>
 
                 <div v-if='state === "queue"' class="online__queue">
+                    <p v-if="opponentLeft">Opponent left</p>
                     <p class="online__searching">Searching for players</p>
                 </div>
 

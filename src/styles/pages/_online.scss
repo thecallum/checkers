@@ -29,13 +29,13 @@
     }
 
     &__queue {
-        background-color: hsl(200, 20%, 60%);
+        // background-color: hsl(200, 20%, 60%);
         box-sizing: border-box;
         height: 300px;
         padding: 10px;
-        display: flex;
-        justify-content: space-between;
-        flex-direction: column;
+        // display: flex;
+        // justify-content: space-between;
+        // flex-direction: column;
     }
 
     &__searching {

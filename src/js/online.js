@@ -33,6 +33,8 @@ new Vue({
         accepted: false,
         opponentAccepted: false,
         toggleSetup: false,
+        opponentLeft: false,
+
         // =============
         canvas: {
             width: 500,
@@ -107,16 +109,11 @@ new Vue({
                 if (!data.hasOwnProperty('state')) return;
 
                 if (data.state === 'opponent_left') {
-                    alert('opponent left');
-
-                    this.state = null;
-                    this.gameStarted = false;
-                    // this.accepted = false;
-                    // hide modal
-                    this.toggleSetup = false;
-
-                    // alert('Opponent disconnected!');
-                    return;
+                    this.state = 'queue';
+                    this.accepted = false;
+                    this.opponentAccepted = false;
+                    this.opponentLeft = true;
+                    return this.joinQueue();
                 }
 
                 if (data.state === 'queue') {
@@ -129,11 +126,11 @@ new Vue({
                     this.preDraw();
                     this.gameStarted = false;
                     this.gameEnded = false;
-
                     return;
                 }
 
                 if (data.state === 'found') {
+                    this.opponentLeft = false;
                     this.foundGame = data;
                     this.state = data.state;
                     return;
@@ -146,37 +143,23 @@ new Vue({
 
                 if (data.state === 'ready') {
                     this.state = data.state;
-                    this.game = {
-                        ...data.game,
-                        selectedPiece: null,
-                    };
-
+                    this.game = { ...data.game, selectedPiece: null };
                     this.players = data.game.players.map(player => this.foundGame.data[player]);
-
                     this.startGame();
-
                     return;
                 }
 
                 if (data.state === 'new_turn') {
-                    this.game = {
-                        ...data.data.game,
-                        selectedPiece: null,
-                    };
-
+                    this.game = { ...data.data.game, selectedPiece: null };
                     this.callCanvasRedraw();
+                    return;
                 }
 
                 if (data.state === 'win') {
                     this.state = data.state;
 
-                    console.log('game won', data.data);
-
                     // update game first
-                    this.game = {
-                        ...data.data.game,
-                        selectedPiece: null,
-                    };
+                    this.game = { ...data.data.game, selectedPiece: null };
 
                     this.callCanvasRedraw();
 
@@ -187,6 +170,19 @@ new Vue({
                     }
 
                     this.gameEnded = true;
+                    return;
+                }
+
+                if (data.state === 'disconnect') {
+                    alert('opponent disconnected');
+
+                    this.state = 'queue';
+                    this.accepted = false;
+                    this.gameStarted = false;
+                    this.opponentAccepted = false;
+                    this.game = {};
+                    this.opponentLeft = true;
+                    return this.joinQueue();
                 }
             });
         },
@@ -201,7 +197,6 @@ new Vue({
 
             if (selectedOption) {
                 // Option is selected!
-                //
 
                 const move = {
                     selectedOption,
@@ -211,9 +206,7 @@ new Vue({
                 // send data to server
                 this.socket.emit('game', {
                     state: 'submit_turn',
-                    data: {
-                        move,
-                    },
+                    data: { move },
                 });
             } else {
                 // player didnt't click an option, now check if a piece is selected
@@ -241,19 +234,7 @@ new Vue({
 
         acceptGame() {
             if (this.accepted) return;
-
-            this.socket.emit(
-                'game',
-                {
-                    state: 'accept',
-                    data: {
-                        gameIndex: this.foundGame.roomIndex,
-                    },
-                },
-                () => {
-                    this.accepted = true;
-                }
-            );
+            this.socket.emit('game', { state: 'accept' }, () => (this.accepted = true));
         },
 
         rejectGame() {

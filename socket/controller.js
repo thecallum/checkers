@@ -24,34 +24,23 @@ module.exports = (server, session) => {
         clients.add(socket);
 
         socket.on('disconnect', () => {
-            // const client = clients.remove(socket, io);
             queue.remove(socket.id);
-
-            // if (client.hasOwnProperty('room')) {
-            //     // client is in a room, must disconnect other player
-            //     const roomID = client.room;
-            //     rooms.close(roomID);
-            //     io.to(roomID).emit('game', { state: 'disconnect' });
-            // }
 
             const room = clients.get(socket.id).room;
 
-            // console.log({ room });
             if (room !== null) {
-                // tell opponent that you've left
                 const opponent = rooms.getOpponentID(room, socket.id);
-
-                // const players = rooms.getPlayerIDs(room);
-
                 io.sockets.sockets[opponent].leave(room);
-
                 rooms.close(room);
 
                 clients.updateRoom(opponent, null);
 
-                io.sockets.sockets[opponent].emit('game', {
-                    state: 'opponent_left',
-                });
+                if (games.exists(room)) {
+                    games.close(room);
+                    io.sockets.sockets[opponent].emit('game', { state: 'disconnect' });
+                } else {
+                    io.sockets.sockets[opponent].emit('game', { state: 'opponent_left' });
+                }
             }
         });
 
@@ -68,38 +57,27 @@ module.exports = (server, session) => {
 
                 const room = clients.get(socket.id).room;
 
-                // console.log({ room });
                 if (room !== null) {
                     // tell opponent that you've left
                     const opponent = rooms.getOpponentID(room, socket.id);
-
                     const players = rooms.getPlayerIDs(room);
-
-                    players.forEach(player => {
-                        io.sockets.sockets[player].leave(room);
-                    });
-
+                    players.forEach(player => io.sockets.sockets[player].leave(room));
                     rooms.close(room);
-
                     clients.updateRoom(opponent, null);
-
-                    io.sockets.sockets[opponent].emit('game', {
-                        state: 'opponent_left',
-                    });
+                    io.sockets.sockets[opponent].emit('game', { state: 'opponent_left' });
                 }
 
                 cb();
             }
 
             if (data.state === 'accept') {
-                // console.log('accept', socket)
-
                 const { room } = clients.get(socket.id);
-
-                console.log('accpet', socket.id, room);
-
                 if (room === null) return;
-                // const id = data.data.gameIndex;
+
+                // tell other player
+                const opponent = rooms.getOpponentID(room, socket.id);
+                io.sockets.sockets[opponent].emit('game', { state: 'accepted' });
+
                 const bothAccepted = rooms.accept(room, socket.id);
 
                 if (!bothAccepted) return cb();
@@ -108,8 +86,6 @@ module.exports = (server, session) => {
                 const players = rooms.getPlayerIDs(room);
                 const game = games.create(room, players, socket.id);
 
-                // console.log('players accepted', players);
-                // set roomid to socket.request.user object
                 players.map(player => {
                     io.sockets.sockets[player].request.user = {
                         ...io.sockets.sockets[player].request.user,
@@ -121,8 +97,6 @@ module.exports = (server, session) => {
             }
 
             if (data.state === 'submit_turn') {
-                // const id = socket.request.user.roomIndex;
-
                 const { room } = clients.get(socket.id);
                 if (room === null) return;
 
@@ -145,12 +119,7 @@ module.exports = (server, session) => {
                         },
                     });
                 } else {
-                    io.to(room).emit('game', {
-                        state: 'new_turn',
-                        data: {
-                            game: result,
-                        },
-                    });
+                    io.to(room).emit('game', { state: 'new_turn', data: { game: result } });
                 }
             }
         });
