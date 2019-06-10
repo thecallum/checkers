@@ -1,14 +1,7 @@
-const setupGames = require('./setupGames');
-const games = setupGames();
-
-const setupQueue = require('./setupQueue');
-const queue = setupQueue();
-
-const setupRooms = require('./setupRooms');
-const rooms = setupRooms();
-
-const setupClients = require('./setupClients');
-const clients = setupClients();
+const games = require('./setupGames')();
+const queue = require('./setupQueue')();
+const rooms = require('./setupRooms')();
+const clients = require('./setupClients')();
 
 const socketio = require('socket.io');
 const auth = require('./middleware/auth');
