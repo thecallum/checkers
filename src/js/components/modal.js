@@ -1,9 +1,9 @@
 const modal = {
-	props: {
-		show: { type: Boolean, required: true },
-	},
+    props: {
+        show: { type: Boolean, required: true },
+    },
 
-	template: `
+    template: `
         <div class='modal' v-bind:class="{ 'modal__show': show }">
             <div class="modal__background"></div>
 

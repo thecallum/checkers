@@ -34,7 +34,7 @@ new Vue({
         accepted: false,
         opponentAccepted: false,
         toggleSetup: false,
-        opponentLeft: false,
+        opponentDisconnected: false,
 
         // =============
         canvas: {
@@ -68,6 +68,7 @@ new Vue({
         joinQueue() {
             this.socket.emit('game', { state: 'join_queue' }, () => {
                 this.state = 'queue';
+                this.opponentDisconnected = false;
             });
         },
 
@@ -171,15 +172,12 @@ new Vue({
                 }
 
                 if (data.state === 'disconnect') {
-                    alert('opponent disconnected');
-
-                    this.state = 'queue';
+                    this.state = null;
                     this.accepted = false;
                     this.gameStarted = false;
                     this.opponentAccepted = false;
                     this.game = {};
-                    this.opponentLeft = true;
-                    return this.joinQueue();
+                    this.opponentDisconnected = true;
                 }
             });
         },

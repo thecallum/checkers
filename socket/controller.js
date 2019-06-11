@@ -13,39 +13,32 @@ module.exports = (server, session) => {
     io.use(auth);
 
     io.on('connection', socket => {
+        const room = socket.handshake.session.user.room;
+
+        if (!!room && !rooms.exists(room)) {
+            socket.handshake.session.user = {
+                ...socket.handshake.session.user,
+                room: null,
+            };
+        }
         socket.on('disconnect', () => {
             queue.remove(socket.id);
 
             const room = socket.handshake.session.user.room;
 
-            console.log('DISCONNECT ROOM', room);
-
-            if (room !== null && room !== undefined) {
-                if (!rooms.exists(room)) {
-                    console.log('ROOM DONT EXIST');
-                    socket.handshake.session.user = {
-                        ...socket.handshake.session.user,
-                        room: null,
-                    };
-                    socket.handshake.session.save();
-                }
-
+            if (rooms.exists(room)) {
                 const opponent = rooms.getOpponentID(room, socket.id);
                 const opponentSocket = io.sockets.sockets[opponent];
 
                 opponentSocket.leave(room);
                 rooms.close(room);
-                opponentSocket.handshake.session.user = {
-                    ...opponentSocket.handshake.session.user,
-                    room: null,
-                };
+
+                opponentSocket.handshake.session.user = { ...opponentSocket.handshake.session.user, room: null };
                 socket.handshake.session.save();
 
                 if (games.exists(room)) {
                     games.close(room);
                     io.sockets.sockets[opponent].emit('game', { state: 'disconnect' });
-                } else {
-                    io.sockets.sockets[opponent].emit('game', { state: 'opponent_left' });
                 }
             }
         });
@@ -65,18 +58,14 @@ module.exports = (server, session) => {
                 if (room !== null) {
                     // tell opponent that you've left
                     const opponent = rooms.getOpponentID(room, socket.id);
+                    const opponentSocket = io.sockets.sockets[opponent];
                     const players = rooms.getPlayerIDs(room);
+
                     players.forEach(player => io.sockets.sockets[player].leave(room));
                     rooms.close(room);
 
-                    const opponentSocket = io.sockets.sockets[opponent];
-
-                    opponentSocket.handshake.session.user = {
-                        ...opponentSocket.handshake.session.user,
-                        room: null,
-                    };
+                    opponentSocket.handshake.session.user = { ...opponentSocket.handshake.session.user, room: null };
                     socket.handshake.session.save();
-
                     opponentSocket.emit('game', { state: 'opponent_left' });
                 }
 
@@ -85,8 +74,6 @@ module.exports = (server, session) => {
 
             if (data.state === 'accept') {
                 const room = socket.handshake.session.user.room;
-
-                console.log('accept room', room);
 
                 if (room === null) return;
 
@@ -165,8 +152,6 @@ module.exports = (server, session) => {
                     },
                 },
             });
-
-            console.log('new ROom', room);
 
             // players contain the socketid's
             // Add the players to the room
