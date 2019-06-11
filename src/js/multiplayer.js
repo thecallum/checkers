@@ -13,7 +13,10 @@ new Vue({
     el: '#app',
     components: { canvasComponent: canvas, modal },
     data: {
-        players: [{ name: '', default: 'player 1', src: '#' }, { name: '', default: 'player 2', src: '#' }],
+        players: [
+            { name: '', default: 'player 1', src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg' },
+            { name: '', default: 'player 2', src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg' },
+        ],
 
         toggleSetup: false,
         gameEnded: false,

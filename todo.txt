@@ -5,3 +5,5 @@ Rewrite state in online.js
 Random start player online
 
 online rematch
+
+fix multiplayer message 'its players turn'

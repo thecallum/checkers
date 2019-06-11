@@ -162,13 +162,19 @@ module.exports = (server, session) => {
                 socket.join(room);
             });
 
-            const game = {
-                [players[0]]: { username: io.sockets.sockets[players[0]].handshake.session.user.username },
-                [players[1]]: { username: io.sockets.sockets[players[1]].handshake.session.user.username },
+            const users = {
+                [players[1]]: {
+                    username: io.sockets.sockets[players[1]].handshake.session.user.username,
+                    src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg',
+                },
+                [players[0]]: {
+                    username: io.sockets.sockets[players[0]].handshake.session.user.username,
+                    src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg',
+                },
             };
 
             setTimeout(() => {
-                io.to(room).emit('game', { state: 'found', game });
+                io.to(room).emit('game', { state: 'found', players: users });
             }, 0);
         }
     });

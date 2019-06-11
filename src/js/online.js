@@ -11,7 +11,7 @@ new Vue({
     el: '#app',
     components: { canvasComponent: canvas, modal },
     data: {
-        players: [{ name: '', default: 'player 1', src: '#' }, { name: '', default: 'player 2', src: '#' }],
+        players: {},
 
         gameEnded: false,
         winMessage: '',
@@ -28,13 +28,13 @@ new Vue({
         connecting: true,
         socketerror: null,
 
-        foundGame: null,
         state: 'connecting',
 
         accepted: false,
         opponentAccepted: false,
         toggleSetup: false,
         opponentDisconnected: false,
+        opponentLeft: false,
 
         // =============
         canvas: {
@@ -79,6 +79,10 @@ new Vue({
             });
         },
 
+        rematch() {
+            alert('Feature not build yet');
+        },
+
         startGame() {
             this.gameStarted = true;
 
@@ -119,9 +123,9 @@ new Vue({
                     this.state = data.state;
                     this.accepted = false;
                     this.opponentAccepted = false;
-                    this.foundGame = null;
+                    this.players = {};
                     this.game = {};
-                    this.players = [];
+                    this.players = {};
                     this.preDraw();
                     this.gameStarted = false;
                     this.gameEnded = false;
@@ -130,7 +134,9 @@ new Vue({
 
                 if (data.state === 'found') {
                     this.opponentLeft = false;
-                    this.foundGame = data;
+
+                    this.players = data.players;
+
                     this.state = data.state;
                     return;
                 }
@@ -143,7 +149,7 @@ new Vue({
                 if (data.state === 'ready') {
                     this.state = data.state;
                     this.game = { ...data.game, selectedPiece: null };
-                    this.players = data.game.players.map(player => this.foundGame.data[player]);
+                    // this.players = data.game.players.map(player => this.players[player]);
                     this.startGame();
                     return;
                 }

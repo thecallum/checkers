@@ -52,7 +52,6 @@ const setupGames = () => {
             ...game,
             pieces: newPieces,
             options: newOptions,
-            selectedPiece: null,
             currentPlayer: newPlayer,
             won: !!gameWon,
         };
