@@ -1,0 +1,1 @@
+firefox modal clickout broken (::after)

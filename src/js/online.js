@@ -1,6 +1,7 @@
+const io = require('socket.io-client');
+
 const canvas = require('./components/canvas');
 const modal = require('./components/modal');
-const io = require('socket.io-client');
 
 const findClickedPiece = require('./components/findClickedPiece');
 const checkOptionsClicked = require('./components/checkOptionsClicked');
@@ -9,7 +10,6 @@ const setCanvasWidth = require('./components/setCanvasWidth');
 new Vue({
     el: '#app',
     components: { canvasComponent: canvas, modal },
-
     data: {
         players: [{ name: '', default: 'player 1', src: '#' }, { name: '', default: 'player 2', src: '#' }],
 
@@ -85,6 +85,7 @@ new Vue({
             setTimeout(() => {
                 this.canvasElement.addEventListener('click', this.clickHandler);
                 this.callCanvasRedraw();
+                setTimeout(this.callCanvasRedraw);
             }, 0);
         },
 
@@ -223,17 +224,13 @@ new Vue({
                     this.game.selectedPiece = null;
                 }
 
-                this.callCanvasRedraw(this.game);
+                this.callCanvasRedraw();
             }
         },
 
         acceptGame() {
             if (this.accepted) return;
             this.socket.emit('game', { state: 'accept' }, () => (this.accepted = true));
-        },
-
-        rejectGame() {
-            // console.log('Game rejected');
         },
 
         fetchCanvasControls({ update, preDraw }, canvasElement) {
@@ -245,13 +242,24 @@ new Vue({
         },
 
         callCanvasRedraw() {
-            this.update({ ...this.game });
+            this.update({
+                ...this.game,
+                width: this.canvas.width,
+                gridSize: this.canvas.gridSize,
+                halfGridSize: this.canvas.halfGridSize,
+            });
         },
 
         // generatePieces: generatePieces,
         handleResize() {
             this.setCanvasWidth();
-            setTimeout(this.gameStarted ? this.callCanvasRedraw : this.preDraw, 0);
+            setTimeout(() => {
+                this.gameStarted ? this.callCanvasRedraw() : this.preDraw();
+
+                setTimeout(() => {
+                    this.gameStarted ? this.callCanvasRedraw() : this.preDraw();
+                }, 0);
+            }, 0);
         },
     },
 });

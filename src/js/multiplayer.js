@@ -1,3 +1,6 @@
+const canvas = require('./components/canvas');
+const modal = require('./components/modal');
+
 const generatePieces = require('./components/generatePieces');
 const generateOptions = require('./components/generateOptions');
 const findClickedPiece = require('./components/findClickedPiece');
@@ -5,9 +8,6 @@ const updatePieces = require('./components/updatePieces');
 const nextPlayer = require('./components/nextPlayer');
 const checkOptionsClicked = require('./components/checkOptionsClicked');
 const setCanvasWidth = require('./components/setCanvasWidth');
-
-const canvas = require('./components/canvas');
-const modal = require('./components/modal');
 
 new Vue({
     el: '#app',
@@ -85,11 +85,24 @@ new Vue({
 
             this.gameStarted = true;
 
-            setTimeout(() => {
-                // canvas was destroyed, need to create new clickHandler
-                this.canvasElement.addEventListener('click', this.clickHandler);
+            const newPieces = this.generatePieces();
+            const newOptions = this.generateOptions(newPieces, 0, [0, 1]);
 
+            this.game = {
+                ...this.game,
+
+                currentPlayer: 0,
+                pieces: newPieces,
+                options: newOptions,
+                selectedPiece: null,
+            };
+
+            // only way to get canvas to do first draw.
+            // other than settimeout
+            setTimeout(() => {
+                this.canvasElement.addEventListener('click', this.clickHandler);
                 this.callCanvasRedraw();
+                setTimeout(this.callCanvasRedraw);
             }, 0);
         },
 
@@ -131,7 +144,12 @@ new Vue({
         },
 
         callCanvasRedraw() {
-            this.update(this.game);
+            this.update({
+                ...this.game,
+                width: this.canvas.width,
+                gridSize: this.canvas.gridSize,
+                halfGridSize: this.canvas.halfGridSize,
+            });
         },
 
         endTurn() {
@@ -164,7 +182,13 @@ new Vue({
 
         handleResize() {
             this.setCanvasWidth();
-            setTimeout(this.gameStarted ? this.callCanvasRedraw : this.preDraw, 0);
+            setTimeout(() => {
+                this.gameStarted ? this.callCanvasRedraw() : this.preDraw();
+
+                setTimeout(() => {
+                    this.gameStarted ? this.callCanvasRedraw() : this.preDraw();
+                }, 0);
+            }, 0);
         },
 
         clickHandler({ offsetX, offsetY }) {
@@ -197,7 +221,7 @@ new Vue({
                     currentPlayer: newPlayer,
                 };
 
-                this.callCanvasRedraw(this.game);
+                this.callCanvasRedraw();
 
                 this.endTurn();
             } else {
@@ -220,7 +244,7 @@ new Vue({
                     this.game.selectedPiece = null;
                 }
 
-                this.callCanvasRedraw(this.game);
+                this.callCanvasRedraw();
             }
         },
     },

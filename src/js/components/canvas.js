@@ -5,10 +5,6 @@ const { draw: drawPiece, drawOptions } = require('./piece');
 const canvas = {
     props: {
         fetchCanvasControls: { type: Function, required: true },
-        width: { type: Number, required: true },
-        gridSize: { type: Number, required: true },
-        halfGridSize: { type: Number, required: true },
-        maxWidth: { type: Number, required: true },
     },
     data: function() {
         return {
@@ -50,18 +46,18 @@ const canvas = {
         },
 
         clearCanvas() {
-            this.ctx.clearRect(0, 0, this.width, this.width);
+            this.ctx.clearRect(0, 0, this.gameState.width, this.gameState.width);
         },
 
         drawGrid() {
             this.ctx.fillStyle = 'white';
-            this.ctx.fillRect(0, 0, this.width, this.width);
+            this.ctx.fillRect(0, 0, this.gameState.width, this.gameState.width);
 
             this.ctx.fillStyle = 'black';
             for (let row = 0; row < 8; row++) {
                 for (let col = 0; col < 8; col++) {
                     if ((row % 2 === 0 && col % 2 === 0) || (row % 2 === 1 && col % 2 === 1)) {
-                        this.ctx.fillRect(this.gridSize * col, row * this.gridSize, this.gridSize, this.gridSize);
+                        this.ctx.fillRect(this.gameState.gridSize * col, row * this.gameState.gridSize, this.gameState.gridSize, this.gameState.gridSize);
                     }
                 }
             }
@@ -72,7 +68,7 @@ const canvas = {
                 const isSelected = piece.id === this.gameState.selectedPiece;
                 const availableOptions = this.gameState.options[piece.id].length > 0;
 
-                drawPiece(piece, this.gridSize, this.ctx, availableOptions, isSelected, piece.color);
+                drawPiece(piece, this.gameState.gridSize, this.ctx, availableOptions, isSelected, piece.color);
             });
         },
 
@@ -82,7 +78,7 @@ const canvas = {
             const selectedPieceId = this.gameState.selectedPiece;
             const selectedOptions = this.gameState.options[selectedPieceId];
 
-            drawOptions(this.ctx, selectedOptions, this.gridSize, this.halfGridSize);
+            drawOptions(this.ctx, selectedOptions, this.gameState.gridSize, this.gameState.halfGridSize);
         },
 
         drawSelectedPiece() {
@@ -90,7 +86,7 @@ const canvas = {
             const availableOptions = this.gameState.options[pieceID].length > 0;
 
             const selectedPiece = this.gameState.pieces.filter(piece => piece.id === pieceID)[0];
-            drawPiece(selectedPiece, this.gridSize, this.ctx, availableOptions, true);
+            drawPiece(selectedPiece, this.gameState.gridSize, this.ctx, availableOptions, true);
         },
     },
     template: `
@@ -98,8 +94,8 @@ const canvas = {
             id='canvas' 
             class='canvas'
 
-            :width='width' 
-            :height='width'
+            :width='gameState.width' 
+            :height='gameState.width'
 
             ref='canvas'
         ></canvas>

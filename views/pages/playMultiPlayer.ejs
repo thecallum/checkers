@@ -32,9 +32,7 @@
                         </div>
                     </div>
 
-                    <canvas-component v-bind:width="canvas.width" v-bind:grid-size="canvas.gridSize"
-                        v-bind:half-grid-size="canvas.halfGridSize" :max-width="canvas.maxWidth"
-                        :fetch-canvas-controls="fetchCanvasControls"></canvas-component>
+                    <canvas-component :fetch-canvas-controls="fetchCanvasControls"></canvas-component>
 
                     <div class="canvas__bottom">
                         <h3 class="canvas__message">It's {{ players[game.currentPlayer].name }}'s turn!</h3>
