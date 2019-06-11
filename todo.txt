@@ -7,3 +7,5 @@ Random start player online
 online rematch
 
 fix multiplayer message 'its players turn'
+
+canvas handles any resizing

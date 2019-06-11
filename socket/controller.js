@@ -75,6 +75,8 @@ module.exports = (server, session) => {
             if (data.state === 'accept') {
                 const room = socket.handshake.session.user.room;
 
+                console.log('accept', room);
+
                 if (room === null) return;
 
                 // tell other player
@@ -103,7 +105,7 @@ module.exports = (server, session) => {
 
                 if (room === null) return;
 
-                const result = games.submitTurn(room, socket.id, data.data.move);
+                const result = games.submitTurn(room, socket.id, data.move);
                 if (!result) return;
 
                 if (result.won) {
@@ -111,18 +113,12 @@ module.exports = (server, session) => {
 
                     io.to(room).emit('game', {
                         state: 'win',
-                        data: {
-                            type: result.gameWon,
-                            player: socket.id,
-                            message: "It's a draw!",
-                            game: {
-                                ...result,
-                                currentPlayer: socket.id, // game updated player, but current player has won
-                            },
-                        },
+                        winType: result.gameWon,
+                        player: socket.id,
+                        game: { ...result, currentPlayer: socket.id }, // game updated player, but current player has won
                     });
                 } else {
-                    io.to(room).emit('game', { state: 'new_turn', data: { game: result } });
+                    io.to(room).emit('game', { state: 'new_turn', game: result });
                 }
             }
         });
