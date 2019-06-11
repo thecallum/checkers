@@ -129,8 +129,6 @@ module.exports = (server, session) => {
     });
 
     queue.subscribe(currentQueue => {
-        console.log('Queue update', currentQueue);
-
         if (currentQueue.length >= 2) {
             // add new room object, and subscibe those users to that room object
 
@@ -164,17 +162,13 @@ module.exports = (server, session) => {
                 socket.join(room);
             });
 
-            const gameData = {
+            const game = {
                 [players[0]]: { username: io.sockets.sockets[players[0]].handshake.session.user.username },
                 [players[1]]: { username: io.sockets.sockets[players[1]].handshake.session.user.username },
             };
 
             setTimeout(() => {
-                io.to(room).emit('game', {
-                    state: 'found',
-                    roomIndex: room,
-                    data: gameData,
-                });
+                io.to(room).emit('game', { state: 'found', game });
             }, 0);
         }
     });

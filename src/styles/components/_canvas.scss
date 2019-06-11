@@ -101,22 +101,54 @@
         &__view {
             padding: 20px;
         }
-
         &__playerImg {
             height: 60px;
             width: 60px;
-            font-size: 20px;
         }
-        &__message {
-            font-size: 30px;
+        &__playerName {
+            font-size: 20px;
         }
     }
 }
 
 @media (max-width: 500px) {
     .canvas {
+        &__playerName {
+            display: none;
+        }
+        &__player {
+            width: auto;
+        }
+        &__message {
+            font-size: 10vw;
+        }
+    }
+}
+
+@media (max-width: 400px) {
+    .canvas {
+        margin: 10px auto;
+
         &__playerImg {
-            font-size: 18px;
+            height: 50px;
+            width: 50px;
+        }
+
+        &__players {
+            padding: 0 9px;
+        }
+
+        &__view {
+            padding: 10px;
+        }
+    }
+}
+
+@media (max-width: 300px) {
+    .canvas {
+        &__playerImg {
+            height: 40px;
+            width: 40px;
         }
     }
 }
