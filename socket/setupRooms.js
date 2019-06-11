@@ -21,7 +21,9 @@ const setupRooms = () => {
 
     const getOpponentID = (roomID, userID) => Object.keys(rooms[roomID].players).filter(id => id !== userID)[0];
 
-    return { join, close, accept, getPlayerIDs, getOpponentID };
+    const exists = id => !!rooms.hasOwnProperty(id);
+
+    return { join, close, accept, getPlayerIDs, getOpponentID, exists };
 };
 
 module.exports = setupRooms;

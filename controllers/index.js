@@ -9,23 +9,28 @@ const app = express();
 const server = require('http').createServer(app);
 
 const setupSession = require('./setupSession');
-var ios = require('socket.io-express-session');
+var sharedSession = require('socket.io-express-session');
 
 if (!process.env.PORT) throw 'PORT UNDEFINED';
 
 const path = require('path');
 
-const session = setupSession(app);
+const session = setupSession();
+app.use(session);
 
 const io = require('./socket/io')(server);
-io.use(ios(session));
+io.use(
+    sharedSession(session, {
+        autoSave: true,
+    })
+);
 
 const handleSocket = require('./socket/handleSocket');
 handleSocket(io);
 
 app.set('view engine', 'ejs');
 app.set('view options', {
-	rmWhitespace: true,
+    rmWhitespace: true,
 });
 
 app.use(helmet());

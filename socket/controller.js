@@ -1,7 +1,6 @@
 const games = require('./setupGames')();
 const queue = require('./setupQueue')();
 const rooms = require('./setupRooms')();
-const clients = require('./setupClients')();
 
 const socketio = require('socket.io');
 const auth = require('./middleware/auth');
@@ -14,19 +13,33 @@ module.exports = (server, session) => {
     io.use(auth);
 
     io.on('connection', socket => {
-        clients.add(socket);
-
         socket.on('disconnect', () => {
             queue.remove(socket.id);
 
-            const room = clients.get(socket.id).room;
+            const room = socket.handshake.session.user.room;
 
-            if (room !== null) {
+            console.log('DISCONNECT ROOM', room);
+
+            if (room !== null && room !== undefined) {
+                if (!rooms.exists(room)) {
+                    console.log('ROOM DONT EXIST');
+                    socket.handshake.session.user = {
+                        ...socket.handshake.session.user,
+                        room: null,
+                    };
+                    socket.handshake.session.save();
+                }
+
                 const opponent = rooms.getOpponentID(room, socket.id);
-                io.sockets.sockets[opponent].leave(room);
-                rooms.close(room);
+                const opponentSocket = io.sockets.sockets[opponent];
 
-                clients.updateRoom(opponent, null);
+                opponentSocket.leave(room);
+                rooms.close(room);
+                opponentSocket.handshake.session.user = {
+                    ...opponentSocket.handshake.session.user,
+                    room: null,
+                };
+                socket.handshake.session.save();
 
                 if (games.exists(room)) {
                     games.close(room);
@@ -47,8 +60,7 @@ module.exports = (server, session) => {
 
             if (data.state === 'leave_queue') {
                 queue.remove(socket.id);
-
-                const room = clients.get(socket.id).room;
+                const room = socket.handshake.session.user.room;
 
                 if (room !== null) {
                     // tell opponent that you've left
@@ -56,15 +68,26 @@ module.exports = (server, session) => {
                     const players = rooms.getPlayerIDs(room);
                     players.forEach(player => io.sockets.sockets[player].leave(room));
                     rooms.close(room);
-                    clients.updateRoom(opponent, null);
-                    io.sockets.sockets[opponent].emit('game', { state: 'opponent_left' });
+
+                    const opponentSocket = io.sockets.sockets[opponent];
+
+                    opponentSocket.handshake.session.user = {
+                        ...opponentSocket.handshake.session.user,
+                        room: null,
+                    };
+                    socket.handshake.session.save();
+
+                    opponentSocket.emit('game', { state: 'opponent_left' });
                 }
 
                 cb();
             }
 
             if (data.state === 'accept') {
-                const { room } = clients.get(socket.id);
+                const room = socket.handshake.session.user.room;
+
+                console.log('accept room', room);
+
                 if (room === null) return;
 
                 // tell other player
@@ -80,17 +103,17 @@ module.exports = (server, session) => {
                 const game = games.create(room, players, socket.id);
 
                 players.map(player => {
-                    io.sockets.sockets[player].request.user = {
-                        ...io.sockets.sockets[player].request.user,
-                        roomIndex: room,
-                    };
+                    const socket = io.sockets.sockets[player];
+                    socket.handshake.session.user = { ...socket.handshake.session.user, room };
+                    socket.handshake.session.save();
                 });
 
                 io.to(room).emit('game', { state: 'ready', game });
             }
 
             if (data.state === 'submit_turn') {
-                const { room } = clients.get(socket.id);
+                const room = socket.handshake.session.user.room;
+
                 if (room === null) return;
 
                 const result = games.submitTurn(room, socket.id, data.data.move);
@@ -123,43 +146,48 @@ module.exports = (server, session) => {
 
         if (currentQueue.length >= 2) {
             // add new room object, and subscibe those users to that room object
+
             const players = queue.getPlayers();
-            const roomIndex = rooms.join({
+
+            const room = rooms.join({
                 players: {
                     [players[0]]: {
                         accepted: false,
-                        username: clients.get(players[0]).username,
+                        username: io.sockets.sockets[players[0]].handshake.session.user.username,
                         src: '/',
                         alt: 'user pic',
                     },
                     [players[1]]: {
                         accepted: false,
-                        username: clients.get(players[1]).username,
+                        username: io.sockets.sockets[players[1]].handshake.session.user.username,
                         src: '/',
                         alt: 'user pic',
                     },
                 },
             });
 
-            console.log('new ROom', roomIndex);
+            console.log('new ROom', room);
 
             // players contain the socketid's
             // Add the players to the room
 
             players.map(player => {
-                clients.updateRoom(player, roomIndex);
-                io.sockets.sockets[player].join(roomIndex);
+                const socket = io.sockets.sockets[player];
+                socket.handshake.session.user = { ...socket.handshake.session.user, room };
+                socket.handshake.session.save();
+
+                socket.join(room);
             });
 
             const gameData = {
-                [players[0]]: { username: clients.get(players[0]).username },
-                [players[1]]: { username: clients.get(players[1]).username },
+                [players[0]]: { username: io.sockets.sockets[players[0]].handshake.session.user.username },
+                [players[1]]: { username: io.sockets.sockets[players[1]].handshake.session.user.username },
             };
 
             setTimeout(() => {
-                io.to(roomIndex).emit('game', {
+                io.to(room).emit('game', {
                     state: 'found',
-                    roomIndex,
+                    roomIndex: room,
                     data: gameData,
                 });
             }, 0);
