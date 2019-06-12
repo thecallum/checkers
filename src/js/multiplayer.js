@@ -7,7 +7,6 @@ const findClickedPiece = require('./components/findClickedPiece');
 const updatePieces = require('./components/updatePieces');
 const nextPlayer = require('./components/nextPlayer');
 const checkOptionsClicked = require('./components/checkOptionsClicked');
-const setCanvasWidth = require('./components/setCanvasWidth');
 
 new Vue({
     el: '#app',
@@ -18,22 +17,19 @@ new Vue({
             { name: '', default: 'player 2', src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg' },
         ],
 
-        toggleSetup: false,
-        gameEnded: false,
-        winMessage: '',
-        gameStarted: false,
-
-        // =============
         canvas: {
             width: 500,
             maxWidth: 500,
             gridSize: 500 / 8,
             halfGridSize: 500 / 16,
         },
-        // =============
+
+        toggleSetup: false,
+        gameEnded: false,
+        winMessage: '',
+        gameStarted: false,
 
         update: null,
-        preDraw: null,
         canvasElement: null,
 
         game: {
@@ -45,16 +41,26 @@ new Vue({
     },
 
     mounted() {
-        // this.setCanvasWidth = this.setCanvasWidth.bind(this);
-
-        this.setCanvasWidth();
         window.addEventListener('resize', this.handleResize);
     },
 
     methods: {
-        setCanvasWidth: setCanvasWidth,
         generatePieces: generatePieces,
         generateOptions: generateOptions,
+
+        setCanvasWidth() {
+            const maxWidth = this.canvas.maxWidth;
+            // 40px for padding
+            const width = document.body.clientWidth - 40 > maxWidth ? maxWidth : document.body.clientWidth - 40;
+            this.canvas.width = width;
+            this.canvas.gridSize = width / 8;
+            this.canvas.halfGridSize = width / 16;
+        },
+
+        handleResize() {
+            this.setCanvasWidth();
+            this.callCanvasRedraw(true);
+        },
 
         beginSetup() {
             this.toggleSetup = true;
@@ -104,8 +110,12 @@ new Vue({
             // other than settimeout
             setTimeout(() => {
                 this.canvasElement.addEventListener('click', this.clickHandler);
-                this.callCanvasRedraw();
-                setTimeout(this.callCanvasRedraw);
+                this.setCanvasWidth();
+
+                this.callCanvasRedraw(true);
+                setTimeout(() => this.callCanvasRedraw(true));
+
+                // requestAnimationFrame(this.draw);
             }, 0);
         },
 
@@ -128,7 +138,7 @@ new Vue({
             this.winMessage = '';
             this.gameStarted = false;
         },
-        fetchCanvasControls({ update, preDraw }, canvasElement) {
+        fetchCanvasControls(update, canvasElement) {
             // setup game env
             const newPieces = this.generatePieces();
             const newOptions = this.generateOptions(newPieces, 0, [0, 1]);
@@ -140,19 +150,21 @@ new Vue({
             };
 
             this.update = update;
-            this.preDraw = preDraw;
             this.canvasElement = canvasElement;
 
-            this.preDraw();
+            this.callCanvasRedraw();
         },
 
-        callCanvasRedraw() {
-            this.update({
-                ...this.game,
-                width: this.canvas.width,
-                gridSize: this.canvas.gridSize,
-                halfGridSize: this.canvas.halfGridSize,
-            });
+        callCanvasRedraw(hasResized) {
+            if (hasResized) {
+                this.update(this.game, {
+                    width: this.canvas.width,
+                    gridSize: this.canvas.gridSize,
+                    halfGridSize: this.canvas.halfGridSize,
+                });
+            } else {
+                this.update(this.game);
+            }
         },
 
         endTurn() {
@@ -183,17 +195,6 @@ new Vue({
             }
         },
 
-        handleResize() {
-            this.setCanvasWidth();
-            setTimeout(() => {
-                this.gameStarted ? this.callCanvasRedraw() : this.preDraw();
-
-                setTimeout(() => {
-                    this.gameStarted ? this.callCanvasRedraw() : this.preDraw();
-                }, 0);
-            }, 0);
-        },
-
         clickHandler({ offsetX, offsetY }) {
             console.log('click');
             if (this.gameEnded) return;
@@ -211,9 +212,7 @@ new Vue({
                 // Then update turn
 
                 const newPieces = updatePieces(selectedOption, this.game.selectedPiece, this.game.pieces, this.game.currentPlayer);
-
                 const newPlayer = nextPlayer(this.game.currentPlayer, [0, 1]);
-
                 const newOptions = this.generateOptions(newPieces, newPlayer, [0, 1]);
 
                 this.game = {

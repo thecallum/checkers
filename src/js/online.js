@@ -5,7 +5,6 @@ const modal = require('./components/modal');
 
 const findClickedPiece = require('./components/findClickedPiece');
 const checkOptionsClicked = require('./components/checkOptionsClicked');
-const setCanvasWidth = require('./components/setCanvasWidth');
 
 new Vue({
     el: '#app',
@@ -13,6 +12,13 @@ new Vue({
     data: {
         players: {},
         game: {},
+
+        canvas: {
+            width: 500,
+            maxWidth: 500,
+            gridSize: 500 / 8,
+            halfGridSize: 500 / 16,
+        },
 
         socket: null,
         connecting: true,
@@ -29,28 +35,31 @@ new Vue({
         winMessage: '',
         gameStarted: false,
 
-        canvas: {
-            width: 500,
-            maxWidth: 500,
-            gridSize: 500 / 8,
-            halfGridSize: 500 / 16,
-        },
-
         update: null,
-        preDraw: null,
         canvasElement: null,
     },
 
     mounted() {
-        this.setCanvasWidth();
-        window.addEventListener('resize', this.handleResize);
         this.socket = io.connect('/');
         this.handleSocket();
+
+        window.addEventListener('resize', this.handleResize);
     },
 
     methods: {
-        setCanvasWidth,
+        setCanvasWidth() {
+            const maxWidth = this.canvas.maxWidth;
+            // 40px for padding
+            const width = document.body.clientWidth - 40 > maxWidth ? maxWidth : document.body.clientWidth - 40;
+            this.canvas.width = width;
+            this.canvas.gridSize = width / 8;
+            this.canvas.halfGridSize = width / 16;
+        },
 
+        handleResize() {
+            this.setCanvasWidth();
+            this.callCanvasRedraw(true);
+        },
         beginSetup() {
             this.toggleSetup = true;
             this.joinQueue();
@@ -93,8 +102,10 @@ new Vue({
 
             setTimeout(() => {
                 this.canvasElement.addEventListener('click', this.clickHandler);
-                this.callCanvasRedraw();
-                setTimeout(this.callCanvasRedraw);
+                this.setCanvasWidth();
+
+                this.callCanvasRedraw(true);
+                setTimeout(() => this.callCanvasRedraw(true));
             });
         },
 
@@ -115,32 +126,23 @@ new Vue({
             this.socket.emit('game', { state: 'accept' }, () => (this.accepted = true));
         },
 
-        fetchCanvasControls({ update, preDraw }, canvasElement) {
+        fetchCanvasControls(update, canvasElement) {
             this.update = update;
-            this.preDraw = preDraw;
             this.canvasElement = canvasElement;
 
-            this.preDraw();
+            this.callCanvasRedraw();
         },
 
-        callCanvasRedraw() {
-            this.update({
-                ...this.game,
-                width: this.canvas.width,
-                gridSize: this.canvas.gridSize,
-                halfGridSize: this.canvas.halfGridSize,
-            });
-        },
-
-        handleResize() {
-            this.setCanvasWidth();
-            setTimeout(() => {
-                this.gameStarted ? this.callCanvasRedraw() : this.preDraw();
-
-                setTimeout(() => {
-                    this.gameStarted ? this.callCanvasRedraw() : this.preDraw();
+        callCanvasRedraw(hasResized) {
+            if (hasResized) {
+                this.update(this.game, {
+                    width: this.canvas.width,
+                    gridSize: this.canvas.gridSize,
+                    halfGridSize: this.canvas.halfGridSize,
                 });
-            });
+            } else {
+                this.update(this.game);
+            }
         },
 
         handleSocket() {
