@@ -1,12 +1,18 @@
 const loadFont = require('./loadFont');
 
-const { draw: drawPiece, drawOptions } = require('./piece');
+const {
+    draw: drawPiece,
+    drawOptions
+} = require('./piece');
 
 const canvas = {
     props: {
-        fetchCanvasControls: { type: Function, required: true },
+        fetchCanvasControls: {
+            type: Function,
+            required: true
+        },
     },
-    data: function() {
+    data: function () {
         return {
             gameState: {}, // passed in when game is to be updated
 
@@ -23,6 +29,9 @@ const canvas = {
         this.canvas = this.$refs.canvas;
         this.ctx = this.canvas.getContext('2d');
 
+        this.canvas.width = this.width;
+        this.canvas.height = this.width;
+
         loadFont(this.ctx, 'Special Elite', 36);
 
         // pass methods to update the canvas
@@ -33,15 +42,36 @@ const canvas = {
             if (typeof newState === 'undefined') {
                 this.preDraw();
             } else {
+                this.gameState = newState;
+
                 if (typeof newSize !== 'undefined') {
-                    this.width = newSize.width;
-                    this.gridSize = newSize.gridSize;
-                    this.halfGridSize = newSize.halfGridSize;
+                    this.resize(newSize.width, newSize.gridSize, newSize.halfGridSize);
+                } else {
+                    this.draw();
                 }
 
-                this.gameState = newState;
-                setTimeout(this.draw);
             }
+        },
+
+        resize(width, gridSize, halfGridSize) {
+            // https: //stackoverflow.com/questions/8693949/resize-html5-canvas-element
+            // Creating temp canvas to hide resize clearing canvas
+
+            this.width = width;
+            this.gridSize = gridSize;
+            this.halfGridSize = halfGridSize;
+
+            const tempCanvas = document.createElement('canvas')
+
+            tempCanvas.height = this.width;
+            tempCanvas.width = this.width;
+
+            tempCanvas.getContext('2d').drawImage(this.canvas, 0, 0)
+
+            this.canvas.width = this.width;
+            this.canvas.height = this.width;
+
+            this.draw();
         },
 
         draw() {
@@ -106,9 +136,6 @@ const canvas = {
         <canvas 
             id='canvas' 
             class='canvas'
-
-            :width='width' 
-            :height='width'
 
             ref='canvas'
         ></canvas>

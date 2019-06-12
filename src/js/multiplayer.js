@@ -10,11 +10,21 @@ const checkOptionsClicked = require('./components/checkOptionsClicked');
 
 new Vue({
     el: '#app',
-    components: { canvasComponent: canvas, modal },
+    components: {
+        canvasComponent: canvas,
+        modal
+    },
     data: {
-        players: [
-            { name: '', default: 'player 1', src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg' },
-            { name: '', default: 'player 2', src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg' },
+        players: [{
+                name: '',
+                default: 'player 1',
+                src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg'
+            },
+            {
+                name: '',
+                default: 'player 2',
+                src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg'
+            },
         ],
 
         canvas: {
@@ -67,7 +77,10 @@ new Vue({
         },
         cancelSetup() {
             // remove player names entered
-            this.players = this.players.map(player => ({ ...player, name: '' }));
+            this.players = this.players.map(player => ({
+                ...player,
+                name: ''
+            }));
             this.toggleSetup = false;
         },
         toggleWin() {
@@ -108,15 +121,17 @@ new Vue({
 
             // only way to get canvas to do first draw.
             // other than settimeout
-            setTimeout(() => {
-                this.canvasElement.addEventListener('click', this.clickHandler);
-                this.setCanvasWidth();
+            // setTimeout(() => {
+            //     this.canvasElement.addEventListener('click', this.clickHandler);
+            //     // this.setCanvasWidth();
 
-                this.callCanvasRedraw(true);
-                setTimeout(() => this.callCanvasRedraw(true));
+            //     setTimeout(() => {
+            //         this.setCanvasWidth();
 
-                // requestAnimationFrame(this.draw);
-            }, 0);
+            //         requestAnimationFrame(() => this.callCanvasRedraw(true));
+
+            //     }, 0);
+            // }, 0);
         },
 
         handleRematch() {
@@ -152,16 +167,20 @@ new Vue({
             this.update = update;
             this.canvasElement = canvasElement;
 
-            this.callCanvasRedraw();
+            console.log('fetch')
+
+            setTimeout(() => {
+                this.canvasElement.addEventListener('click', this.clickHandler);
+
+                // only works when run twice, I don't know why
+                this.handleResize();
+                setTimeout(this.handleResize);
+            }, 0);
         },
 
         callCanvasRedraw(hasResized) {
             if (hasResized) {
-                this.update(this.game, {
-                    width: this.canvas.width,
-                    gridSize: this.canvas.gridSize,
-                    halfGridSize: this.canvas.halfGridSize,
-                });
+                this.update(this.game, this.canvas);
             } else {
                 this.update(this.game);
             }
@@ -195,15 +214,18 @@ new Vue({
             }
         },
 
-        clickHandler({ offsetX, offsetY }) {
+        clickHandler({
+            offsetX,
+            offsetY
+        }) {
             console.log('click');
             if (this.gameEnded) return;
 
             // if no piece is selected, cannot select an option..
             let selectedOption =
-                this.game.selectedPiece === null
-                    ? null
-                    : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);
+                this.game.selectedPiece === null ?
+                null :
+                checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);
 
             if (selectedOption) {
                 // Option is selected!
