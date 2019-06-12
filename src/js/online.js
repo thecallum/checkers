@@ -110,8 +110,15 @@ new Vue({
         },
 
         updateGame(updates) {
+            console.log('UPDATE GAME', updates)
+
             this.game = {
                 ...updates,
+
+                options: updates[this.socket.id].options,
+                pieces: updates[this.socket.id].pieces,
+
+                // pieces,
                 selectedPiece: null
             };
         },
@@ -195,8 +202,35 @@ new Vue({
                 }
 
                 if (data.state === 'new_turn') {
-                    this.updateGame(data.game);
+
+                    // will recieve no options
+                    // other player has the options
+
+                    const updates = data.game;
+
+                    console.log('NEW TURN', updates[this.socket.id])
+                    this.updateGame({
+                        ...updates,
+
+                        options: updates[this.socket.id].options,
+                        pieces: updates[this.socket.id].pieces,
+
+                        // pieces,
+                        selectedPiece: null
+                    });
                     this.callCanvasRedraw();
+
+
+
+                    // this.game = {
+                    //     ...updates,
+
+                    //     options: updates[this.socket.id].options,
+                    //     pieces: updates[this.socket.id].pieces,
+
+                    //     // pieces,
+                    //     selectedPiece: null
+                    // };
                     return;
                 }
 
@@ -269,6 +303,12 @@ new Vue({
             } else {
                 return `It\'s ${this.players[this.game.currentPlayer].username}\'s turn`;
             }
+        },
+        opponent() {
+            if (this.state !== 'found') return false;
+
+
+            return this.players[Object.keys(this.players).filter(key => key !== this.socket.id)[0]].username;
         }
     }
 });

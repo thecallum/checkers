@@ -54,9 +54,7 @@
 
                 <p v-if="accepted && opponentAccepted" class="online__searching">Setting up game</p>
                 <div v-else>
-                    <p>
-                        Opponent: {{ opponent }}
-                    </p>
+                    <p v-if='opponent'>Opponent: {{ opponent }}</p>
 
                     <p v-if="accepted">You have accepted</p>
                     <p v-if="opponentAccepted">Your opponent has accepted</p>
