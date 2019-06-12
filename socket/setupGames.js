@@ -22,13 +22,11 @@ const setupGames = () => {
             [players[0]]: {
                 pieces: newPieces_0,
                 options: newOptions_0,
-
             },
             [players[1]]: {
-                pieces: newPieces_1,
-                options: newOptions_1,
-
-            }
+                pieces: newPieces_0,
+                options: newOptions_0,
+            },
         };
 
         games[id] = game;
@@ -58,7 +56,7 @@ const setupGames = () => {
     const updateGame = (game, selectedOption, selectedOptionID) => {
         console.log('UPDATE GAME', game);
 
-        console.log('SELECTED OOTION', selectedOption, selectedOptionID)
+        console.log('SELECTED OOTION', selectedOption, selectedOptionID);
 
         const newPlayer = nextPlayer(game.currentPlayer, game.players);
 
@@ -90,10 +88,7 @@ const setupGames = () => {
         };
     };
 
-    const submitTurn = (id, userID, {
-        selectedOption,
-        selectedPiece: selectedOptionID
-    }) => {
+    const submitTurn = (id, userID, { selectedOption, selectedPiece: selectedOptionID }) => {
         const game = games[id];
         // check that correct player made the mode
         if (userID !== game.currentPlayer) return null;
@@ -128,7 +123,7 @@ const setupGames = () => {
         getCurrentPlayer,
         submitTurn,
         close,
-        exists
+        exists,
     };
 };
 

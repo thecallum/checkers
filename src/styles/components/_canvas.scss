@@ -3,6 +3,10 @@
     display: block;
     background-color: #ddd;
 
+    &.rotate {
+        transform: rotate(180deg);
+    }
+
     &__title {
         font-size: 40px;
         font-weight: 100;
