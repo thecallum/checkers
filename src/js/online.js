@@ -27,7 +27,7 @@ new Vue({
         connecting: true,
         socketerror: null,
 
-        state: 'connecting',
+        state: null,
 
         accepted: false,
         opponentAccepted: false,
@@ -50,7 +50,7 @@ new Vue({
     },
 
     methods: {
-        setCanvasWidth() {
+        updateCanvasSize() {
             const maxWidth = this.canvas.maxWidth;
             // 40px for padding
             const width = document.body.clientWidth - 40 > maxWidth ? maxWidth : document.body.clientWidth - 40;
@@ -60,9 +60,10 @@ new Vue({
         },
 
         handleResize() {
-            this.setCanvasWidth();
+            this.updateCanvasSize();
             this.callCanvasRedraw(true);
         },
+
         beginSetup() {
             this.toggleSetup = true;
             this.joinQueue();
@@ -106,14 +107,6 @@ new Vue({
 
         startGame() {
             this.gameStarted = true;
-
-            setTimeout(() => {
-                this.canvasElement.addEventListener('click', this.clickHandler);
-                this.setCanvasWidth();
-
-                this.callCanvasRedraw(true);
-                setTimeout(() => this.callCanvasRedraw(true));
-            });
         },
 
         updateGame(updates) {
@@ -142,19 +135,19 @@ new Vue({
             this.update = update;
             this.canvasElement = canvasElement;
 
-            this.callCanvasRedraw();
+            setTimeout(() => {
+                this.canvasElement.addEventListener('click', this.clickHandler);
+
+                // only works when run twice, I don't know why
+                this.handleResize();
+                setTimeout(this.handleResize);
+            }, 0);
+
+            // this.callCanvasRedraw();
         },
 
         callCanvasRedraw(hasResized) {
-            if (hasResized) {
-                this.update(this.game, {
-                    width: this.canvas.width,
-                    gridSize: this.canvas.gridSize,
-                    halfGridSize: this.canvas.halfGridSize,
-                });
-            } else {
-                this.update(this.game);
-            }
+            this.update(this.game, hasResized ? this.canvas : undefined);
         },
 
         handleSocket() {

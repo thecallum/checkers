@@ -12,11 +12,6 @@
     <%- include('../components/header', { auth: auth }); %>
 
     <div id="app">
-        <!-- <span v-cloak>
-                <p>{{ connecting ? 'Connecting' : 'Connected' }}</p>
-                <h1 v-if="socketerror">Error: {{ socketerror }}</h1>
-            </span> -->
-
         <div class="container">
             <div class="canvas__view">
                 <div v-if="!gameStarted">
@@ -68,8 +63,10 @@
                     <p v-if="opponentAccepted">Your opponent has accepted</p>
                 </div>
             </div>
-            <button class="button modal__button" @click="cancelSetup">Cancel</button>
-            <button @click="acceptGame" class="button modal__button" v-if="state === 'found'">Accept</button>
+            <div class="modal__options">
+                <button class="button modal__button" @click="cancelSetup">Cancel</button>
+                <button @click="acceptGame" class="button modal__button" v-if="state === 'found'">Accept</button>
+                <div class="modal__options">
         </modal>
 
         <!-- Game End Modal -->

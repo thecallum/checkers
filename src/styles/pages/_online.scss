@@ -2,12 +2,15 @@
     0% {
         content: '';
     }
+
     25% {
         content: '.';
     }
+
     50% {
         content: '..';
     }
+
     75% {
         content: '...';
     }
@@ -29,13 +32,8 @@
     }
 
     &__queue {
-        // background-color: hsl(200, 20%, 60%);
         box-sizing: border-box;
-        height: 300px;
         padding: 10px;
-        // display: flex;
-        // justify-content: space-between;
-        // flex-direction: column;
     }
 
     &__searching {
@@ -48,7 +46,7 @@
     &__button__group {
         display: flex;
 
-        > * {
+        >* {
             flex-grow: 1;
             flex-shrink: 1;
         }

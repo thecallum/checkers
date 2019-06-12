@@ -58,7 +58,7 @@ new Vue({
         generatePieces: generatePieces,
         generateOptions: generateOptions,
 
-        setCanvasWidth() {
+        updateCanvasSize() {
             const maxWidth = this.canvas.maxWidth;
             // 40px for padding
             const width = document.body.clientWidth - 40 > maxWidth ? maxWidth : document.body.clientWidth - 40;
@@ -68,7 +68,7 @@ new Vue({
         },
 
         handleResize() {
-            this.setCanvasWidth();
+            this.updateCanvasSize();
             this.callCanvasRedraw(true);
         },
 
@@ -76,7 +76,7 @@ new Vue({
             this.toggleSetup = true;
         },
         cancelSetup() {
-            // remove player names entered
+            // reset player names entered
             this.players = this.players.map(player => ({
                 ...player,
                 name: ''
@@ -98,59 +98,37 @@ new Vue({
                 winMessage = `${name} has won!`;
             }
 
-            this.gameEnded = true;
             this.winMessage = winMessage;
+            this.gameEnded = true;
         },
 
-        startGame() {
-            console.log('start game');
 
-            this.gameStarted = true;
-            // fetchCanvasControls will be called when canvas mounted
-
+        setupNewGame() {
             const newPieces = this.generatePieces();
             const newOptions = this.generateOptions(newPieces, 0, [0, 1]);
 
             this.game = {
                 ...this.game,
-
                 currentPlayer: 0,
                 pieces: newPieces,
                 options: newOptions,
                 selectedPiece: null,
             };
+        },
+
+        startGame() {
+            this.setupNewGame();
+            this.gameStarted = true;
         },
 
         handleRematch() {
             // reset default variables except from name
-
-            const newPieces = this.generatePieces();
-            const newOptions = this.generateOptions(newPieces, 0, [0, 1]);
-
-            this.game = {
-                ...this.game,
-
-                currentPlayer: 0,
-                pieces: newPieces,
-                options: newOptions,
-                selectedPiece: null,
-            };
-
             this.gameEnded = false;
             this.winMessage = '';
             this.gameStarted = false;
         },
+
         fetchCanvasControls(update, canvasElement) {
-            // setup game env
-            const newPieces = this.generatePieces();
-            const newOptions = this.generateOptions(newPieces, 0, [0, 1]);
-
-            this.game = {
-                ...this.game,
-                pieces: newPieces,
-                options: newOptions,
-            };
-
             this.update = update;
             this.canvasElement = canvasElement;
 
@@ -164,11 +142,7 @@ new Vue({
         },
 
         callCanvasRedraw(hasResized) {
-            if (hasResized) {
-                this.update(this.game, this.canvas);
-            } else {
-                this.update(this.game);
-            }
+            this.update(this.game, hasResized ? this.canvas : undefined);
         },
 
         endTurn() {
@@ -177,33 +151,37 @@ new Vue({
             // 3. otherwise, it comes next players turn
 
             const opponentHasPieces = this.game.pieces.filter(piece => piece.player === this.game.currentPlayer).length > 0;
-
-            if (!opponentHasPieces) {
-                this.handleGameEnd('win');
-                return;
-            }
+            if (!opponentHasPieces) return this.handleGameEnd('win');
 
             let opponentHasOptions = false;
             for (let option in this.game.options) {
-                const currentOption = this.game.options[option];
-
-                if (currentOption.length > 0) {
+                if (this.game.options[option].length > 0) {
                     opponentHasOptions = true;
                     break;
                 }
             }
 
-            if (!opponentHasOptions) {
-                this.handleGameEnd('draw');
-                return;
-            }
+            if (!opponentHasOptions) return this.handleGameEnd('draw');
+        },
+
+        updateGame(selectedOption) {
+            const newPieces = updatePieces(selectedOption, this.game.selectedPiece, this.game.pieces, this.game.currentPlayer);
+            const newPlayer = nextPlayer(this.game.currentPlayer, [0, 1]);
+            const newOptions = this.generateOptions(newPieces, newPlayer, [0, 1]);
+
+            this.game = {
+                ...this.game,
+                pieces: newPieces,
+                options: newOptions,
+                selectedPiece: null,
+                currentPlayer: newPlayer,
+            };
         },
 
         clickHandler({
             offsetX,
             offsetY
         }) {
-            console.log('click');
             if (this.gameEnded) return;
 
             // if no piece is selected, cannot select an option..
@@ -213,25 +191,8 @@ new Vue({
                 checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);
 
             if (selectedOption) {
-                // Option is selected!
-                //
-                // Move Piece and reset options
-                // Then update turn
-
-                const newPieces = updatePieces(selectedOption, this.game.selectedPiece, this.game.pieces, this.game.currentPlayer);
-                const newPlayer = nextPlayer(this.game.currentPlayer, [0, 1]);
-                const newOptions = this.generateOptions(newPieces, newPlayer, [0, 1]);
-
-                this.game = {
-                    ...this.game,
-                    pieces: newPieces,
-                    options: newOptions,
-                    selectedPiece: null,
-                    currentPlayer: newPlayer,
-                };
-
+                this.updateGame(selectedOption);
                 this.callCanvasRedraw();
-
                 this.endTurn();
             } else {
                 // player didnt't click an option, now check if a piece is selected
