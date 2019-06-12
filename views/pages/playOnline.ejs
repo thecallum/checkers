@@ -1,110 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <% include ../components/head %>
-        <title>Online | Checkers</title>
 
-        <link href="https://fonts.googleapis.com/css?family=Audiowide|Indie+Flower|Special+Elite" rel="stylesheet" />
-    </head>
+<head>
+    <% include ../components/head %>
+    <title>Online | Checkers</title>
 
-    <body>
-        <%- include('../components/header', { auth: auth }); %>
+    <link href="https://fonts.googleapis.com/css?family=Audiowide|Indie+Flower|Special+Elite" rel="stylesheet" />
+</head>
 
-        <div id="app">
-            <!-- <span v-cloak>
+<body>
+    <%- include('../components/header', { auth: auth }); %>
+
+    <div id="app">
+        <!-- <span v-cloak>
                 <p>{{ connecting ? 'Connecting' : 'Connected' }}</p>
                 <h1 v-if="socketerror">Error: {{ socketerror }}</h1>
             </span> -->
 
-            <div class="container">
-                <div class="canvas__view">
-                    <div v-if="!gameStarted">
-                        <h1 class="canvas__title">Online</h1>
+        <div class="container">
+            <div class="canvas__view">
+                <div v-if="!gameStarted">
+                    <h1 class="canvas__title">Online</h1>
 
-                        <p class="canvas__subtitle">Play against another human from anywhere across the internet</p>
+                    <p class="canvas__subtitle">Play against another human from anywhere across the internet</p>
 
-                        <button class="button canvas__button" @click="beginSetup">Play</button>
+                    <button class="button canvas__button" @click="beginSetup">Play</button>
+                </div>
+                <div v-if="gameStarted" v-cloak>
+                    <div class="canvas__players" v-if="gameStarted">
+                        <div class="canvas__player" v-for="player in players">
+                            <img v-bind:src="player.src" v-bind:alt="player.alt" class="canvas__playerImg" />
+                            <p class="canvas__playerName">
+                                {{ player.username }}
+                            </p>
+                        </div>
                     </div>
-                    <div v-if="gameStarted" v-cloak>
-                        <div class="canvas__players" v-if="gameStarted">
-                            <div class="canvas__player" v-for="player in players">
-                                <img v-bind:src="player.src" v-bind:alt="player.alt" class="canvas__playerImg" />
-                                <p class="canvas__playerName">
-                                    {{ player.username }}
-                                </p>
-                            </div>
-                        </div>
 
-                        <canvas-component :fetch-canvas-controls="fetchCanvasControls"></canvas-component>
+                    <canvas-component :fetch-canvas-controls="fetchCanvasControls"></canvas-component>
 
-                        <div class="canvas__bottom" v-if="gameStarted">
-                            <h3 class="canvas__message">
-                                It's
-                                {{ game.currentPlayer === socket.id ? 'your' : players[game.currentPlayer].username + "'s" }}
-                                turn!
-                            </h3>
-                        </div>
+                    <div class="canvas__bottom" v-if="gameStarted">
+                        <h3 class="canvas__message">{{ currentPlayerMessage }}</h3>
                     </div>
                 </div>
             </div>
-
-            <!-- Game Setup Modal -->
-            <modal :show="!gameStarted && toggleSetup" v-cloak>
-                <h3>Queue</h3>
-
-                <div v-if='state === "queue"' class="online__queue">
-                    <p v-if="opponentLeft">Opponent left</p>
-                    <p class="online__searching">Searching for players</p>
-                </div>
-
-                <div v-if='state === "found"' class="online__queue">
-                    <p>Found an opponent</p>
-
-                    <p v-if="accepted && opponentAccepted" class="online__searching">Setting up game</p>
-                    <div v-else>
-                        <p>
-                            Opponent:
-                            {{ players[Object.keys(players).filter(key => key !== socket.id)[0]].username }}
-                        </p>
-
-                        <p v-if="accepted">You have accepted</p>
-                        <p v-if="opponentAccepted">Your opponent has accepted</p>
-                    </div>
-                </div>
-                <button class="button modal__button" @click="cancelSetup">Cancel</button>
-                <button @click="acceptGame" class="button modal__button" v-if="state === 'found'">Accept</button>
-            </modal>
-
-            <!-- Game End Modal -->
-            <modal :show="gameEnded" v-cloak>
-                <h1 class="modal__title">Game Ended</h1>
-
-                <p class="modal__message">{{ winMessage }}</p>
-
-                <div class="modal__options">
-                    <div class="modal__options__row">
-                        <button class="button modal__button" @click="rematch">Rematch</button>
-                        <button class="button modal__button" @click="joinQueue">Join Queue</button>
-                    </div>
-                    <div class="modal__options__row">
-                        <a class="button modal__button" href="/">Home</a>
-                        <a class="button modal__button" href="/leaderboard">Leaderboard</a>
-                    </div>
-                </div>
-            </modal>
-
-            <!-- Opponent disconnected Modal -->
-            <modal :show="opponentDisconnected" v-cloak>
-                <h1 class="modal__title">Your Opponent Disconnected</h1>
-
-                <div class="modal__options">
-                    <a class="button modal__button" href="/">Home</a>
-                    <button class="button modal__button" @click="rejoinQueue">Join Queue</button>
-                </div>
-            </modal>
         </div>
 
-        <script src="/js/vue.bundle.js"></script>
-        <script src="/js/online.bundle.js"></script>
-    </body>
+        <!-- Game Setup Modal -->
+        <modal :show="!gameStarted && toggleSetup" v-cloak>
+            <h3>Queue</h3>
+
+            <div v-if='state === "queue"' class="online__queue">
+                <p v-if="opponentLeft">Opponent left</p>
+                <p class="online__searching">Searching for players</p>
+            </div>
+
+            <div v-if='state === "found"' class="online__queue">
+                <p>Found an opponent</p>
+
+                <p v-if="accepted && opponentAccepted" class="online__searching">Setting up game</p>
+                <div v-else>
+                    <p>
+                        Opponent:
+                        {{ players[Object.keys(players).filter(key => key !== socket.id)[0]].username }}
+                    </p>
+
+                    <p v-if="accepted">You have accepted</p>
+                    <p v-if="opponentAccepted">Your opponent has accepted</p>
+                </div>
+            </div>
+            <button class="button modal__button" @click="cancelSetup">Cancel</button>
+            <button @click="acceptGame" class="button modal__button" v-if="state === 'found'">Accept</button>
+        </modal>
+
+        <!-- Game End Modal -->
+        <modal :show="gameEnded" v-cloak>
+            <h1 class="modal__title">Game Ended</h1>
+
+            <p class="modal__message">{{ winMessage }}</p>
+
+            <div class="modal__options">
+                <div class="modal__options__row">
+                    <button class="button modal__button" @click="rematch">Rematch</button>
+                    <button class="button modal__button" @click="joinQueue">Join Queue</button>
+                </div>
+                <div class="modal__options__row">
+                    <a class="button modal__button" href="/">Home</a>
+                    <a class="button modal__button" href="/leaderboard">Leaderboard</a>
+                </div>
+            </div>
+        </modal>
+
+        <!-- Opponent disconnected Modal -->
+        <modal :show="opponentDisconnected" v-cloak>
+            <h1 class="modal__title">Your Opponent Disconnected</h1>
+
+            <div class="modal__options">
+                <a class="button modal__button" href="/">Home</a>
+                <button class="button modal__button" @click="rejoinQueue">Join Queue</button>
+            </div>
+        </modal>
+    </div>
+
+    <script src="/js/vue.bundle.js"></script>
+    <script src="/js/online.bundle.js"></script>
+</body>
+
 </html>

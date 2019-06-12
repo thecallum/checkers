@@ -106,6 +106,7 @@ new Vue({
             console.log('start game');
 
             this.gameStarted = true;
+            // fetchCanvasControls will be called when canvas mounted
 
             const newPieces = this.generatePieces();
             const newOptions = this.generateOptions(newPieces, 0, [0, 1]);
@@ -118,20 +119,6 @@ new Vue({
                 options: newOptions,
                 selectedPiece: null,
             };
-
-            // only way to get canvas to do first draw.
-            // other than settimeout
-            // setTimeout(() => {
-            //     this.canvasElement.addEventListener('click', this.clickHandler);
-            //     // this.setCanvasWidth();
-
-            //     setTimeout(() => {
-            //         this.setCanvasWidth();
-
-            //         requestAnimationFrame(() => this.callCanvasRedraw(true));
-
-            //     }, 0);
-            // }, 0);
         },
 
         handleRematch() {
@@ -166,8 +153,6 @@ new Vue({
 
             this.update = update;
             this.canvasElement = canvasElement;
-
-            console.log('fetch')
 
             setTimeout(() => {
                 this.canvasElement.addEventListener('click', this.clickHandler);
@@ -272,4 +257,11 @@ new Vue({
             }
         },
     },
+
+    computed: {
+        currentPlayer() {
+            const player = this.players[this.game.currentPlayer];
+            return player.name !== '' ? player.name : player.default;
+        }
+    }
 });
