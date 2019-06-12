@@ -55,8 +55,7 @@
                 <p v-if="accepted && opponentAccepted" class="online__searching">Setting up game</p>
                 <div v-else>
                     <p>
-                        Opponent:
-                        {{ players[Object.keys(players).filter(key => key !== socket.id)[0]].username }}
+                        Opponent: {{ opponent }}
                     </p>
 
                     <p v-if="accepted">You have accepted</p>
@@ -66,7 +65,7 @@
             <div class="modal__options">
                 <button class="button modal__button" @click="cancelSetup">Cancel</button>
                 <button @click="acceptGame" class="button modal__button" v-if="state === 'found'">Accept</button>
-                <div class="modal__options">
+            </div>
         </modal>
 
         <!-- Game End Modal -->
