@@ -120,17 +120,7 @@ new Vue({
         },
 
         updateGame(updates) {
-            console.log('UPDATE GAME', updates);
-
-            this.game = {
-                ...updates,
-
-                options: updates[this.socket.id].options,
-                pieces: updates[this.socket.id].pieces,
-
-                // pieces,
-                selectedPiece: null,
-            };
+            this.game = { ...updates, selectedPiece: null };
         },
 
         updateWinMessage(winType, player) {
@@ -162,9 +152,7 @@ new Vue({
                 // only works when run twice, I don't know why
                 this.handleResize();
                 setTimeout(this.handleResize);
-            }, 0);
-
-            // this.callCanvasRedraw();
+            });
         },
 
         callCanvasRedraw(hasResized) {

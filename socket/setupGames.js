@@ -2,31 +2,23 @@ const generatePieces = require('../src/js/components/generatePieces');
 const generateOptions = require('../src/js/components/generateOptions');
 const updatePieces = require('../src/js/components/updatePieces');
 const nextPlayer = require('../src/js/components/nextPlayer');
+const colors = require('../src/js/components/colors');
 
 const setupGames = () => {
     const games = {};
 
     const create = (id, players, currentPlayerID) => {
-        const newPieces_0 = generatePieces(players[0], players[1], 0);
-        const newOptions_0 = generateOptions(newPieces_0, players[0], players);
+        const gamePlayers = [{ id: players[0], color: colors.red }, { id: players[1], color: colors.blue }];
 
-        const newPieces_1 = generatePieces(players[1], players[0], 1);
-        const newOptions_1 = generateOptions(newPieces_1, players[1], players);
+        const newPieces = generatePieces(gamePlayers[0].id, gamePlayers[1].id);
+        const newOptions = generateOptions(newPieces, gamePlayers[0].id, gamePlayers);
 
         const game = {
-            // pieces: newPieces,
-            // options: newOptions,
-            players,
-            currentPlayer: currentPlayerID,
+            pieces: newPieces,
+            options: newOptions,
 
-            [players[0]]: {
-                pieces: newPieces_0,
-                options: newOptions_0,
-            },
-            [players[1]]: {
-                pieces: newPieces_0,
-                options: newOptions_0,
-            },
+            players: gamePlayers,
+            currentPlayer: currentPlayerID,
         };
 
         games[id] = game;
@@ -54,35 +46,17 @@ const setupGames = () => {
     };
 
     const updateGame = (game, selectedOption, selectedOptionID) => {
-        console.log('UPDATE GAME', game);
-
-        console.log('SELECTED OOTION', selectedOption, selectedOptionID);
-
         const newPlayer = nextPlayer(game.currentPlayer, game.players);
 
-        const newPieces_0 = updatePieces(selectedOption, selectedOptionID, game[game.players[0]].pieces, game.currentPlayer);
-        const newOptions_0 = generateOptions(newPieces_0, newPlayer, game.players);
+        const newPieces = updatePieces(selectedOption, selectedOptionID, game.pieces, game.currentPlayer);
+        const newOptions = generateOptions(newPieces, newPlayer, game.players);
 
-        const newPieces_1 = updatePieces(selectedOption, selectedOptionID, game[game.players[1]].pieces, game.currentPlayer);
-        const newOptions_1 = generateOptions(newPieces_1, newPlayer, game.players);
-
-        const gameWon = checkWin(newPieces_0, newPlayer, newOptions_0);
+        const gameWon = checkWin(newPieces, newPlayer, newOptions);
 
         return {
             ...game,
-
-            [game.players[0]]: {
-                options: newOptions_0,
-                pieces: newPieces_0,
-            },
-
-            [game.players[1]]: {
-                options: newOptions_1,
-                pieces: newPieces_1,
-            },
-
-            // pieces: newPieces,
-            // options: newOptions,
+            pieces: newPieces,
+            options: newOptions,
             currentPlayer: newPlayer,
             won: !!gameWon,
         };
@@ -95,7 +69,7 @@ const setupGames = () => {
         // game already won, cannot make another move
         if (game.won) return null;
 
-        const gameOptions = game[userID].options[selectedOptionID];
+        const gameOptions = game.options[selectedOptionID];
         // there must be options
         if (gameOptions.length === 0) return;
 

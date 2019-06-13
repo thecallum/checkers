@@ -1,18 +1,15 @@
 const loadFont = require('./loadFont');
 
-const {
-    draw: drawPiece,
-    drawOptions
-} = require('./piece');
+const { draw: drawPiece, drawOptions } = require('./piece');
 
 const canvas = {
     props: {
         fetchCanvasControls: {
             type: Function,
-            required: true
+            required: true,
         },
     },
-    data: function () {
+    data: function() {
         return {
             gameState: {}, // passed in when game is to be updated
 
@@ -49,7 +46,6 @@ const canvas = {
                 } else {
                     this.draw();
                 }
-
             }
         },
 
@@ -61,12 +57,12 @@ const canvas = {
             this.gridSize = gridSize;
             this.halfGridSize = halfGridSize;
 
-            const tempCanvas = document.createElement('canvas')
+            const tempCanvas = document.createElement('canvas');
 
             tempCanvas.height = this.width;
             tempCanvas.width = this.width;
 
-            tempCanvas.getContext('2d').drawImage(this.canvas, 0, 0)
+            tempCanvas.getContext('2d').drawImage(this.canvas, 0, 0);
 
             this.canvas.width = this.width;
             this.canvas.height = this.width;
@@ -107,11 +103,13 @@ const canvas = {
         },
 
         drawPieces() {
+            // console.log('draw', this.gameState);
             this.gameState.pieces.map(piece => {
                 const isSelected = piece.id === this.gameState.selectedPiece;
                 const availableOptions = this.gameState.options[piece.id].length > 0;
 
-                drawPiece(piece, this.gridSize, this.ctx, availableOptions, isSelected, piece.color);
+                const color = this.gameState.players.filter(player => player.id === piece.player)[0].color;
+                drawPiece(piece, this.gridSize, this.ctx, availableOptions, isSelected, color);
             });
         },
 

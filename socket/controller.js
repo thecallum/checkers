@@ -19,16 +19,16 @@ module.exports = (server, session) => {
             const socket = io.sockets.sockets[player];
             socket.handshake.session.user = {
                 ...socket.handshake.session.user,
-                room
+                room,
             };
             socket.handshake.session.save();
         });
 
         io.to(room).emit('game', {
             state: 'ready',
-            game
+            game,
         });
-    }
+    };
 
     io.on('connection', socket => {
         const room = socket.handshake.session.user.room;
@@ -53,14 +53,14 @@ module.exports = (server, session) => {
 
                 opponentSocket.handshake.session.user = {
                     ...opponentSocket.handshake.session.user,
-                    room: null
+                    room: null,
                 };
                 socket.handshake.session.save();
 
                 if (games.exists(room)) {
                     games.close(room);
                     io.sockets.sockets[opponent].emit('game', {
-                        state: 'disconnect'
+                        state: 'disconnect',
                     });
                 }
             }
@@ -89,11 +89,11 @@ module.exports = (server, session) => {
 
                     opponentSocket.handshake.session.user = {
                         ...opponentSocket.handshake.session.user,
-                        room: null
+                        room: null,
                     };
                     socket.handshake.session.save();
                     opponentSocket.emit('game', {
-                        state: 'opponent_left'
+                        state: 'opponent_left',
                     });
                 }
 
@@ -103,14 +103,12 @@ module.exports = (server, session) => {
             if (data.state === 'accept') {
                 const room = socket.handshake.session.user.room;
 
-                console.log('accept', room);
-
                 if (room === null) return;
 
                 // tell other player
                 const opponent = rooms.getOpponentID(room, socket.id);
                 io.sockets.sockets[opponent].emit('game', {
-                    state: 'accepted'
+                    state: 'accepted',
                 });
 
                 cb();
@@ -138,13 +136,13 @@ module.exports = (server, session) => {
                         player: socket.id,
                         game: {
                             ...result,
-                            currentPlayer: socket.id
+                            currentPlayer: socket.id,
                         }, // game updated player, but current player has won
                     });
                 } else {
                     io.to(room).emit('game', {
                         state: 'new_turn',
-                        game: result
+                        game: result,
                     });
                 }
             }
@@ -181,7 +179,7 @@ module.exports = (server, session) => {
                 const socket = io.sockets.sockets[player];
                 socket.handshake.session.user = {
                     ...socket.handshake.session.user,
-                    room
+                    room,
                 };
                 socket.handshake.session.save();
 
@@ -202,7 +200,7 @@ module.exports = (server, session) => {
             setTimeout(() => {
                 io.to(room).emit('game', {
                     state: 'found',
-                    players: users
+                    players: users,
                 });
             }, 0);
         }

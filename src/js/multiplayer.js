@@ -7,23 +7,27 @@ const findClickedPiece = require('./components/findClickedPiece');
 const updatePieces = require('./components/updatePieces');
 const nextPlayer = require('./components/nextPlayer');
 const checkOptionsClicked = require('./components/checkOptionsClicked');
+const colors = require('./components/colors');
 
 new Vue({
     el: '#app',
     components: {
         canvasComponent: canvas,
-        modal
+        modal,
     },
     data: {
-        players: [{
+        players: [
+            {
                 name: '',
                 default: 'player 1',
-                src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg'
+                src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg',
+                color: colors.red,
             },
             {
                 name: '',
                 default: 'player 2',
-                src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg'
+                src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg',
+                color: colors.blue,
             },
         ],
 
@@ -42,12 +46,7 @@ new Vue({
         update: null,
         canvasElement: null,
 
-        game: {
-            pieces: [],
-            options: {},
-            currentPlayer: 0,
-            selectedPiece: null,
-        },
+        game: {},
     },
 
     mounted() {
@@ -77,10 +76,7 @@ new Vue({
         },
         cancelSetup() {
             // reset player names entered
-            this.players = this.players.map(player => ({
-                ...player,
-                name: ''
-            }));
+            this.players = this.players.map(player => ({ ...player, name: '' }));
             this.toggleSetup = false;
         },
         toggleWin() {
@@ -102,10 +98,10 @@ new Vue({
             this.gameEnded = true;
         },
 
-
         setupNewGame() {
+            const players = [{ id: 0, color: this.players[0].color }, { id: 1, color: this.players[1].color }];
             const newPieces = this.generatePieces();
-            const newOptions = this.generateOptions(newPieces, 0, [0, 1]);
+            const newOptions = this.generateOptions(newPieces, 0, players);
 
             this.game = {
                 ...this.game,
@@ -113,6 +109,7 @@ new Vue({
                 pieces: newPieces,
                 options: newOptions,
                 selectedPiece: null,
+                players,
             };
         },
 
@@ -138,7 +135,7 @@ new Vue({
                 // only works when run twice, I don't know why
                 this.handleResize();
                 setTimeout(this.handleResize);
-            }, 0);
+            });
         },
 
         callCanvasRedraw(hasResized) {
@@ -151,6 +148,7 @@ new Vue({
             // 3. otherwise, it comes next players turn
 
             const opponentHasPieces = this.game.pieces.filter(piece => piece.player === this.game.currentPlayer).length > 0;
+
             if (!opponentHasPieces) return this.handleGameEnd('win');
 
             let opponentHasOptions = false;
@@ -166,8 +164,8 @@ new Vue({
 
         updateGame(selectedOption) {
             const newPieces = updatePieces(selectedOption, this.game.selectedPiece, this.game.pieces, this.game.currentPlayer);
-            const newPlayer = nextPlayer(this.game.currentPlayer, [0, 1]);
-            const newOptions = this.generateOptions(newPieces, newPlayer, [0, 1]);
+            const newPlayer = nextPlayer(this.game.currentPlayer, this.game.players);
+            const newOptions = this.generateOptions(newPieces, newPlayer, this.game.players);
 
             this.game = {
                 ...this.game,
@@ -178,17 +176,14 @@ new Vue({
             };
         },
 
-        clickHandler({
-            offsetX,
-            offsetY
-        }) {
+        clickHandler({ offsetX, offsetY }) {
             if (this.gameEnded) return;
 
             // if no piece is selected, cannot select an option..
             let selectedOption =
-                this.game.selectedPiece === null ?
-                null :
-                checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);
+                this.game.selectedPiece === null
+                    ? null
+                    : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);
 
             if (selectedOption) {
                 this.updateGame(selectedOption);
@@ -223,6 +218,6 @@ new Vue({
         currentPlayer() {
             const player = this.players[this.game.currentPlayer];
             return player.name !== '' ? player.name : player.default;
-        }
-    }
+        },
+    },
 });
