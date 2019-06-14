@@ -1,13 +1,13 @@
-const canvas = require('./components/canvas');
-const modal = require('./components/modal');
+const canvas = require('../components/canvas');
+const modal = require('../components/modal');
 
-const generatePieces = require('./components/generatePieces');
-const generateOptions = require('./components/generateOptions');
-const findClickedPiece = require('./components/findClickedPiece');
-const updatePieces = require('./components/updatePieces');
-const nextPlayer = require('./components/nextPlayer');
-const checkOptionsClicked = require('./components/checkOptionsClicked');
-const colors = require('./components/colors');
+const generatePieces = require('../game_modules/generatePieces');
+const generateOptions = require('../game_modules/generateOptions');
+const findClickedPiece = require('../game_modules/findClickedPiece');
+const updatePieces = require('../game_modules/updatePieces');
+const nextPlayer = require('../game_modules/nextPlayer');
+const checkOptionsClicked = require('../game_modules/checkOptionsClicked');
+const colors = require('../game_modules/colors');
 
 new Vue({
     el: '#app',

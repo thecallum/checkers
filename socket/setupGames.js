@@ -1,8 +1,8 @@
-const generatePieces = require('../src/js/components/generatePieces');
-const generateOptions = require('../src/js/components/generateOptions');
-const updatePieces = require('../src/js/components/updatePieces');
-const nextPlayer = require('../src/js/components/nextPlayer');
-const colors = require('../src/js/components/colors');
+const generatePieces = require('../src/js/game_modules/generatePieces');
+const generateOptions = require('../src/js/game_modules/generateOptions');
+const updatePieces = require('../src/js/game_modules/updatePieces');
+const nextPlayer = require('../src/js/game_modules/nextPlayer');
+const colors = require('../src/js/game_modules/colors');
 
 const setupGames = () => {
     const games = {};

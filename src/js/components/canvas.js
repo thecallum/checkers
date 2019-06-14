@@ -1,4 +1,4 @@
-const { draw: drawPiece, drawOptions } = require('./piece');
+const { draw: drawPiece, drawOptions } = require('../game_modules/piece');
 
 const canvas = {
     props: {

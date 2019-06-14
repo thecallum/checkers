@@ -1,10 +1,10 @@
 const io = require('socket.io-client');
 
-const canvas = require('./components/canvas');
-const modal = require('./components/modal');
+const canvas = require('../components/canvas');
+const modal = require('../components/modal');
 
-const findClickedPiece = require('./components/findClickedPiece');
-const checkOptionsClicked = require('./components/checkOptionsClicked');
+const findClickedPiece = require('../game_modules/findClickedPiece');
+const checkOptionsClicked = require('../game_modules/checkOptionsClicked');
 
 new Vue({
     el: '#app',
@@ -73,7 +73,8 @@ new Vue({
 
         joinQueue() {
             this.socket.emit(
-                'game', {
+                'game',
+                {
                     state: 'join_queue',
                 },
                 () => {
@@ -95,7 +96,8 @@ new Vue({
 
         cancelSetup() {
             this.socket.emit(
-                'game', {
+                'game',
+                {
                     state: 'leave_queue',
                 },
                 () => {
@@ -124,7 +126,7 @@ new Vue({
             this.game = {
                 ...updates,
                 selectedPiece: null,
-                upsideDown: updates.players[0].id !== this.socket.id
+                upsideDown: updates.players[0].id !== this.socket.id,
             };
         },
 
@@ -139,7 +141,8 @@ new Vue({
         acceptGame() {
             if (this.accepted) return;
             this.socket.emit(
-                'game', {
+                'game',
+                {
                     state: 'accept',
                 },
                 () => (this.accepted = true)
@@ -232,17 +235,14 @@ new Vue({
                 }
             });
         },
-        clickHandler({
-            offsetX,
-            offsetY
-        }) {
+        clickHandler({ offsetX, offsetY }) {
             if (this.gameEnded || this.game.currentPlayer !== this.socket.id) return;
 
             // if no piece is selected, cannot select an option..
             let selectedOption =
-                this.game.selectedPiece === null ?
-                null :
-                checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);
+                this.game.selectedPiece === null
+                    ? null
+                    : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);
 
             if (selectedOption) {
                 const move = {
@@ -283,7 +283,7 @@ new Vue({
             if (this.game.currentPlayer === this.socket.id) {
                 return "It's your turn";
             } else {
-                return `It\'s ${this.players[this.game.currentPlayer].username}\'s turn`;
+                return `It's ${this.players[this.game.currentPlayer].username}'s turn`;
             }
         },
         opponent() {
