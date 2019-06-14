@@ -1,9 +1,4 @@
-const loadFont = require('./loadFont');
-
-const {
-    draw: drawPiece,
-    drawOptions
-} = require('./piece');
+const { draw: drawPiece, drawOptions } = require('./piece');
 
 const canvas = {
     props: {
@@ -31,8 +26,6 @@ const canvas = {
 
         this.canvas.width = this.width;
         this.canvas.height = this.width;
-
-        loadFont(this.ctx, 'Special Elite', 36);
 
         // pass methods to update the canvas
         this.fetchCanvasControls(this.update, this.canvas);

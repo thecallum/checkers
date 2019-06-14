@@ -35,21 +35,18 @@ const drawKingOverlay = (ctx, x, y, upsideDown) => {
 
     if (upsideDown) ctx.rotate((Math.PI / 180) * 180);
 
+    ctx.font = `36px Arial`;
     ctx.fillStyle = 'black';
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
 
-    ctx.fillText('K', 0, 0);
+    ctx.fillText('K', 0, 3.5);
 
     ctx.restore();
 };
 
 const drawOptions = (ctx, options, gridSize, halfGridSize) => {
-    for (let {
-            start,
-            end
-        }
-        of options) {
+    for (let { start, end } of options) {
         // Calculate which direction arrow needs to point
         const xDir = start.x > end.x ? -1 : 1;
         const yDir = start.y > end.y ? -1 : 1;
@@ -107,4 +104,4 @@ module.exports = {
     Piece,
     draw,
     drawOptions,
-};;
+};
