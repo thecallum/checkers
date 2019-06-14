@@ -3817,11 +3817,6 @@ has-flag@^3.0.0:
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-3.0.0.tgz#b5d454dc2199ae225699f3467e5a07f3b955bafd"
   integrity sha1-tdRU3CGZriJWmfNGfloH87lVuv0=
 
-has-font@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/has-font/-/has-font-1.0.2.tgz#e6d7651e3e1b2a1fd3bfb0105fbb6692e520d71e"
-  integrity sha1-5tdlHj4bKh/Tv7AQX7tmkuUg1x4=
-
 has-symbols@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/has-symbols/-/has-symbols-1.0.0.tgz#ba1a8f1af2a0fc39650f5c850367704122063b44"
@@ -6874,11 +6869,6 @@ range-parser@^1.2.1, range-parser@~1.2.0, range-parser@~1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
-
-rate-limiter-flexible@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/rate-limiter-flexible/-/rate-limiter-flexible-1.0.2.tgz#d4fd25e0a3663e02a8df353f249fb59d103072a2"
-  integrity sha512-me2BdoTUUnNt3uF/gjcZ89t/x6sx/V5ui612ajjbGNSW0CW37S2PteN5zVP6p7eDbFm9CK9CthtxAwWi4hdRvA==
 
 raw-body@2.3.3:
   version "2.3.3"

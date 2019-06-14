@@ -302,7 +302,7 @@ new Vue({
 				})
 					.then(res => res.json())
 					.then(res => {
-						this.username_search_valid = !res.exists;
+						this.username_search_valid = res.exists;
 					})
 					.catch(err => console.error('Fetch username err', err));
 			}, 500);
