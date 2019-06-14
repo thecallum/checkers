@@ -1,6 +1,9 @@
 const loadFont = require('./loadFont');
 
-const { draw: drawPiece, drawOptions } = require('./piece');
+const {
+    draw: drawPiece,
+    drawOptions
+} = require('./piece');
 
 const canvas = {
     props: {
@@ -103,13 +106,12 @@ const canvas = {
         },
 
         drawPieces() {
-            // console.log('draw', this.gameState);
             this.gameState.pieces.map(piece => {
                 const isSelected = piece.id === this.gameState.selectedPiece;
                 const availableOptions = this.gameState.options[piece.id].length > 0;
 
                 const color = this.gameState.players.filter(player => player.id === piece.player)[0].color;
-                drawPiece(piece, this.gridSize, this.ctx, availableOptions, isSelected, color);
+                drawPiece(piece, this.gridSize, this.ctx, availableOptions, isSelected, color, this.gameState.upsideDown);
             });
         },
 

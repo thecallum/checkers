@@ -9,7 +9,7 @@ class Piece {
     }
 }
 
-const draw = (piece, gridSize, ctx, validOptions, selected, color) => {
+const draw = (piece, gridSize, ctx, validOptions, selected, color, upsideDown = false) => {
     const radius = gridSize / 2 - 6;
     const x = piece.coords.x * gridSize + gridSize / 2;
     const y = piece.coords.y * gridSize + gridSize / 2;
@@ -26,16 +26,30 @@ const draw = (piece, gridSize, ctx, validOptions, selected, color) => {
     ctx.arc(x, y, radius, 50, 0, 2 * Math.PI);
     ctx.fill();
 
-    if (piece.king) drawKingOverlay(ctx, x, y);
+    if (piece.king) drawKingOverlay(ctx, x, y, upsideDown);
 };
 
-const drawKingOverlay = (ctx, x, y) => {
+const drawKingOverlay = (ctx, x, y, upsideDown) => {
+    ctx.save();
+    ctx.translate(x, y);
+
+    if (upsideDown) ctx.rotate((Math.PI / 180) * 180);
+
     ctx.fillStyle = 'black';
-    ctx.fillText('K', x - 10, y + 12);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillText('K', 0, 0);
+
+    ctx.restore();
 };
 
 const drawOptions = (ctx, options, gridSize, halfGridSize) => {
-    for (let { start, end } of options) {
+    for (let {
+            start,
+            end
+        }
+        of options) {
         // Calculate which direction arrow needs to point
         const xDir = start.x > end.x ? -1 : 1;
         const yDir = start.y > end.y ? -1 : 1;
@@ -93,4 +107,4 @@ module.exports = {
     Piece,
     draw,
     drawOptions,
-};
+};;

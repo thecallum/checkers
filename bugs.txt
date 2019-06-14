@@ -1,3 +1,4 @@
 firefox modal clickout broken (::after)
 
-when canvas rotated, king text upside down
+//fixed -- when canvas rotated, king text upside down
+text isnt centered

@@ -7,6 +7,13 @@ const testingConfig = {
 	database: 'test',
 };
 
+if (!process.env.TESTING) {
+    if (!process.env.DB_HOST) throw 'Missing env variable DB_HOST';
+    if (!process.env.DB_USER) throw 'Missing env variable DB_USER';
+    if (!process.env.DB_PASSWORD) throw 'Missing env variable DB_PASSWORD';
+    if (!process.env.DB_DATABASE) throw 'Missing env variable DB_DATABASE';
+}
+
 const config = {
 	host: process.env.DB_HOST,
 	user: process.env.DB_USER,

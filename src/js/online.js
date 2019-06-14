@@ -73,8 +73,7 @@ new Vue({
 
         joinQueue() {
             this.socket.emit(
-                'game',
-                {
+                'game', {
                     state: 'join_queue',
                 },
                 () => {
@@ -96,8 +95,7 @@ new Vue({
 
         cancelSetup() {
             this.socket.emit(
-                'game',
-                {
+                'game', {
                     state: 'leave_queue',
                 },
                 () => {
@@ -120,7 +118,14 @@ new Vue({
         },
 
         updateGame(updates) {
-            this.game = { ...updates, selectedPiece: null };
+            // console.log({
+            //     updates
+            // })
+            this.game = {
+                ...updates,
+                selectedPiece: null,
+                upsideDown: updates.players[0].id !== this.socket.id
+            };
         },
 
         updateWinMessage(winType, player) {
@@ -134,8 +139,7 @@ new Vue({
         acceptGame() {
             if (this.accepted) return;
             this.socket.emit(
-                'game',
-                {
+                'game', {
                     state: 'accept',
                 },
                 () => (this.accepted = true)
@@ -228,14 +232,17 @@ new Vue({
                 }
             });
         },
-        clickHandler({ offsetX, offsetY }) {
+        clickHandler({
+            offsetX,
+            offsetY
+        }) {
             if (this.gameEnded || this.game.currentPlayer !== this.socket.id) return;
 
             // if no piece is selected, cannot select an option..
             let selectedOption =
-                this.game.selectedPiece === null
-                    ? null
-                    : checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);
+                this.game.selectedPiece === null ?
+                null :
+                checkOptionsClicked(this.game.options[this.game.selectedPiece], this.canvas.gridSize, offsetX, offsetY);
 
             if (selectedOption) {
                 const move = {

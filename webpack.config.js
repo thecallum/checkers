@@ -9,7 +9,9 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 module.exports = env => {
     const isDev = !!env && env.hasOwnProperty('development');
 
-    console.log({ isDev });
+    console.log({
+        isDev
+    });
 
     return {
         mode: isDev ? 'development' : 'production',
@@ -54,25 +56,23 @@ module.exports = env => {
 
         module: {
             rules: [{
-                    test: /\.(s*)css$/,
-                    use: [{
-                            loader: MiniCssExtractPlugin.loader
-                        },
-                        'css-loader',
-                        'sass-loader'
-                    ]
-                },
-                {
-                    test: /\.js$/,
-                    exclude: /(node_modules|bower_components)/,
-                    use: {
-                        loader: 'babel-loader',
-                        options: {
-                            presets: ['@babel/preset-env']
-                        }
+                test: /\.(s*)css$/,
+                use: [{
+                        loader: MiniCssExtractPlugin.loader
+                    },
+                    'css-loader',
+                    'sass-loader'
+                ]
+            }, {
+                test: /\.js$/,
+                exclude: /(node_modules|bower_components)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
                     }
                 }
-            ],
+            }],
         },
 
         optimization: {
@@ -128,15 +128,17 @@ module.exports = env => {
             ],
         },
 
-        ...isDev ? {} : { devtool: 'cheap-source-map' },
+        ...isDev ? {} : {
+            devtool: 'cheap-source-map'
+        },
 
         devServer: {
             contentBase: path.join(__dirname, 'public'),
-            port: 9000,
+            port: 8000,
 
             proxy: {
                 '/': {
-                    target: 'http://localhost:3000',
+                    target: `http://localhost:${3000}`,
                     // bypass: function(req, res, proxyOptions) {
                     //     console.log('proxy', req.url)
                     // }
