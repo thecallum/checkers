@@ -62,6 +62,10 @@ module.exports = (server, session) => {
                     io.sockets.sockets[opponent].emit('game', {
                         state: 'disconnect',
                     });
+                } else {
+                    io.sockets.sockets[opponent].emit('game', {
+                        state: 'opponent_left',
+                    });
                 }
             }
         });
@@ -71,7 +75,7 @@ module.exports = (server, session) => {
 
             if (data.state === 'join_queue') {
                 queue.add(socket.id);
-                cb();
+                if (cb) cb();
             }
 
             if (data.state === 'leave_queue') {
@@ -97,7 +101,7 @@ module.exports = (server, session) => {
                     });
                 }
 
-                cb();
+                if (cb) cb();
             }
 
             if (data.state === 'accept') {
@@ -111,7 +115,7 @@ module.exports = (server, session) => {
                     state: 'accepted',
                 });
 
-                cb();
+                if (cb) cb();
                 const bothAccepted = rooms.accept(room, socket.id);
 
                 if (!bothAccepted) return;
@@ -125,7 +129,10 @@ module.exports = (server, session) => {
                 if (room === null) return;
 
                 const result = games.submitTurn(room, socket.id, data.move);
-                if (!result) return;
+                if (!result) {
+                    if (cb) cb(false);
+                    return;
+                }
 
                 if (result.won) {
                     games.close(room);
