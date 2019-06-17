@@ -1,45 +1,20 @@
 require('dotenv').config();
-
 process.env.TESTING = true;
-
-const request = require('supertest');
-const truncateUserTable = require('../testUtils/truncateUserTable');
-
-const registerUser = require('../testUtils/registerUser');
-
 const io = require('socket.io-client');
-
 const app = require('../../app');
+const truncateUserTable = require('../testUtils/truncateUserTable');
+const registerUser = require('../testUtils/registerUser');
 
 let cookie1, cookie2, options1, options2;
 
-const user1 = {
-    email: 'email1@email.com',
-    password: 'Password1234!',
-    username: 'username111',
-};
+const user1 = { email: 'email1@email.com', password: 'Password1234!', username: 'username111' };
+const user2 = { email: 'email2@email.com', password: 'Password1234!', username: 'username222' };
 
-const user2 = {
-    email: 'email2@email.com',
-    password: 'Password1234!',
-    username: 'username222',
-};
 beforeAll(async done => {
     // jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
     await truncateUserTable();
 
-    const response = await Promise.all([
-        registerUser(app, {
-            email: user1.email,
-            password: user1.password,
-            username: user1.username,
-        }),
-        registerUser(app, {
-            email: user2.email,
-            password: user2.password,
-            username: user2.username,
-        }),
-    ]);
+    const response = await Promise.all([registerUser(app, user1), registerUser(app, user2)]);
 
     expect(response[0].status).toBe(200);
     expect(response[1].status).toBe(200);
@@ -187,73 +162,75 @@ describe('socket', () => {
         });
     });
 
-    test('submit turn', done => {
-        socket1.on('error', err => done(err));
-        socket2.on('error', err => done(err));
+    describe('submit turn', () => {
+        test('submit turn', done => {
+            socket1.on('error', err => done(err));
+            socket2.on('error', err => done(err));
 
-        socket1.emit('game', { state: 'join_queue' }, () => {});
-        socket2.emit('game', { state: 'join_queue' }, () => {});
+            socket1.emit('game', { state: 'join_queue' }, () => {});
+            socket2.emit('game', { state: 'join_queue' }, () => {});
 
-        socket1.on('game', (data = JSON.parse(data)) => {
-            if (data.state === 'found') socket1.emit('game', { state: 'accept' });
-        });
+            socket1.on('game', (data = JSON.parse(data)) => {
+                if (data.state === 'found') socket1.emit('game', { state: 'accept' });
+            });
 
-        socket2.on('game', (data = JSON.parse(data)) => {
-            if (data.state === 'found') socket2.emit('game', { state: 'accept' });
-            if (data.state === 'new_turn') {
-                expect(!!data.game).toBe(true);
-                done();
-            }
-            if (data.state === 'ready') {
-                expect(!!data.game).toBe(true);
-
-                const selectedPiece = Object.keys(data.game.options).filter(key => data.game.options[key].length !== 0)[0];
-                const selectedOption = data.game.options[selectedPiece][0];
-
-                const move = { selectedOption, selectedPiece: Number(selectedPiece) };
-
-                if (data.game.currentPlayer === socket1.id) {
-                    socket1.emit('game', { state: 'submit_turn', move });
-                } else {
-                    socket2.emit('game', { state: 'submit_turn', move });
+            socket2.on('game', (data = JSON.parse(data)) => {
+                if (data.state === 'found') socket2.emit('game', { state: 'accept' });
+                if (data.state === 'new_turn') {
+                    expect(!!data.game).toBe(true);
+                    done();
                 }
-            }
-        });
-    });
+                if (data.state === 'ready') {
+                    expect(!!data.game).toBe(true);
 
-    test('submit turn -- incorrect user', done => {
-        socket1.on('error', err => done(err));
-        socket2.on('error', err => done(err));
+                    const selectedPiece = Object.keys(data.game.options).filter(key => data.game.options[key].length !== 0)[0];
+                    const selectedOption = data.game.options[selectedPiece][0];
 
-        socket1.emit('game', { state: 'join_queue' }, () => {});
-        socket2.emit('game', { state: 'join_queue' }, () => {});
+                    const move = { selectedOption, selectedPiece: Number(selectedPiece) };
 
-        socket1.on('game', (data = JSON.parse(data)) => {
-            if (data.state === 'found') socket1.emit('game', { state: 'accept' });
-        });
-
-        socket2.on('game', (data = JSON.parse(data)) => {
-            if (data.state === 'found') socket2.emit('game', { state: 'accept' });
-            if (data.state === 'ready') {
-                expect(!!data.game).toBe(true);
-
-                const selectedPiece = Object.keys(data.game.options).filter(key => data.game.options[key].length !== 0)[0];
-                const selectedOption = data.game.options[selectedPiece][0];
-
-                const move = { selectedOption, selectedPiece: Number(selectedPiece) };
-
-                if (data.game.currentPlayer === socket2.id) {
-                    socket1.emit('game', { state: 'submit_turn', move }, err => {
-                        expect(err).toBe(false);
-                        done();
-                    });
-                } else {
-                    socket2.emit('game', { state: 'submit_turn', move }, err => {
-                        expect(err).toBe(false);
-                        done();
-                    });
+                    if (data.game.currentPlayer === socket1.id) {
+                        socket1.emit('game', { state: 'submit_turn', move });
+                    } else {
+                        socket2.emit('game', { state: 'submit_turn', move });
+                    }
                 }
-            }
+            });
+        });
+
+        test('submit turn -- incorrect user', done => {
+            socket1.on('error', err => done(err));
+            socket2.on('error', err => done(err));
+
+            socket1.emit('game', { state: 'join_queue' }, () => {});
+            socket2.emit('game', { state: 'join_queue' }, () => {});
+
+            socket1.on('game', (data = JSON.parse(data)) => {
+                if (data.state === 'found') socket1.emit('game', { state: 'accept' });
+            });
+
+            socket2.on('game', (data = JSON.parse(data)) => {
+                if (data.state === 'found') socket2.emit('game', { state: 'accept' });
+                if (data.state === 'ready') {
+                    expect(!!data.game).toBe(true);
+
+                    const selectedPiece = Object.keys(data.game.options).filter(key => data.game.options[key].length !== 0)[0];
+                    const selectedOption = data.game.options[selectedPiece][0];
+
+                    const move = { selectedOption, selectedPiece: Number(selectedPiece) };
+
+                    if (data.game.currentPlayer === socket2.id) {
+                        socket1.emit('game', { state: 'submit_turn', move }, err => {
+                            expect(err).toBe(false);
+                            done();
+                        });
+                    } else {
+                        socket2.emit('game', { state: 'submit_turn', move }, err => {
+                            expect(err).toBe(false);
+                            done();
+                        });
+                    }
+                }
+            });
         });
     });
 });
