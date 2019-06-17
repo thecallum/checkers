@@ -1,7 +1,15 @@
 Create timer for disconnected user
 
-Rewrite state in online.js
-
 Random start player online
 
 online rematch
+
+can auth state be used as session.save()
+research socket security
+
+responsive login form
+links between login and register page
+tab index for stayLogged
+tab doesnt work on firefox
+
+firefox modal clickout broken (::after)

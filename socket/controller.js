@@ -6,6 +6,11 @@ const socketio = require('socket.io');
 const auth = require('./middleware/auth');
 const ios = require('socket.io-express-session');
 
+const updateSessionRoom = (socket, newRoom) => {
+    socket.handshake.session.user = { ...socket.handshake.session.user, room: newRoom };
+    socket.handshake.session.save();
+};
+
 module.exports = (server, session) => {
     const io = socketio(server);
     // allows ws to access sessions
@@ -17,11 +22,7 @@ module.exports = (server, session) => {
 
         players.map(player => {
             const socket = io.sockets.sockets[player];
-            socket.handshake.session.user = {
-                ...socket.handshake.session.user,
-                room,
-            };
-            socket.handshake.session.save();
+            updateSessionRoom(socket, room);
         });
 
         io.to(room).emit('game', {
@@ -33,39 +34,40 @@ module.exports = (server, session) => {
     io.on('connection', socket => {
         const room = socket.handshake.session.user.room;
 
-        if (!!room && !rooms.exists(room)) {
-            socket.handshake.session.user = {
-                ...socket.handshake.session.user,
-                room: null,
-            };
-        }
+        // console.log('CONNECT', { room });
+
+        // if room exists in session, revert it to null
+        if (room) updateSessionRoom(socket, null);
+
         socket.on('disconnect', () => {
             queue.remove(socket.id);
 
             const room = socket.handshake.session.user.room;
 
+            if (!room && room !== 0) {
+                return;
+            }
+
+            // if user  is in room, inform opponent
             if (rooms.exists(room)) {
                 const opponent = rooms.getOpponentID(room, socket.id);
-                const opponentSocket = io.sockets.sockets[opponent];
 
-                opponentSocket.leave(room);
-                rooms.close(room);
+                if (opponent) {
+                    const opponentSocket = io.sockets.sockets[opponent];
 
-                opponentSocket.handshake.session.user = {
-                    ...opponentSocket.handshake.session.user,
-                    room: null,
-                };
-                socket.handshake.session.save();
+                    opponentSocket.leave(room);
+                    rooms.close(room);
 
-                if (games.exists(room)) {
-                    games.close(room);
-                    io.sockets.sockets[opponent].emit('game', {
-                        state: 'disconnect',
-                    });
-                } else {
-                    io.sockets.sockets[opponent].emit('game', {
-                        state: 'opponent_left',
-                    });
+                    // reset socket to null
+                    updateSessionRoom(opponentSocket, null);
+
+                    // handle differently if opponent is in a game
+                    if (games.exists(room)) {
+                        games.close(room);
+                        io.sockets.sockets[opponent].emit('game', { state: 'disconnect' });
+                    } else {
+                        io.sockets.sockets[opponent].emit('game', { state: 'opponent_left' });
+                    }
                 }
             }
         });
@@ -74,84 +76,126 @@ module.exports = (server, session) => {
             if (!data.hasOwnProperty('state')) return;
 
             if (data.state === 'join_queue') {
-                queue.add(socket.id);
-                if (cb) cb();
+                // must not already be in queue
+
+                const inQueue = queue.add(socket.id);
+                if (cb) cb(inQueue);
             }
 
             if (data.state === 'leave_queue') {
+                // must be in queue
+                // room must be valid
+
                 queue.remove(socket.id);
                 const room = socket.handshake.session.user.room;
 
-                if (room !== null) {
-                    // tell opponent that you've left
-                    const opponent = rooms.getOpponentID(room, socket.id);
+                if (!room && room !== 0) {
+                    if (cb) cb(false);
+                    return;
+                }
+
+                // tell opponent that you've left
+                const opponent = rooms.getOpponentID(room, socket.id);
+
+                if (opponent) {
                     const opponentSocket = io.sockets.sockets[opponent];
                     const players = rooms.getPlayerIDs(room);
 
                     players.forEach(player => io.sockets.sockets[player].leave(room));
                     rooms.close(room);
 
-                    opponentSocket.handshake.session.user = {
-                        ...opponentSocket.handshake.session.user,
-                        room: null,
-                    };
-                    socket.handshake.session.save();
-                    opponentSocket.emit('game', {
-                        state: 'opponent_left',
-                    });
+                    updateSessionRoom(opponentSocket, null);
+
+                    opponentSocket.emit('game', { state: 'opponent_left' });
+
+                    if (cb) cb();
                 }
 
-                if (cb) cb();
+                return;
             }
 
             if (data.state === 'accept') {
+                // must be in room
+                // room must be valid
+
                 const room = socket.handshake.session.user.room;
 
-                if (room === null) return;
-
-                // tell other player
-                const opponent = rooms.getOpponentID(room, socket.id);
-                io.sockets.sockets[opponent].emit('game', {
-                    state: 'accepted',
-                });
-
-                if (cb) cb();
-                const bothAccepted = rooms.accept(room, socket.id);
-
-                if (!bothAccepted) return;
-
-                startGame(room, socket.id, [socket.id, rooms.getOpponentID(room, socket.id)]);
-            }
-
-            if (data.state === 'submit_turn') {
-                const room = socket.handshake.session.user.room;
-
-                if (room === null) return;
-
-                const result = games.submitTurn(room, socket.id, data.move);
-                if (!result) {
+                if (!room && room !== 0) {
                     if (cb) cb(false);
                     return;
                 }
 
-                if (result.won) {
+                if (!rooms.exists(room)) {
+                    if (cb) cb(false);
+                    return;
+                }
+
+                // tell other player
+                const opponent = rooms.getOpponentID(room, socket.id);
+                io.sockets.sockets[opponent].emit('game', { state: 'accepted' });
+
+                if (cb) cb();
+                const bothAccepted = rooms.accept(room, socket.id);
+
+                if (bothAccepted) {
+                    startGame(room, socket.id, [socket.id, rooms.getOpponentID(room, socket.id)]);
+                }
+
+                return;
+            }
+
+            if (data.state === 'submit_turn') {
+                // must be in room
+                // room must be valid
+                // turn must be valid
+                // must be current players turn
+
+                const room = socket.handshake.session.user.room;
+
+                if (!room && room !== 0) {
+                    if (cb) cb(false);
+                    return;
+                }
+
+                if (!rooms.exists(room)) {
+                    if (cb) cb(false);
+                    return;
+                }
+
+                // validate turn
+                if (!games.isPlayersTurn(room, socket.id)) {
+                    // invalid player
+                    console.log('INVALID PLAYER');
+                    if (cb) cb(false);
+                    return;
+                }
+
+                if (!games.isValidMove(room, data.move)) {
+                    // invalid move
+                    console.log('INVALID MOVE');
+                    if (cb) cb(false);
+                    return;
+                }
+
+                const updatedGame = games.update(room, data.move);
+
+                if (updatedGame.won) {
                     games.close(room);
 
                     io.to(room).emit('game', {
                         state: 'win',
-                        winType: result.gameWon,
+                        winType: updatedGame.gameWon,
                         player: socket.id,
-                        game: {
-                            ...result,
-                            currentPlayer: socket.id,
-                        }, // game updated player, but current player has won
+                        game: { ...updatedGame, currentPlayer: socket.id }, // game updated player, but current player has won
                     });
                 } else {
                     io.to(room).emit('game', {
                         state: 'new_turn',
-                        game: result,
+                        game: updatedGame,
                     });
                 }
+
+                return;
             }
         });
     });
@@ -184,12 +228,7 @@ module.exports = (server, session) => {
 
             players.map(player => {
                 const socket = io.sockets.sockets[player];
-                socket.handshake.session.user = {
-                    ...socket.handshake.session.user,
-                    room,
-                };
-                socket.handshake.session.save();
-
+                updateSessionRoom(socket, room);
                 socket.join(room);
             });
 
@@ -205,11 +244,8 @@ module.exports = (server, session) => {
             };
 
             setTimeout(() => {
-                io.to(room).emit('game', {
-                    state: 'found',
-                    players: users,
-                });
-            }, 0);
+                io.to(room).emit('game', { state: 'found', players: users });
+            });
         }
     });
 };

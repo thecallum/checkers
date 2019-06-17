@@ -1,28 +1,33 @@
 const setupQueue = () => {
-	let queue = [];
-	const subscribeList = [];
+    let queue = [];
+    const subscribeList = [];
 
-	const add = id => {
-		queue.push(id);
-		emit();
-	};
+    const add = id => {
+        const inQueue = queue.indexOf(id) !== -1;
 
-	const getPlayers = () => {
-		const spliced = queue.splice(0, 2);
-		emit();
-		return spliced;
-	};
+        if (inQueue) return false;
 
-	const remove = id => {
-		queue = queue.filter(userID => userID !== id);
-		emit();
-	};
+        queue.push(id);
+        emit();
+    };
 
-	const subscribe = cb => subscribeList.push(cb);
+    const getPlayers = () => {
+        const spliced = queue.splice(0, 2);
+        emit();
+        return spliced;
+    };
 
-	const emit = () => subscribeList.map(cb => cb(queue));
+    const remove = id => {
+        queue = queue.filter(userID => userID !== id);
 
-	return { add, getPlayers, subscribe, remove };
+        emit();
+    };
+
+    const subscribe = cb => subscribeList.push(cb);
+
+    const emit = () => subscribeList.map(cb => cb(queue));
+
+    return { add, getPlayers, subscribe, remove };
 };
 
 module.exports = setupQueue;

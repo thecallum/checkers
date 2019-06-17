@@ -45,60 +45,79 @@ const setupGames = () => {
         return false;
     };
 
-    const updateGame = (game, selectedOption, selectedOptionID) => {
+    const update = (gameID, { selectedOption, selectedPiece }) => {
+        const game = games[gameID];
+
         const newPlayer = nextPlayer(game.currentPlayer, game.players);
 
-        const newPieces = updatePieces(selectedOption, selectedOptionID, game.pieces, game.currentPlayer);
+        const newPieces = updatePieces(selectedOption, selectedPiece, game.pieces, game.currentPlayer);
         const newOptions = generateOptions(newPieces, newPlayer, game.players);
 
         const gameWon = checkWin(newPieces, newPlayer, newOptions);
 
-        return {
+        const newGame = {
             ...game,
             pieces: newPieces,
             options: newOptions,
             currentPlayer: newPlayer,
             won: !!gameWon,
         };
+
+        games[gameID] = newGame;
+        return newGame;
     };
 
-    const submitTurn = (id, userID, { selectedOption, selectedPiece: selectedOptionID }) => {
-        const game = games[id];
-        // check that correct player made the mode
-        if (userID !== game.currentPlayer) return null;
-        // game already won, cannot make another move
-        if (game.won) return null;
+    const isPlayersTurn = (roomID, userID) => games[roomID].currentPlayer === userID;
 
-        const gameOptions = game.options[selectedOptionID];
-        // there must be options
-        if (gameOptions.length === 0) return;
+    const isValidMove = (roomID, move) => {
+        try {
+            if (!move.hasOwnProperty('selectedOption')) return false;
+            if (!move.selectedOption.hasOwnProperty('start')) return false;
+
+            if (!move.selectedOption.start.hasOwnProperty('x')) return false;
+            if (!Number.isInteger(move.selectedOption.start.x) || move.selectedOption.start.x < 0 || move.selectedOption.start.x > 7) return false;
+
+            if (!move.selectedOption.start.hasOwnProperty('y')) return false;
+            if (!Number.isInteger(move.selectedOption.start.y) || move.selectedOption.start.y < 0 || move.selectedOption.start.y > 7) return false;
+
+            if (!move.selectedOption.end.hasOwnProperty('x')) return false;
+            if (!Number.isInteger(move.selectedOption.end.x) || move.selectedOption.end.x < 0 || move.selectedOption.end.x > 7) return false;
+
+            if (!move.selectedOption.end.hasOwnProperty('y')) return false;
+            if (!Number.isInteger(move.selectedOption.end.y) || move.selectedOption.end.y < 0 || move.selectedOption.end.y > 7) return false;
+
+            if (move.selectedOption.hasOwnProperty('becomeKing')) {
+                if (typeof move.selectedOption.becomeKing !== 'boolean') return false;
+            }
+
+            if (!move.hasOwnProperty('selectedPiece')) return false;
+            if (!Number.isInteger(move.selectedPiece) || move.selectedPiece < 0 || move.selectedPiece > 23) return false;
+        } catch (e) {
+            return false;
+        }
+
+        // move is correctly formatted
+        // now verify that move matches one of the options
+
+        const gameOptions = games[roomID].options[move.selectedPiece];
 
         let validOption = false;
 
         for (let option of gameOptions) {
-            if (JSON.stringify(option) === JSON.stringify(selectedOption)) {
+            if (JSON.stringify(option) === JSON.stringify(move.selectedOption)) {
                 validOption = true;
                 break;
             }
         }
 
-        if (!validOption) return null;
-        const updatedGame = updateGame(game, selectedOption, selectedOptionID);
-        games[id] = updatedGame;
-        return updatedGame;
+        return validOption;
     };
 
     const close = id => delete games[id];
 
     const exists = id => !!games.hasOwnProperty(id);
 
-    return {
-        create,
-        getCurrentPlayer,
-        submitTurn,
-        close,
-        exists,
-    };
+    return { create, getCurrentPlayer, update, close, exists, isPlayersTurn, isValidMove };
 };
 
 module.exports = setupGames;
