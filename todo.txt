@@ -4,7 +4,6 @@ Random start player online
 
 online rematch
 
-can auth state be used as session.save()
 research socket security
 
 responsive login form
