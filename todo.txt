@@ -12,3 +12,8 @@ tab index for stayLogged
 tab doesnt work on firefox
 
 firefox modal clickout broken (::after)
+
+
+regsiter handle taken email address
+
+login/register disable typing when loading??
