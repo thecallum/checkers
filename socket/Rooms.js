@@ -1,4 +1,4 @@
-const setupRooms = () => {
+const Rooms = () => {
     let rooms = {};
     let roomIndex = 0;
 
@@ -29,4 +29,4 @@ const setupRooms = () => {
     return { join, close, accept, getPlayerIDs, getOpponentID, exists };
 };
 
-module.exports = setupRooms;
+module.exports = Rooms;

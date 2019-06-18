@@ -4,7 +4,7 @@ const updatePieces = require('../src/js/game_modules/updatePieces');
 const nextPlayer = require('../src/js/game_modules/nextPlayer');
 const colors = require('../src/js/game_modules/colors');
 
-const setupGames = () => {
+const Games = () => {
     const games = {};
 
     const create = (id, players, currentPlayerID) => {
@@ -16,7 +16,6 @@ const setupGames = () => {
         const game = {
             pieces: newPieces,
             options: newOptions,
-
             players: gamePlayers,
             currentPlayer: currentPlayerID,
         };
@@ -47,12 +46,9 @@ const setupGames = () => {
 
     const update = (gameID, { selectedOption, selectedPiece }) => {
         const game = games[gameID];
-
         const newPlayer = nextPlayer(game.currentPlayer, game.players);
-
         const newPieces = updatePieces(selectedOption, selectedPiece, game.pieces, game.currentPlayer);
         const newOptions = generateOptions(newPieces, newPlayer, game.players);
-
         const gameWon = checkWin(newPieces, newPlayer, newOptions);
 
         const newGame = {
@@ -120,4 +116,4 @@ const setupGames = () => {
     return { create, getCurrentPlayer, update, close, exists, isPlayersTurn, isValidMove };
 };
 
-module.exports = setupGames;
+module.exports = Games;

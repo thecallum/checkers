@@ -1,15 +1,12 @@
-const games = require('./setupGames')();
-const queue = require('./setupQueue')();
-const rooms = require('./setupRooms')();
+const games = require('./Games')();
+const queue = require('./Queue')();
+const rooms = require('./Rooms')();
 
 const socketio = require('socket.io');
 const auth = require('./middleware/auth');
 const ios = require('socket.io-express-session');
 
-const updateSessionRoom = (socket, newRoom) => {
-    socket.handshake.session.user = { ...socket.handshake.session.user, room: newRoom };
-    socket.handshake.session.save();
-};
+const updateSessionRoom = require('./updateSessionRoom');
 
 module.exports = (server, session) => {
     const io = socketio(server);
@@ -17,24 +14,8 @@ module.exports = (server, session) => {
     io.use(ios(session));
     io.use(auth);
 
-    const startGame = (room, userID, players) => {
-        const game = games.create(room, players, userID);
-
-        players.map(player => {
-            const socket = io.sockets.sockets[player];
-            updateSessionRoom(socket, room);
-        });
-
-        io.to(room).emit('game', {
-            state: 'ready',
-            game,
-        });
-    };
-
     io.on('connection', socket => {
         const room = socket.handshake.session.user.room;
-
-        // console.log('CONNECT', { room });
 
         // if room exists in session, revert it to null
         if (room) updateSessionRoom(socket, null);
@@ -78,8 +59,9 @@ module.exports = (server, session) => {
             if (data.state === 'join_queue') {
                 // must not already be in queue
 
-                const inQueue = queue.add(socket.id);
-                if (cb) cb(inQueue);
+                const addedToQueue = queue.add(socket.id);
+                // console.log({ addedToQueue });
+                if (cb) cb(addedToQueue);
             }
 
             if (data.state === 'leave_queue') {
@@ -138,7 +120,12 @@ module.exports = (server, session) => {
                 const bothAccepted = rooms.accept(room, socket.id);
 
                 if (bothAccepted) {
-                    startGame(room, socket.id, [socket.id, rooms.getOpponentID(room, socket.id)]);
+                    const players = [socket.id, rooms.getOpponentID(room, socket.id)];
+                    const game = games.create(room, players, socket.id);
+
+                    players.map(player => updateSessionRoom(io.sockets.sockets[player], room));
+
+                    io.to(room).emit('game', { state: 'ready', game });
                 }
 
                 return;

@@ -1,12 +1,10 @@
-const setupQueue = () => {
+const Queue = () => {
     let queue = [];
     const subscribeList = [];
 
     const add = id => {
-        const inQueue = queue.indexOf(id) !== -1;
-
+        const inQueue = queue.includes(id);
         if (inQueue) return false;
-
         queue.push(id);
         emit();
     };
@@ -19,7 +17,6 @@ const setupQueue = () => {
 
     const remove = id => {
         queue = queue.filter(userID => userID !== id);
-
         emit();
     };
 
@@ -30,4 +27,4 @@ const setupQueue = () => {
     return { add, getPlayers, subscribe, remove };
 };
 
-module.exports = setupQueue;
+module.exports = Queue;

@@ -50,21 +50,36 @@ beforeAll(async done => {
 describe('socket', () => {
     let socket1, socket2;
 
-    beforeEach(() => {
+    beforeEach(done => {
         socket1 = io('ws://localhost:3000', options1);
         socket2 = io('ws://localhost:3000', options2);
+        done();
     });
 
-    describe('queue', () => {
-        test('join_queue', done => {
+    afterEach(done => {
+        socket1.disconnect();
+        socket2.disconnect();
+        done();
+    });
+
+    describe('join queue', () => {
+        test('join queue', done => {
+            socket1.on('error', err => done(err));
+            socket1.emit('game', { state: 'join_queue' }, () => done());
+        });
+
+        test('get error when joining queue more than once/', done => {
             socket1.on('error', err => done(err));
 
             socket1.emit('game', { state: 'join_queue' }, () => {
-                done();
+                socket1.emit('game', { state: 'join_queue' }, err => {
+                    expect(err).toBe(false);
+                    done();
+                });
             });
         });
 
-        test('leave_queue', done => {
+        test('leave queue', done => {
             socket1.on('error', err => done(err));
 
             socket1.emit('game', { state: 'join_queue' }, () => {
@@ -72,7 +87,18 @@ describe('socket', () => {
             });
         });
 
-        test('found', done => {
+        test('get error when trying to leave queue when not in queue', done => {
+            socket1.on('error', err => done(err));
+
+            socket1.emit('game', { state: 'join_queue' }, () => {
+                socket1.emit('game', { state: 'leave_queue' }, err => {
+                    expect(err).toBe(false);
+                    done();
+                });
+            });
+        });
+
+        test('recieve found request when two players join queue', done => {
             socket1.on('error', err => done(err));
             socket2.on('error', err => done(err));
 
@@ -94,7 +120,7 @@ describe('socket', () => {
             });
         });
 
-        test('player_left', done => {
+        test('recieve player_left request', done => {
             socket1.on('error', err => done(err));
             socket2.on('error', err => done(err));
 
@@ -112,23 +138,7 @@ describe('socket', () => {
             });
         });
 
-        test('disconnect', done => {
-            socket1.on('error', err => done(err));
-            socket2.on('error', err => done(err));
-
-            socket1.emit('game', { state: 'join_queue' }, () => {});
-            socket2.emit('game', { state: 'join_queue' }, () => {});
-
-            socket1.on('game', (data = JSON.parse(data)) => {
-                if (data.state === 'opponent_left') done();
-            });
-
-            socket2.on('game', (data = JSON.parse(data)) => {
-                if (data.state === 'found') socket2.disconnect();
-            });
-        });
-
-        test('both accept', done => {
+        test('recieve game when both players accept', done => {
             socket1.on('error', err => done(err));
             socket2.on('error', err => done(err));
 
@@ -145,7 +155,7 @@ describe('socket', () => {
             });
         });
 
-        test('opponent accepted', done => {
+        test('recieve notification when opponent accepted game', done => {
             socket1.on('error', err => done(err));
             socket2.on('error', err => done(err));
 
@@ -162,8 +172,24 @@ describe('socket', () => {
         });
     });
 
+    test('disconnect', done => {
+        socket1.on('error', err => done(err));
+        socket2.on('error', err => done(err));
+
+        socket1.emit('game', { state: 'join_queue' }, () => {});
+        socket2.emit('game', { state: 'join_queue' }, () => {});
+
+        socket1.on('game', (data = JSON.parse(data)) => {
+            if (data.state === 'opponent_left') done();
+        });
+
+        socket2.on('game', (data = JSON.parse(data)) => {
+            if (data.state === 'found') socket2.disconnect();
+        });
+    });
+
     describe('submit turn', () => {
-        test('submit turn', done => {
+        test('recieve new turn after submitting one', done => {
             socket1.on('error', err => done(err));
             socket2.on('error', err => done(err));
 
@@ -197,7 +223,7 @@ describe('socket', () => {
             });
         });
 
-        test('submit turn -- incorrect user', done => {
+        test('recieve error when submitting turn from incorrect user', done => {
             socket1.on('error', err => done(err));
             socket2.on('error', err => done(err));
 
@@ -217,6 +243,39 @@ describe('socket', () => {
                     const selectedOption = data.game.options[selectedPiece][0];
 
                     const move = { selectedOption, selectedPiece: Number(selectedPiece) };
+
+                    if (data.game.currentPlayer === socket2.id) {
+                        socket1.emit('game', { state: 'submit_turn', move }, err => {
+                            expect(err).toBe(false);
+                            done();
+                        });
+                    } else {
+                        socket2.emit('game', { state: 'submit_turn', move }, err => {
+                            expect(err).toBe(false);
+                            done();
+                        });
+                    }
+                }
+            });
+        });
+
+        test('recieve error when submitting turn invalid turn format', done => {
+            socket1.on('error', err => done(err));
+            socket2.on('error', err => done(err));
+
+            socket1.emit('game', { state: 'join_queue' }, () => {});
+            socket2.emit('game', { state: 'join_queue' }, () => {});
+
+            socket1.on('game', (data = JSON.parse(data)) => {
+                if (data.state === 'found') socket1.emit('game', { state: 'accept' });
+            });
+
+            socket2.on('game', (data = JSON.parse(data)) => {
+                if (data.state === 'found') socket2.emit('game', { state: 'accept' });
+                if (data.state === 'ready') {
+                    expect(!!data.game).toBe(true);
+
+                    const move = { selectedOption: {}, selectedPiece: 30 };
 
                     if (data.game.currentPlayer === socket2.id) {
                         socket1.emit('game', { state: 'submit_turn', move }, err => {
