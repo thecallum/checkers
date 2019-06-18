@@ -47,7 +47,8 @@ router.post('/register', (req, res) => {
         .then(({ success, newUser, message }) => {
             if (!success) {
                 // show message if the message isnt invalid
-                return res.status(400).json({ ...(message !== 'invalid' && message) });
+                const body = { ...(message !== 'invalid' && { message }) };
+                return res.status(400).json(body);
             }
 
             // register successful
