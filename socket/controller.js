@@ -121,7 +121,7 @@ module.exports = (server, session) => {
 
                 if (bothAccepted) {
                     const players = [socket.id, rooms.getOpponentID(room, socket.id)];
-                    const game = games.create(room, players, socket.id);
+                    const game = games.create(room, players);
 
                     players.map(player => updateSessionRoom(io.sockets.sockets[player], room));
 

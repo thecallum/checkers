@@ -7,8 +7,13 @@ const colors = require('../src/js/game_modules/colors');
 const Games = () => {
     const games = {};
 
-    const create = (id, players, currentPlayerID) => {
-        const gamePlayers = [{ id: players[0], color: colors.red }, { id: players[1], color: colors.blue }];
+    const create = (id, players) => {
+        const randomNumber = Math.floor(Math.random() * 2);
+
+        const startPlayer = players[randomNumber];
+        const otherPlayer = players[randomNumber === 0 ? 1 : 0];
+
+        const gamePlayers = [{ id: startPlayer, color: colors.red }, { id: otherPlayer, color: colors.blue }];
 
         const newPieces = generatePieces(gamePlayers[0].id, gamePlayers[1].id);
         const newOptions = generateOptions(newPieces, gamePlayers[0].id, gamePlayers);
@@ -17,7 +22,7 @@ const Games = () => {
             pieces: newPieces,
             options: newOptions,
             players: gamePlayers,
-            currentPlayer: currentPlayerID,
+            currentPlayer: startPlayer,
         };
 
         games[id] = game;

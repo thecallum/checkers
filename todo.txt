@@ -1,11 +1,16 @@
 Create timer for disconnected user
 
-Random start player online
-
 online rematch
 
 research socket security
 
 firefox modal clickout broken (::after)
 
-tidy form.scss
+Build profile page
+
+Build Leaderboard page
+Setup Leaderboard functionality
+
+setup socket for multi-server use
+
+Player picks piece color
