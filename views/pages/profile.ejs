@@ -9,12 +9,37 @@
 
         <div class="container">
             <div class="profile__container">
-                <h3>Profile</h3>
+                <h1 class="profile__title">Profile</h1>
 
-                <p>Username: <%= username %></p>
-                <p>Email: <%= email %></p>
+                <button disabled="true">Save All Settings</button>
 
-                <img src="<%= img %>" alt="" />
+                <div class="profile__group">
+                    <label class="profile__label" for="">Profile Picture</label>
+
+                    <div class="profile__profile__container">
+                        <img src="<%= img %>" alt="" class="profile__profile__picture" />
+
+                        <div class="profile__profile__label">Update Profile Picture</div>
+                    </div>
+
+                    <button>Select File</button>
+                </div>
+
+                <div class="profile__group">
+                    <label class="profile__label" for="">Username</label>
+                    <input type="text" value="<%= username %>" disabled="true" />
+                </div>
+
+                <div class="profile__group">
+                    <label class="profile__label" for="">Email</label>
+                    <input type="text" value="<%= email %>" disabled="true" />
+                </div>
+
+                <div class="profile__group">
+                    <label class="profile__label" for="">Password</label>
+                    <input type="text" disabled="true" />
+                    <input type="text" disabled="true" />
+                </div>
             </div>
         </div>
     </body>

@@ -1,9 +1,68 @@
 .profile {
     &__container {
-        background-color: orange;
+        background-color: #fff;
         padding: 50px 20px;
         border-radius: $border_radius;
 
         margin-top: 100px;
+    }
+
+    &__label {
+        margin-right: 20px;
+        display: block;
+    }
+
+    &__title {
+        font-weight: 100;
+        font-size: 40px;
+    }
+
+    &__profile__container {
+        width: 150px;
+        height: 150px;
+        position: relative;
+    }
+
+    &__profile__container:hover &__profile__picture {
+        // filter: blur(2px);
+    }
+
+    &__profile__container:hover &__profile__label {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+
+    &__profile__picture {
+        width: 100%;
+        height: 100%;
+        display: block;
+        border-radius: $border-radius;
+        transition: all 0.4s ease-in;
+    }
+
+    &__profile__label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -20%);
+        padding: 8px 4px;
+        width: 100px;
+        text-align: center;
+        border-radius: $border-radius;
+        color: white;
+        background-color: teal;
+        cursor: pointer;
+        transition: all 0.4s ease-out;
+
+        opacity: 0;
+    }
+
+    &__group {
+        background-color: #ddd;
+        margin-bottom: 50px;
+
+        padding: 50px;
+
+        border-radius: $border-radius;
     }
 }
