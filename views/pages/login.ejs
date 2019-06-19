@@ -13,20 +13,31 @@
                 <h1 class="form__title">Login</h1>
 
                 <div class="form__row">
-                    <input type="text" name="email" id="input__email" v-model="email" v-bind:class="email__class" class="form__input" />
+                    <input type="text" name="email" id="input__email" v-model="email" v-bind:class="email__class" class="form__input" :disabled="loading" />
                     <label class="form__label" for="input__email" v-bind:class="{notempty: email}">Email</label>
                     <span class="form__error" v-if="email__error" v-cloak>{{ email__error }}</span>
                 </div>
 
                 <div class="form__row">
-                    <input type="password" name="password" id="input__password" v-model="password" v-bind:class="password__class" class="form__input" />
+                    <input
+                        type="password"
+                        name="password"
+                        id="input__password"
+                        v-model="password"
+                        v-bind:class="password__class"
+                        class="form__input"
+                        :disabled="loading"
+                    />
                     <label class="form__label" for="input__password" v-bind:class="{notempty: password}">Password</label>
                     <span class="form__error" v-if="password__error" v-cloak>{{ password__error }}</span>
                 </div>
 
                 <div class="form__row">
-                    <input type="checkbox" name="stay_logged" id="input_stay_logged" class="form__checkbox" v-model="stayLogged" />
-                    <label for="input_stay_logged">Stay Logged In</label>
+                    <input type="checkbox" name="stay_logged" id="input_stay_logged" class="form__checkbox" v-model="stayLogged" :disabled="loading" />
+                    <label for="input_stay_logged" class="form__checkboxLabel">
+                        <div class="form__fakeCheckbox"></div>
+                        Stay Logged In
+                    </label>
                 </div>
 
                 <span v-cloak>

@@ -6,11 +6,6 @@ online rematch
 
 research socket security
 
-responsive login form
-links between login and register page
-tab index for stayLogged
-tab doesnt work on firefox
-
 firefox modal clickout broken (::after)
 
-login/register disable typing when loading??
+tidy form.scss

@@ -150,36 +150,40 @@ $color_text: hsl(200, 20%, 20%);
     }
 
     &__checkbox {
-        width: 26px;
-        height: 26px;
-        position: relative;
-        visibility: hidden;
-        border-radius: 5px;
+        opacity: 0;
+        margin-right: -16px;
+    }
+
+    &__checkbox:checked ~ &__checkboxLabel &__fakeCheckbox::after {
+        opacity: 1;
+        width: 16px;
+        height: 16px;
+        transform: translate(-50%, -50%) rotate(90deg);
+        transition: all 0.1s ease-in;
+    }
+
+    &__checkbox:focus ~ &__checkboxLabel &__fakeCheckbox {
+        border: 1px solid hsl(200, 20%, 70%);
+    }
+
+    &__checkboxLabel {
+        height: 30px;
+        line-height: 30px;
         cursor: pointer;
+        display: flex;
+    }
+
+    &__fakeCheckbox {
+        background-color: hsl(200, 20%, 90%);
+        width: 30px;
+        height: 30px;
         margin-right: 10px;
+        position: relative;
 
-        ~ label {
-            height: 30px;
-            line-height: 30px;
-            display: inline-block;
-        }
-
-        &::before,
         &::after {
             content: '';
             display: block;
-        }
-
-        &::before {
-            background-color: hsl(200, 20%, 90%);
-            visibility: visible;
-            width: 100%;
-            height: 100%;
-        }
-
-        &::after {
             background-color: hsl(200, 20%, 20%);
-            visibility: visible;
             border-radius: $border-radius;
             position: absolute;
             top: 50%;
@@ -189,13 +193,6 @@ $color_text: hsl(200, 20%, 20%);
             width: 1px;
             height: 1px;
             transition: all 0.1s ease-out 0.1s;
-        }
-        &:checked::after {
-            opacity: 1;
-            width: 16px;
-            height: 16px;
-            transform: translate(-50%, -50%) rotate(90deg);
-            transition: all 0.1s ease-in;
         }
     }
 
@@ -233,6 +230,10 @@ $color_text: hsl(200, 20%, 20%);
         }
         &.loading::after {
             opacity: 1;
+        }
+
+        &:focus {
+            border: 2px dashed hsl(200, 20%, 50%);
         }
     }
 
