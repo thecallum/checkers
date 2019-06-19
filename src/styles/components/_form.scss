@@ -17,23 +17,21 @@ $color_text: hsl(200, 20%, 20%);
     border-radius: $border-radius;
     font-family: sans-serif;
 
-    label {
+    &__label {
         color: $color_text;
     }
-    *:focus {
+    input:focus {
         outline: none;
     }
 
-    &__links {
-        > a {
-            color: inherit;
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 5px;
+    &__link {
+        color: inherit;
+        text-decoration: none;
+        padding: 10px;
+        border-radius: 5px;
 
-            &:hover {
-                background-color: #eee;
-            }
+        &:hover {
+            background-color: #eee;
         }
     }
 
@@ -111,7 +109,7 @@ $color_text: hsl(200, 20%, 20%);
                 border: 2px solid #444;
                 border-top: 3px solid #000;
 
-                animation: username_loader 1s infinite linear;
+                animation: input_loading 1s infinite linear;
             }
         }
     }
@@ -154,7 +152,7 @@ $color_text: hsl(200, 20%, 20%);
         margin-right: -16px;
     }
 
-    &__checkbox:checked ~ &__checkboxLabel &__fakeCheckbox::after {
+    &__checkbox:checked ~ &__checkbox__label &__fake__checkbox::after {
         opacity: 1;
         width: 16px;
         height: 16px;
@@ -162,18 +160,18 @@ $color_text: hsl(200, 20%, 20%);
         transition: all 0.1s ease-in;
     }
 
-    &__checkbox:focus ~ &__checkboxLabel &__fakeCheckbox {
+    &__checkbox:focus ~ &__checkbox__label &__fake__checkbox {
         border: 1px solid hsl(200, 20%, 70%);
     }
 
-    &__checkboxLabel {
+    &__checkbox__label {
         height: 30px;
         line-height: 30px;
         cursor: pointer;
         display: flex;
     }
 
-    &__fakeCheckbox {
+    &__fake__checkbox {
         background-color: hsl(200, 20%, 90%);
         width: 30px;
         height: 30px;
@@ -221,7 +219,7 @@ $color_text: hsl(200, 20%, 20%);
             border-radius: 50%;
             width: 30px;
             height: 30px;
-            animation: loading 1s infinite linear;
+            animation: submit_loading 1s infinite linear;
             opacity: 0;
         }
 
@@ -237,7 +235,7 @@ $color_text: hsl(200, 20%, 20%);
         }
     }
 
-    &__requesterror {
+    &__request__error {
         border: 0px solid hsl(0, 50%, 50%);
         border-width: 2px 0;
         padding: 10px 20px;
@@ -268,24 +266,6 @@ $color_text: hsl(200, 20%, 20%);
         &.valid::before {
             color: $color_green;
         }
-    }
-}
-
-@keyframes loading {
-    0% {
-        transform: translate(-50%, -50%) rotate(0deg);
-    }
-    100% {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
-}
-
-@keyframes username_loader {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
     }
 }
 

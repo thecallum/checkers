@@ -58,10 +58,7 @@ new Vue({
 		username_timeout: null,
 		username_search_valid: undefined,
 	},
-	mounted() {
-		console.log('Vue mounted');
-		// window.onbeforeunload = () => '';
-	},
+
 	methods: {
 		handleSubmit(e) {
 			e.preventDefault();
@@ -70,7 +67,6 @@ new Vue({
 
 			this.main__error = null;
 
-			console.log('Handle Submit');
 			this.hasSubmitted = true;
 
 			if (
@@ -109,24 +105,14 @@ new Vue({
 					if (res.status === 200) {
 						window.location = '/profile';
 					} else if (res.status === 400) {
-						//  check for message
-
-						res.json()
-							.then(res => {
-								// console.log('404 res', res);
-								this.main__error = res.message;
-							})
-							.catch(() => {
-								// console.log('error parsing', e)
-								this.main__error = res.status;
-							});
+						res.json().then(res => this.main__error = res.message)
 					} else {
 						this.main__error = res.status;
 					}
 				})
 				.catch(e => {
 					console.error('Login error', e);
-					this.error = 'Fetch error!';
+                    this.request__error = 'Unknown error! Please try again';
 					this.main__error = false;
 				});
 		},

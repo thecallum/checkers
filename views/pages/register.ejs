@@ -112,15 +112,15 @@
 
                 <div class="form__row">
                     <input type="checkbox" name="stay_logged" id="input_stay_logged" class="form__checkbox" v-model="stayLogged" :disabled="loading" />
-                    <label for="input_stay_logged" class="form__checkboxLabel">
-                        <div class="form__fakeCheckbox"></div>
+                    <label for="input_stay_logged" class="form__checkbox__label">
+                        <div class="form__fake__checkbox"></div>
                         Stay Logged In
                     </label>
                 </div>
 
                 <span v-cloak>
                     <div class="form__row" v-if="main__error">
-                        <div class="form__requesterror">
+                        <div class="form__request__error">
                             <strong>Error: </strong>
                             {{ main__error }}
                         </div>
@@ -128,14 +128,14 @@
                 </span>
 
                 <div class="form__row">
-                    <button type="submit" class="form__submit" v-bind:class="{loading: loading}">
+                    <button type="submit" class="form__submit" v-bind:class="{loading}">
                         <span v-if="loading"></span>
                         <span v-else>Register</span>
                     </button>
                 </div>
 
                 <p class="form__links">
-                    <a href="/login">Login</a>
+                    <a class="form__link" href="/login">Login</a>
                 </p>
             </form>
         </div>
