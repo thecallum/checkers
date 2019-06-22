@@ -28,6 +28,7 @@ app.use('/css/', express.static('public/css/'));
 app.use('/assets/', express.static('public/assets/'));
 
 app.use(require('./controllers/routes/data'));
+app.use(require('./controllers/routes/user'));
 app.use(require('./controllers/routes/auth'));
 app.use(require('./controllers/routes/pages'));
 

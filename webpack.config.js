@@ -21,6 +21,7 @@ module.exports = env => {
             login: path.resolve(__dirname, 'src', 'js', 'pages', 'login.js'),
             register: path.resolve(__dirname, 'src', 'js', 'pages', 'register.js'),
             online: path.resolve(__dirname, 'src', 'js', 'pages', 'online.js'),
+            profile: path.resolve(__dirname, 'src', 'js', 'pages', 'profile.js'),
         },
         output: {
             path: path.resolve(__dirname, 'public'),
@@ -120,30 +121,25 @@ module.exports = env => {
                                   },
                               },
                           }),
+                          new OptimizeCSSAssetsPlugin({
+                              cssProcessorPluginOptions: {
+                                  preset: [
+                                      'default',
+                                      {
+                                          discardComments: {
+                                              removeAll: true,
+                                          },
+                                      },
+                                  ],
+                              },
+                              canPrint: true,
+                          }),
                       ]
                     : []),
-
-                new OptimizeCSSAssetsPlugin({
-                    cssProcessorPluginOptions: {
-                        preset: [
-                            'default',
-                            {
-                                discardComments: {
-                                    removeAll: true,
-                                },
-                            },
-                        ],
-                    },
-                    canPrint: true,
-                }),
             ],
         },
 
-        ...(isDev
-            ? {}
-            : {
-                  devtool: 'cheap-source-map',
-              }),
+        devtool: isDev ? 'cheap-module-eval-source-map' : 'cheap-source-map',
 
         devServer: {
             contentBase: path.join(__dirname, 'public'),
@@ -152,9 +148,6 @@ module.exports = env => {
             proxy: {
                 '/': {
                     target: `http://localhost:${3000}`,
-                    // bypass: function(req, res, proxyOptions) {
-                    //     console.log('proxy', req.url)
-                    // }
                 },
             },
         },

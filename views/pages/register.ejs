@@ -6,7 +6,7 @@
     </head>
 
     <body>
-        <%- include('../components/header', { auth: auth }); %>
+        <%- include('../components/header', { auth }); %>
 
         <div id="app" class="form">
             <h1 class="form__title">Register</h1>
@@ -24,7 +24,7 @@
                     />
                     <label class="form__label" for="input__username" v-bind:class="{notempty: username}">Username</label>
                     <span class="form__input__username__search" v-bind:class="{loading: username_search_loading}"></span>
-                    <span class="form__error" v-if="(username__error || username__search__error) && !username_search_loading" v-cloak>{{
+                    <span class="form__error" v-if="(username__error || !!username__search__error) && !username_search_loading" v-cloak>{{
                         username__error || username__search__error
                     }}</span>
                     <span class="form__message" v-if="!username_search_loading && !username__search__error && !username__error && username" v-cloak>

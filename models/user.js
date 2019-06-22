@@ -27,3 +27,23 @@ exports.login = email =>
             resolve(response.length === 0 ? null : response[0]);
         });
     });
+
+exports.updateUsername = (id, username) =>
+    new Promise(async (resolve, reject) => {
+        const query = `UPDATE user SET username = '${username}' where id = '${id}';`;
+
+        con.query(query, (err, response) => {
+            if (err) return reject(err);
+            resolve(response);
+        });
+    });
+
+exports.updateEmail = (id, email) =>
+    new Promise(async (resolve, reject) => {
+        const query = `UPDATE user SET email = '${email}' where id = '${id}';`;
+
+        con.query(query, (err, response) => {
+            if (err) return reject(err);
+            resolve(response);
+        });
+    });

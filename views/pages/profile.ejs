@@ -5,42 +5,99 @@
         <title>Profile | Checkers</title>
     </head>
     <body>
-        <%- include('../components/header', { auth: auth }); %>
+        <%- include('../components/header', { auth }); %>
 
         <div class="container">
             <div class="profile__container">
                 <h1 class="profile__title">Profile</h1>
 
-                <button disabled="true">Save All Settings</button>
-
-                <div class="profile__group">
+                <!-- <div class="profile__group">
                     <label class="profile__label" for="">Profile Picture</label>
 
                     <div class="profile__profile__container">
-                        <img src="<%= img %>" alt="" class="profile__profile__picture" />
+                        <img src="<%= img %>" alt="" class="profile__profile__picture" /> 
 
                         <div class="profile__profile__label">Update Profile Picture</div>
                     </div>
 
                     <button>Select File</button>
+                </div> -->
+
+                <div id="app__username">
+                    <div class="profile__group">
+                        <label class="profile__label" for="">Username</label>
+
+                        <div class="profile__input__group">
+                            <input
+                                ref="username"
+                                type="text"
+                                class="profile__input"
+                                data-value="<%= username %>"
+                                value="<%= username %>"
+                                v-model="username"
+                                :disabled="saving"
+                            />
+                            <span class="profile__search" v-bind:class="loadingClass"></span>
+                        </div>
+
+                        <div class="profile__status" v-if="valid || invalid" v-bind:class="{invalid, error: available === false}">
+                            <span v-if="available === true && !loading && valid"> {{ username }} is available </span>
+                            <span v-else-if="available === false && !loading"> {{ username }} is taken </span>
+                            <span v-else-if="!loading">
+                                Invalid username
+                            </span>
+                        </div>
+
+                        <button class="profile__button" disabled v-bind:disabled="unchanged" @click="save">Save</button>
+
+                        <success-message :close="closeSuccessMessage" :message="successMessage" v-if="successMessage"></success-message>
+                        <error-message :close="closeErrorMessage" :message="errorMessage" v-if="errorMessage"></error-message>
+                    </div>
                 </div>
 
-                <div class="profile__group">
-                    <label class="profile__label" for="">Username</label>
-                    <input type="text" value="<%= username %>" disabled="true" />
-                </div>
+                <div id="app__email">
+                    <div class="profile__group">
+                        <label class="profile__label" for="">Email</label>
 
-                <div class="profile__group">
-                    <label class="profile__label" for="">Email</label>
-                    <input type="text" value="<%= email %>" disabled="true" />
+                        <div class="profile__input__group">
+                            <input
+                                ref="email"
+                                type="text"
+                                class="profile__input"
+                                data-value="<%= email %>"
+                                value="<%= email %>"
+                                v-model="email"
+                                :disabled="saving"
+                            />
+                            <span class="profile__search" v-bind:class="loadingClass"></span>
+                        </div>
+
+                        <div class="profile__status" v-if="valid || invalid" v-bind:class="{ invalid, error: available === false }">
+                            <span v-if="!loading && invalid">
+                                Invalid email
+                            </span>
+                        </div>
+
+                        <button class="profile__button" disabled v-bind:disabled="unchanged" @click="save">Save</button>
+
+                        <success-message :close="closeSuccessMessage" :message="successMessage" v-if="successMessage"></success-message>
+                        <error-message :close="closeErrorMessage" :message="errorMessage" v-if="errorMessage"></error-message>
+                    </div>
                 </div>
 
                 <div class="profile__group">
                     <label class="profile__label" for="">Password</label>
-                    <input type="text" disabled="true" />
-                    <input type="text" disabled="true" />
+                    <input type="text" class="profile__input" />
+                    <input type="text" class="profile__input" />
+                    <input type="text" class="profile__input" />
+
+                    <button class="profile__button">Save</button>
                 </div>
             </div>
         </div>
+
+        <script src="/js/validator.bundle.js"></script>
+        <script src="/js/vue.bundle.js"></script>
+        <script src="/js/profile.bundle.js"></script>
     </body>
 </html>
