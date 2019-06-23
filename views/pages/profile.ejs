@@ -40,7 +40,7 @@
                             <span class="profile__search" v-bind:class="loadingClass"></span>
                         </div>
 
-                        <div class="profile__status" v-if="valid || invalid" v-bind:class="{invalid, error: available === false}">
+                        <div class="profile__status" v-if="valid || invalid" v-bind:class="{invalid, error: available === false}" v-cloak>
                             <span v-if="available === true && !loading && valid"> {{ username }} is available </span>
                             <span v-else-if="available === false && !loading"> {{ username }} is taken </span>
                             <span v-else-if="!loading">
@@ -72,7 +72,7 @@
                             <span class="profile__search" v-bind:class="loadingClass"></span>
                         </div>
 
-                        <div class="profile__status" v-if="valid || invalid" v-bind:class="{ invalid, error: available === false }">
+                        <div class="profile__status" v-if="valid || invalid" v-bind:class="{ invalid, error: available === false }" v-cloak>
                             <span v-if="!loading && invalid">
                                 Invalid email
                             </span>
@@ -85,13 +85,43 @@
                     </div>
                 </div>
 
-                <div class="profile__group">
-                    <label class="profile__label" for="">Password</label>
-                    <input type="text" class="profile__input" />
-                    <input type="text" class="profile__input" />
-                    <input type="text" class="profile__input" />
+                <div id="app__password">
+                    <div class="profile__group">
+                        <label class="profile__label" for="">Password</label>
 
-                    <button class="profile__button">Save</button>
+                        <div class="profile__input__group">
+                            <input type="password" class="profile__input" v-model="passwordCurrent" :disabled="saving" placeholder="Current password" />
+
+                            <input type="password" class="profile__input" v-model="passwordNew" :disabled="saving" placeholder="New Password" />
+
+                            <input type="password" class="profile__input" v-model="passwordNewConf" :disabled="saving" placeholder="Confirm new password" />
+                            <span class="profile__search" v-bind:class="loadingClass"></span>
+                        </div>
+
+                        <p v-if="saving" v-cloak>LOADING</p>
+
+                        <div class="profile__status" v-if="!emptyNew" v-bind:class="{ invalid }" v-cloak>
+                            <span v-if="!validPassword">Password doesn't meet the requirements</span>
+                            <span v-else-if="!passwordsMatch">Passwords don't match</span>
+                        </div>
+
+                        <div class="form__row">
+                            <password-rules
+                                :password="passwordNew"
+                                :show-validation="passwordNew !== ''"
+                                :rules="passwordRules"
+                                :show="passwordRulesActive"
+                                :toggle="togglePasswordRules"
+                            ></password-rules>
+                        </div>
+
+                        <success-message :close="closeSuccessMessage" :message="successMessage" v-if="successMessage"></success-message>
+                        <error-message :close="closeErrorMessage" :message="errorMessage" v-if="errorMessage"></error-message>
+
+                        <button class="profile__button" @click="save" type="submit" disabled :disabled="empty || !validPassword || !passwordsMatch">
+                            Save
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,65 +1,27 @@
 const usernameAvailable = require('../requests/usernameAvailable');
+const passwordRules = require('../components/passwordRules');
 
 new Vue({
     el: '#app',
+    components: { passwordRules },
     data: {
         hasSubmitted: false,
         loading: false,
         main__error: null,
 
-        // controlled inputs =============
         email: '',
         email__conf: '',
         username: '',
         password: '',
         password__conf: '',
         stayLogged: false,
-        // ================================
-
-        password_rules: [
-            {
-                // value: 'Between 10-128 characters',
-                test: str => str.match(/^.{10,128}$/),
-            },
-            {
-                // value: 'No more than 2 identical characters in a row (e.g. 111 not allowed)',
-                test: str => !str.match(/(.)\1{2,}/),
-            },
-            {
-                // value: 'At least 1 uppercase character (A-Z)',
-                test: str => str.match(/[A-Z]/),
-            },
-            {
-                // value: 'At least 1 lowercase character (a-z)',
-                test: str => str.match(/[a-z]/),
-            },
-            {
-                // value: 'At least 1 digit (0-9)',
-                test: str => str.match(/[0-9]/),
-            },
-            {
-                // value: 'At least 1 special character (punctuation and space count as special characters)',
-                test: str => str.match(/[!@#$%^&*(),.?":{}|<> ]/),
-            },
-        ],
-
-        username__rules: [
-            {
-                // value: 'Between 2-14 characters',
-                test: str => str.match(/^.{2,14}$/),
-                // test: str => true,
-            },
-            {
-                // value: 'Allow letters, numbers and punctuation',
-                test: str => str.match(/^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]*$/),
-                // test: str => true,
-            },
-        ],
 
         username_search_loading: false,
         username_timeout: null,
         username_search_valid: undefined,
         username__search__request__error: null,
+
+        passwordRulesActive: false,
     },
 
     methods: {
@@ -79,12 +41,10 @@ new Vue({
                 this.password__error ||
                 this.password__conf__error ||
                 this.username__search__error ||
-                !this.rule_0_met ||
-                !this.rule_1_met ||
-                !this.rule_3_of_4_met
+                !this.validPassword
             ) {
                 const newError = 'You have errors';
-
+                if (!this.validPassword) this.togglePasswordRules(true);
                 if (this.main__error !== newError) this.main__error = newError;
                 return;
             }
@@ -118,6 +78,10 @@ new Vue({
                     this.request__error = 'Unknown error! Please try again';
                     this.main__error = false;
                 });
+        },
+
+        togglePasswordRules(state) {
+            this.passwordRulesActive = typeof state === 'boolean' ? state : !this.passwordRulesActive;
         },
     },
     computed: {
@@ -157,7 +121,7 @@ new Vue({
             if (el === '') return false;
             // if (el.length < 10) return "Username must be 10 characters"
 
-            if (!this.username_rule_0_met || !this.username_rule_1_met) return 'Invalid username';
+            if (!this.usernameRules[0] || !this.usernameRules[1]) return 'Invalid username';
 
             return false;
         },
@@ -203,68 +167,43 @@ new Vue({
             };
         },
 
-        rule_0_met() {
-            return !!this.password_rules[0].test(this.password);
+        passwordRules() {
+            return [
+                // value: 'Between 10-128 characters',
+                !!this.password.match(/^.{10,128}$/),
+                // value: 'No more than 2 identical characters in a row (e.g. 111 not allowed)',
+                !this.password.match(/(.)\1{2,}/),
+                // value: 'At least 1 uppercase character (A-Z)',
+                !!this.password.match(/[A-Z]/),
+                // value: 'At least 1 lowercase character (a-z)',
+                !!this.password.match(/[a-z]/),
+                // value: 'At least 1 digit (0-9)',
+                !!this.password.match(/[0-9]/),
+                // value: 'At least 1 special character (punctuation and space count as special characters)',
+                !!this.password.match(/[!@#$%^&*(),.?":{}|<> ]/),
+            ];
         },
-        rule_1_met() {
-            return !!this.password_rules[1].test(this.password);
-        },
-        rule_2_met() {
-            return !!this.password_rules[2].test(this.password);
-        },
-        rule_3_met() {
-            return !!this.password_rules[3].test(this.password);
-        },
-        rule_4_met() {
-            return !!this.password_rules[4].test(this.password);
-        },
-        rule_5_met() {
-            return !!this.password_rules[5].test(this.password);
-        },
-        rule_3_of_4_met() {
+
+        validPassword() {
+            if (!this.passwordRules[0] || !this.passwordRules[1]) return false;
+
             let count = 0;
 
-            if (this.rule_2_met) count++;
-            if (this.rule_3_met) count++;
-            if (this.rule_4_met) count++;
-            if (this.rule_5_met) count++;
+            if (this.passwordRules[2]) count++;
+            if (this.passwordRules[3]) count++;
+            if (this.passwordRules[4]) count++;
+            if (this.passwordRules[5]) count++;
 
             return count >= 3;
         },
 
-        // rules
-        rule_0_class() {
-            const valid = this.rule_0_met;
-            return { valid, invalid: !valid && this.hasSubmitted };
-        },
-        rule_1_class() {
-            const valid = this.rule_1_met && this.password !== '';
-            return { valid: valid && this.password };
-        },
-        rule_2_class() {
-            const valid = this.rule_2_met;
-            return { valid };
-        },
-        rule_3_class() {
-            const valid = this.rule_3_met;
-            return { valid };
-        },
-        rule_4_class() {
-            const valid = this.rule_4_met;
-            return { valid };
-        },
-        rule_5_class() {
-            const valid = this.rule_5_met;
-            return { valid };
-        },
-
-        username_rule_0_met() {
-            // return true;
-            return !!this.username__rules[0].test(this.username);
-        },
-        username_rule_1_met() {
-            // return true
-            return !!this.username__rules[1].test(this.username);
+        usernameRules() {
+            return [
+                // value: 'Between 2-14 characters',
+                !!this.username.match(/^.{2,14}$/),
+                // value: 'Allow letters, numbers and punctuation',
+                !!this.username.match(/^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]*$/),
+            ];
         },
     },
     watch: {

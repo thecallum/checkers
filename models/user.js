@@ -47,3 +47,23 @@ exports.updateEmail = (id, email) =>
             resolve(response);
         });
     });
+
+exports.updatePassword = (id, password) =>
+    new Promise(async (resolve, reject) => {
+        const query = `UPDATE user SET password = '${password}' where id = '${id}';`;
+
+        con.query(query, (err, response) => {
+            if (err) return reject(err);
+            resolve(response);
+        });
+    });
+
+exports.getPassword = id =>
+    new Promise(async (resolve, reject) => {
+        const query = `SELECT password FROM user WHERE id = ${id};`;
+
+        con.query(query, (err, response) => {
+            if (err) return reject(err);
+            resolve(response.length === 0 ? null : response[0].password);
+        });
+    });

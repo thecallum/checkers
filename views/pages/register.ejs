@@ -81,33 +81,13 @@
                 </div>
 
                 <div class="form__row">
-                    <ul class="form__rules">
-                        <h4>Password Rules</h4>
-
-                        <li class="form__rule" v-bind:class="rule_0_class">
-                            Between 10-128 Characters
-                        </li>
-                        <li class="form__rule" v-bind:class="rule_1_class">
-                            Not more than 2 identical characters in a row (e.g., 111 not allowed)
-                        </li>
-
-                        <h4 class="form__rule__heading">
-                            Must meet at least 3 of the following 4 complexity rules:
-                        </h4>
-
-                        <li class="form__rule" v-bind:class="rule_2_class">
-                            At least 1 uppercase character (A-Z)
-                        </li>
-                        <li class="form__rule" v-bind:class="rule_3_class">
-                            At least 1 lowercase character (a-z)
-                        </li>
-                        <li class="form__rule" v-bind:class="rule_4_class">
-                            At least 1 digit (0-9)
-                        </li>
-                        <li class="form__rule" v-bind:class="rule_5_class">
-                            At least 1 special character (punctuation, space counts as special characters)
-                        </li>
-                    </ul>
+                    <password-rules
+                        :password="password"
+                        :show-validation="hasSubmitted"
+                        :rules="passwordRules"
+                        :show="passwordRulesActive"
+                        :toggle="togglePasswordRules"
+                    ></password-rules>
                 </div>
 
                 <div class="form__row">

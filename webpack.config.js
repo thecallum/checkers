@@ -92,13 +92,6 @@ module.exports = env => {
                         minSize: 0,
                         maxInitialRequests: Infinity,
                     },
-                    echarts: {
-                        test: /[\\/]node_modules[\\/](validator)[\\/]/,
-                        name: 'validator',
-                        chunks: 'all',
-                        minSize: 0,
-                        maxInitialRequests: Infinity,
-                    },
                 },
             },
 

@@ -40,12 +40,6 @@ $color_text: hsl(200, 20%, 20%);
         font-size: 45px;
     }
 
-    // &__group {
-    //     width: 100%;
-    //     margin: 20px 0 0;
-    //     display: inline-block;
-    // }
-
     &__row {
         width: 100%;
         min-height: 70px;
@@ -243,28 +237,6 @@ $color_text: hsl(200, 20%, 20%);
 
         > strong {
             color: hsl(0, 50%, 50%);
-        }
-    }
-
-    &__rules {
-        background-color: hsl(200, 20%, 90%);
-        padding: 10px;
-        margin-top: 20px;
-        width: 100%;
-    }
-    &__rule {
-        display: block;
-        color: $color_text;
-
-        &::before {
-            content: '\2714';
-            margin-right: 5px;
-            color: hsl(200, 17%, 52%);
-            font-size: 26px;
-        }
-
-        &.valid::before {
-            color: $color_green;
         }
     }
 }
