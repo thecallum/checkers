@@ -6,6 +6,9 @@ const updateEmail = require('../updateEmail');
 const updatePassword = require('../updatePassword');
 
 const validatePassword = require('../validatePassword');
+const validateUsername = require('../validateUsername');
+
+const { isEmail } = require('validator');
 
 const auth = require('../../middleware/auth');
 
@@ -14,6 +17,8 @@ router.post('/user/update/username', auth, (req, res) => {
     if (!username) return res.status(400).send();
 
     const { id } = req.session.user;
+
+    if (!validateUsername(username)) return res.status(400).send();
 
     updateUsername(username, id)
         .then(() => {
@@ -30,7 +35,7 @@ router.post('/user/update/username', auth, (req, res) => {
 router.post('/user/update/email', auth, (req, res) => {
     const { email } = req.body;
 
-    if (!email) return res.status(400).send();
+    if (!email || !isEmail(email)) return res.status(400).send();
     const { id } = req.session.user;
 
     updateEmail(email, id)

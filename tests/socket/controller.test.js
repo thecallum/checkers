@@ -63,6 +63,8 @@ describe('socket', () => {
     });
 
     describe('join queue', () => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+
         test('join queue', done => {
             socket1.on('error', err => done(err));
             socket1.emit('game', { state: 'join_queue' }, () => done());
