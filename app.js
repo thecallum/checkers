@@ -34,7 +34,7 @@ app.use(require('./controllers/routes/pages'));
 
 const server = app.listen(process.env.PORT, () => console.log(`${path.basename(__filename)} is running on https://localhost:${process.env.PORT}`));
 
+module.exports = { app, server };
+
 // start websocket controller;
 controller(server, session);
-
-module.exports = app;

@@ -1,4 +1,4 @@
-const request = require('supertest');
+// const request = require('supertest');
 const bcrypt = require('bcrypt');
 const saltRounds = 15;
 
@@ -6,28 +6,37 @@ require('dotenv').config();
 
 process.env.TESTING = true;
 
-const app = require('../../../app');
+const { app, server } = require('../../../app');
 
-const asyncQuery = require('../../../helpers/asyncQuery');
 const con = require('../../../db/connection');
 
 const truncateUserTable = require('../../testUtils/truncateUserTable');
+
+var request = require('supertest');
+
+afterAll(done => {
+    server.close(() => {
+        done();
+    });
+});
 
 describe('POST /login', () => {
     const user = {
         email: 'email@email.com',
         password: 'Password1234!',
         hash: bcrypt.hashSync('Password1234!', saltRounds),
-        username: 'username1234'
+        username: 'username1234',
     };
 
-    beforeAll(async done => {
+    beforeEach(async done => {
         await truncateUserTable();
+        const query = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.hash}','${user.username}');`;
 
-        const query2 = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.hash}','${user.username}');`;
-        await asyncQuery(con, query2);
-
-        done();
+        con.query(query, (err, result) => {
+            if (err) done(err);
+            expect(result.insertId).toBe(1);
+            done();
+        });
     });
 
     test('Valid user', done => {
@@ -35,7 +44,7 @@ describe('POST /login', () => {
             .post('/login')
             .send({
                 email: user.email,
-                password: user.password
+                password: user.password,
             })
             .then(response => {
                 expect(response.status).toBe(200);
@@ -48,7 +57,7 @@ describe('POST /login', () => {
         request(app)
             .post('/login')
             .send({
-                password: user.password
+                password: user.password,
             })
             .then(response => {
                 expect(response.status).toBe(400);
@@ -61,7 +70,7 @@ describe('POST /login', () => {
         request(app)
             .post('/login')
             .send({
-                email: user.email
+                email: user.email,
             })
             .then(response => {
                 expect(response.status).toBe(400);
@@ -75,7 +84,7 @@ describe('POST /login', () => {
             .post('/login')
             .send({
                 email: user.email + 'a',
-                password: user.password
+                password: user.password,
             })
             .then(response => {
                 expect(response.status).toBe(401);
@@ -89,7 +98,7 @@ describe('POST /login', () => {
             .post('/login')
             .send({
                 email: user.email,
-                password: user.password + 'a'
+                password: user.password + 'a',
             })
             .then(response => {
                 expect(response.status).toBe(401);
@@ -97,29 +106,32 @@ describe('POST /login', () => {
             })
             .catch(e => done(e));
     });
-})
+});
 
 describe('POST /register', () => {
     const user = {
         email: 'email@email.com',
         password: 'Password1234!',
         hash: bcrypt.hashSync('Password1234!', saltRounds),
-        username: 'username1234'
+        username: 'username1234',
     };
 
     const existing = {
         email: 'email2@email.com',
         password: 'Password1234!',
         hash: bcrypt.hashSync('Password1234!', saltRounds),
-        username: 'username12345'
+        username: 'username12345',
     };
 
-    beforeAll(async done => {
+    beforeEach(async done => {
         await truncateUserTable();
+        const query = `INSERT INTO user (email, password, username) VALUES ('${existing.email}','${existing.hash}','${existing.username}');`;
 
-        const query2 = `INSERT INTO user (email, password, username) VALUES ('${existing.email}','${existing.hash}','${existing.username}');`;
-        await asyncQuery(con, query2);
-        done();
+        con.query(query, (err, result) => {
+            if (err) done(err);
+            expect(result.insertId).toBe(1);
+            done();
+        });
     });
 
     describe('Password Rules', () => {
@@ -129,7 +141,7 @@ describe('POST /register', () => {
                 .send({
                     email: user.email,
                     password: '1aA!',
-                    username: user.username
+                    username: user.username,
                 })
                 .then(response => {
                     expect(response.status).toBe(400);
@@ -144,7 +156,7 @@ describe('POST /register', () => {
                 .send({
                     email: user.email,
                     password: '1aA!'.repeat(40),
-                    username: user.username
+                    username: user.username,
                 })
                 .then(response => {
                     expect(response.status).toBe(400);
@@ -159,7 +171,7 @@ describe('POST /register', () => {
                 .send({
                     email: user.email,
                     password: '1aaaaaaaA!',
-                    username: user.username
+                    username: user.username,
                 })
                 .then(response => {
                     expect(response.status).toBe(400);
@@ -174,7 +186,7 @@ describe('POST /register', () => {
                 .send({
                     email: user.email,
                     password: 'AbhuJGVija',
-                    username: user.username
+                    username: user.username,
                 })
                 .then(response => {
                     expect(response.status).toBe(400);
@@ -189,7 +201,7 @@ describe('POST /register', () => {
                 .send({
                     email: user.email,
                     password: '3BHU653IJA',
-                    username: user.username
+                    username: user.username,
                 })
                 .then(response => {
                     expect(response.status).toBe(400);
@@ -204,7 +216,7 @@ describe('POST /register', () => {
                 .send({
                     email: user.email,
                     password: 'A*)~JGV)J .,',
-                    username: user.username
+                    username: user.username,
                 })
                 .then(response => {
                     expect(response.status).toBe(400);
@@ -219,7 +231,7 @@ describe('POST /register', () => {
                 .send({
                     email: user.email,
                     password: '9bhu345ija',
-                    username: user.username
+                    username: user.username,
                 })
                 .then(response => {
                     expect(response.status).toBe(400);
@@ -234,7 +246,7 @@ describe('POST /register', () => {
                 .send({
                     email: user.email,
                     password: '#bhu@).ija',
-                    username: user.username
+                    username: user.username,
                 })
                 .then(response => {
                     expect(response.status).toBe(400);
@@ -249,7 +261,7 @@ describe('POST /register', () => {
                 .send({
                     email: user.email,
                     password: '9465(.)8@#~',
-                    username: user.username
+                    username: user.username,
                 })
                 .then(response => {
                     expect(response.status).toBe(400);
@@ -265,7 +277,7 @@ describe('POST /register', () => {
             .send({
                 email: 'asdasdasdasdas',
                 password: user.password,
-                username: user.username
+                username: user.username,
             })
             .then(response => {
                 expect(response.status).toBe(400);
@@ -281,7 +293,7 @@ describe('POST /register', () => {
                 .send({
                     email: user.email,
                     password: user.password,
-                    username: 'a'
+                    username: 'a',
                 })
                 .then(response => {
                     expect(response.status).toBe(400);
@@ -296,7 +308,7 @@ describe('POST /register', () => {
                 .send({
                     email: user.email,
                     password: user.password,
-                    username: 'a'.repeat(20)
+                    username: 'a'.repeat(20),
                 })
                 .then(response => {
                     expect(response.status).toBe(400);
@@ -304,9 +316,7 @@ describe('POST /register', () => {
                 })
                 .catch(e => done(e));
         });
-
-
-    })
+    });
 
     test('Existing username', done => {
         request(app)
@@ -314,7 +324,7 @@ describe('POST /register', () => {
             .send({
                 email: user.email,
                 password: user.password,
-                username: existing.username
+                username: existing.username,
             })
             .then(response => {
                 expect(response.status).toBe(400);
@@ -329,7 +339,7 @@ describe('POST /register', () => {
             .send({
                 email: existing.email,
                 password: user.password,
-                username: user.username
+                username: user.username,
             })
             .then(response => {
                 expect(response.status).toBe(400);
@@ -344,23 +354,24 @@ describe('POST /register', () => {
             .send({
                 email: user.email,
                 password: user.password,
-                username: user.username
+                username: user.username,
             })
             .then(response => {
                 expect(response.status).toBe(200);
                 const query = `SELECT * FROM user WHERE email = '${user.email}';`;
 
-                return asyncQuery(con, query)
-            })
-            .then(response => {
-                expect(response.length).toBe(1);
+                con.query(query, (err, result) => {
+                    if (err) done(err);
 
-                expect(response[0].email).toBe(user.email);
-                expect(bcrypt.compareSync(user.password, response[0].password)).toBe(true);
-                expect(response[0].username).toBe(user.username);
+                    expect(result.length).toBe(1);
 
-                done();
+                    expect(result[0].email).toBe(user.email);
+                    expect(bcrypt.compareSync(user.password, result[0].password)).toBe(true);
+                    expect(result[0].username).toBe(user.username);
+
+                    done();
+                });
             })
             .catch(e => done(e));
     });
-})
+});

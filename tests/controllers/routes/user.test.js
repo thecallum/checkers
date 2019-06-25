@@ -1,4 +1,3 @@
-const request = require('supertest');
 const bcrypt = require('bcrypt');
 const saltRounds = 15;
 
@@ -6,9 +5,10 @@ require('dotenv').config();
 
 process.env.TESTING = true;
 
-const app = require('../../../app');
+const { app, server } = require('../../../app');
 
-// const asyncQuery = require('../../../helpers/asyncQuery');
+const request = require('supertest');
+
 const con = require('../../../db/connection');
 
 const truncateUserTable = require('../../testUtils/truncateUserTable');
@@ -17,20 +17,23 @@ const registerUser = require('../../testUtils/registerUser');
 const user1 = { email: 'email1@email.com', password: 'Password1234!', hash: bcrypt.hashSync('Password1234!', saltRounds), username: 'username111' };
 const user2 = { email: 'email2@email.com', password: 'Password1234!', hash: bcrypt.hashSync('Password1234!', saltRounds), username: 'username222' };
 
+afterAll(done => {
+    server.close(() => {
+        done();
+    });
+});
+
 describe('POST /user/update/username', () => {
     const newUsername = 'user1234';
-    let cookie1, cookie2;
-
-    beforeAll(async done => {
+    let cookie1;
+    beforeEach(async done => {
         await truncateUserTable();
-
         const response = await Promise.all([registerUser(app, user1), registerUser(app, user2)]);
 
         expect(response[0].status).toBe(200);
         expect(response[1].status).toBe(200);
 
         cookie1 = response[0].headers['set-cookie'];
-        cookie2 = response[1].headers['set-cookie'];
 
         done();
     });
@@ -81,18 +84,16 @@ describe('POST /user/update/username', () => {
 
 describe('POST /user/update/email', () => {
     const newEmail = 'newEmail@email.com';
-    let cookie1, cookie2;
+    let cookie1;
 
-    beforeAll(async done => {
+    beforeEach(async done => {
         await truncateUserTable();
-
         const response = await Promise.all([registerUser(app, user1), registerUser(app, user2)]);
 
         expect(response[0].status).toBe(200);
         expect(response[1].status).toBe(200);
 
         cookie1 = response[0].headers['set-cookie'];
-        cookie2 = response[1].headers['set-cookie'];
 
         done();
     });
@@ -143,18 +144,16 @@ describe('POST /user/update/email', () => {
 
 describe('POST /user/update/password', () => {
     const newPassword = 'NewPassWord1234!';
-    let cookie1, cookie2;
+    let cookie1;
 
-    beforeAll(async done => {
+    beforeEach(async done => {
         await truncateUserTable();
-
         const response = await Promise.all([registerUser(app, user1), registerUser(app, user2)]);
 
         expect(response[0].status).toBe(200);
         expect(response[1].status).toBe(200);
 
         cookie1 = response[0].headers['set-cookie'];
-        cookie2 = response[1].headers['set-cookie'];
 
         done();
     });
@@ -172,23 +171,26 @@ describe('POST /user/update/password', () => {
     });
 
     test('update password', done => {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
         request(app)
             .post('/user/update/password')
-            .set('Cookie', cookie2)
-            .send({ newPassword, currentPassword: user2.password })
+            .set('Cookie', cookie1)
+            .send({ newPassword, currentPassword: user1.password })
             .then(res => {
                 expect(res.status).toBe(200);
 
-                const query = `select password from user where email = '${user2.email}';`;
+                const query = `select password from user where email = '${user1.email}';`;
 
                 con.query(query, (err, response) => {
                     if (err) done(err);
                     const storedPassword = response[0].password;
-                    const validPassword = bcrypt.compareSync(newPassword, storedPassword);
-                    expect(validPassword).toBe(true);
-                    done();
+
+                    bcrypt.compare(newPassword, storedPassword, (err, res) => {
+                        if (err) done(err);
+                        expect(res).toBe(true);
+                        done();
+                    });
                 });
             })
             .catch(e => done(e));

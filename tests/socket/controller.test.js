@@ -1,7 +1,8 @@
 require('dotenv').config();
 process.env.TESTING = true;
+
 const io = require('socket.io-client');
-const app = require('../../app');
+const { app } = require('../../app');
 const truncateUserTable = require('../testUtils/truncateUserTable');
 const registerUser = require('../testUtils/registerUser');
 
@@ -11,7 +12,6 @@ const user1 = { email: 'email1@email.com', password: 'Password1234!', username: 
 const user2 = { email: 'email2@email.com', password: 'Password1234!', username: 'username222' };
 
 beforeAll(async done => {
-    // jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
     await truncateUserTable();
 
     const response = await Promise.all([registerUser(app, user1), registerUser(app, user2)]);
@@ -63,7 +63,7 @@ describe('socket', () => {
     });
 
     describe('join queue', () => {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+        // jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
         test('join queue', done => {
             socket1.on('error', err => done(err));

@@ -1,5 +1,6 @@
 require('dotenv').config();
 process.env.TESTING = true;
+const expect = require('expect');
 
 const con = require('../../db/connection');
 const truncateUserTable = require('../testUtils/truncateUserTable');
@@ -14,7 +15,7 @@ describe('checkUsernameAvailable model', () => {
         username: 'username1234',
     };
 
-    beforeAll(async done => {
+    beforeEach(async done => {
         await truncateUserTable();
         const query2 = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.password}','${user.username}');`;
         await asyncQuery(con, query2);
@@ -41,7 +42,7 @@ describe('login model', () => {
         username: 'username1234',
     };
 
-    beforeAll(async done => {
+    beforeEach(async done => {
         await truncateUserTable();
         const query2 = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.password}','${user.username}');`;
         await asyncQuery(con, query2);
@@ -75,7 +76,7 @@ describe('register model', () => {
         username: 'username12346',
     };
 
-    beforeAll(async done => {
+    beforeEach(async done => {
         await truncateUserTable();
         const query2 = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.password}','${user.username}');`;
         await asyncQuery(con, query2);
@@ -117,7 +118,7 @@ describe('update username model', () => {
 
     const newUsername = 'somenewusername';
 
-    beforeAll(async done => {
+    beforeEach(async done => {
         await truncateUserTable();
 
         const query1 = `INSERT INTO user (email, password, username) VALUES ('${user1.email}','${user1.password}','${user1.username}');`;
@@ -169,7 +170,7 @@ describe('update email model', () => {
 
     const newEmail = 'newemail@email.com';
 
-    beforeAll(async done => {
+    beforeEach(async done => {
         await truncateUserTable();
 
         const query1 = `INSERT INTO user (email, password, username) VALUES ('${user1.email}','${user1.password}','${user1.username}');`;
@@ -214,7 +215,7 @@ describe('update password model', () => {
 
     const newPassword = 'newpassword';
 
-    beforeAll(async done => {
+    beforeEach(async done => {
         await truncateUserTable();
         const query = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.password}','${user.username}');`;
         const res = await asyncQuery(con, query);
@@ -244,7 +245,7 @@ describe('get password model', () => {
         id: null,
     };
 
-    beforeAll(async done => {
+    beforeEach(async done => {
         await truncateUserTable();
         const query = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.password}','${user.username}');`;
         const res = await asyncQuery(con, query);

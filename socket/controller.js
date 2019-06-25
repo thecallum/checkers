@@ -152,14 +152,12 @@ module.exports = (server, session) => {
                 // validate turn
                 if (!games.isPlayersTurn(room, socket.id)) {
                     // invalid player
-                    console.log('INVALID PLAYER');
                     if (cb) cb(false);
                     return;
                 }
 
                 if (!games.isValidMove(room, data.move)) {
                     // invalid move
-                    console.log('INVALID MOVE');
                     if (cb) cb(false);
                     return;
                 }
