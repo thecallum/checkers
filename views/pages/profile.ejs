@@ -48,7 +48,9 @@
                             </span>
                         </div>
 
-                        <button class="profile__button" disabled v-bind:disabled="unchanged" @click="save">Save</button>
+                        <button class="profile__button" disabled v-bind:disabled="unchanged" @click="save" v-bind:class="{ loading:saving }">
+                            <span v-if="!saving">Save</span>
+                        </button>
 
                         <success-message :close="closeSuccessMessage" :message="successMessage" v-if="successMessage"></success-message>
                         <error-message :close="closeErrorMessage" :message="errorMessage" v-if="errorMessage"></error-message>
@@ -78,7 +80,9 @@
                             </span>
                         </div>
 
-                        <button class="profile__button" disabled v-bind:disabled="unchanged" @click="save">Save</button>
+                        <button class="profile__button" disabled v-bind:disabled="unchanged" @click="save" v-bind:class="{ loading:saving }">
+                            <span v-if="!saving">Save</span>
+                        </button>
 
                         <success-message :close="closeSuccessMessage" :message="successMessage" v-if="successMessage"></success-message>
                         <error-message :close="closeErrorMessage" :message="errorMessage" v-if="errorMessage"></error-message>
@@ -98,8 +102,6 @@
                             <span class="profile__search" v-bind:class="loadingClass"></span>
                         </div>
 
-                        <p v-if="saving" v-cloak>LOADING</p>
-
                         <div class="profile__status" v-if="!emptyNew" v-bind:class="{ invalid }" v-cloak>
                             <span v-if="!validPassword">Password doesn't meet the requirements</span>
                             <span v-else-if="!passwordsMatch">Passwords don't match</span>
@@ -115,12 +117,19 @@
                             ></password-rules>
                         </div>
 
+                        <button
+                            class="profile__button"
+                            @click="save"
+                            type="submit"
+                            disabled
+                            :disabled="empty || !validPassword || !passwordsMatch"
+                            v-bind:class="{ loading:saving }"
+                        >
+                            <span v-if="!saving">Save</span>
+                        </button>
+
                         <success-message :close="closeSuccessMessage" :message="successMessage" v-if="successMessage"></success-message>
                         <error-message :close="closeErrorMessage" :message="errorMessage" v-if="errorMessage"></error-message>
-
-                        <button class="profile__button" @click="save" type="submit" disabled :disabled="empty || !validPassword || !passwordsMatch">
-                            Save
-                        </button>
                     </div>
                 </div>
             </div>

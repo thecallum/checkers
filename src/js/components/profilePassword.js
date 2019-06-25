@@ -33,6 +33,8 @@ module.exports = new Vue({
             };
 
             this.saving = true;
+            this.successMessage = null;
+            this.errorMessage = null;
 
             fetch('/user/update/password', {
                 method: 'POST',

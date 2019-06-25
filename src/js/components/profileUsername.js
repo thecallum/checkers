@@ -36,6 +36,8 @@ module.exports = new Vue({
             }
 
             this.saving = true;
+            this.successMessage = null;
+            this.errorMessage = null;
 
             const body = { username: this.username };
 

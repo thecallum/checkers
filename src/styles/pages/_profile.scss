@@ -127,6 +127,11 @@
         background-color: hsl(100, 45%, 50%);
         color: white;
 
+        position: relative;
+
+        width: 85px;
+        height: 55px;
+
         &:focus {
             outline: none;
         }
@@ -137,6 +142,29 @@
 
         &:disabled {
             background-color: hsl(100, 0%, 50%);
+        }
+
+        &::-moz-focus-inner {
+            border: 0;
+        }
+
+        &.loading::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: block;
+            border-radius: 50%;
+            border: 2px solid white;
+            border: 2px solid #bbb;
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: submit_loading 1s infinite linear;
         }
     }
 
