@@ -7,19 +7,19 @@ new Vue({
     data: {
         hasSubmitted: false,
         loading: false,
-        main__error: null,
+        mainError: null,
 
         email: '',
-        email__conf: '',
+        emailConf: '',
         username: '',
         password: '',
-        password__conf: '',
+        passwordConf: '',
         stayLogged: false,
 
-        username_search_loading: false,
-        username_timeout: null,
-        username_search_valid: undefined,
-        username__search__request__error: null,
+        usernameSearchLoading: false,
+        usernameTimeout: null,
+        usernameSearchValid: undefined,
+        usernameSearchRequestError: null,
 
         passwordRulesActive: false,
     },
@@ -28,24 +28,22 @@ new Vue({
         handleSubmit(e) {
             e.preventDefault();
 
-            if (this.loading || this.username_search_loading) return;
-
-            this.main__error = null;
-
+            if (this.loading || this.usernameSearchLoading) return;
+            this.mainError = null;
             this.hasSubmitted = true;
 
             if (
-                this.email__error ||
-                this.email__conf__error ||
-                this.username__error ||
-                this.password__error ||
-                this.password__conf__error ||
-                this.username__search__error ||
+                this.emailError ||
+                this.emailConfError ||
+                this.usernameError ||
+                this.passwordError ||
+                this.passwordConfError ||
+                this.usernameSearchError ||
                 !this.validPassword
             ) {
                 const newError = 'You have errors';
                 if (!this.validPassword) this.togglePasswordRules(true);
-                if (this.main__error !== newError) this.main__error = newError;
+                if (this.mainError !== newError) this.mainError = newError;
                 return;
             }
 
@@ -64,20 +62,21 @@ new Vue({
                 headers: { 'Content-Type': 'application/json' },
             })
                 .then(res => {
-                    this.loading = false;
                     if (res.status === 200) {
                         window.location = '/profile';
                     } else if (res.status === 400) {
-                        res.json().then(res => (this.main__error = res.message));
+                        return res.json();
                     } else {
-                        this.main__error = res.status;
+                        this.mainError = res.status;
+                        return false;
                     }
                 })
+                .then(res => (this.mainError = res.message))
                 .catch(e => {
                     console.error('Login error', e);
-                    this.request__error = 'Unknown error! Please try again';
-                    this.main__error = false;
-                });
+                    this.mainError = 'Unknown error! Please try again';
+                })
+                .finally(() => (this.loading = false));
         },
 
         togglePasswordRules(state) {
@@ -85,85 +84,81 @@ new Vue({
         },
     },
     computed: {
-        email__error() {
+        emailError() {
             const el = this.email;
             if (this.hasSubmitted && el === '') return 'Email is required';
             if (el === '') return false;
             if (!validator.isEmail(el)) return 'Invalid email';
             return false;
         },
-        email__conf__error() {
-            const el = this.email__conf;
+        emailConfError() {
+            const el = this.emailConf;
             if (this.hasSubmitted && el === '') return 'Email is required';
             if (el === '') return false;
             if (!validator.isEmail(el)) return 'Invalid email';
             if (this.email !== el) return "Email doesn't match";
             return false;
         },
-        password__error() {
+        passwordError() {
             const el = this.password;
             if (this.hasSubmitted && el === '') return 'Password is required';
             if (el === '') return false;
             // check password policy
             return false;
         },
-        password__conf__error() {
-            const el = this.password__conf;
+        passwordConfError() {
+            const el = this.passwordConf;
             if (this.hasSubmitted && el === '') return 'Password is required';
             if (el === '') return false;
             if (el !== this.password) return "Password doesn't match";
             // check password policy
             return false;
         },
-        username__error() {
+        usernameError() {
             const el = this.username;
             if (this.hasSubmitted && el === '') return 'Username is required';
             if (el === '') return false;
-            // if (el.length < 10) return "Username must be 10 characters"
 
             if (!this.usernameRules[0] || !this.usernameRules[1]) return 'Invalid username';
 
             return false;
         },
-        username__search__error() {
-            if (this.username__search__request__error) return this.username__search__request__error;
+        usernameSearchError() {
+            if (this.usernameSearchRequestError) return this.usernameSearchRequestError;
 
-            if (this.username_search_valid === false) return `${this.username} is taken`;
-
-            // validate username
-            // check username is available
+            if (this.usernameSearchValid === false) return `${this.username} is taken`;
 
             return false;
         },
 
         email__class() {
             return {
-                valid: !this.email__error && this.email,
-                invalid: !!this.email__error,
+                valid: !this.emailError && this.email,
+                invalid: !!this.emailError,
             };
         },
         email__conf__class() {
             return {
-                valid: !this.email__conf__error && this.email__conf,
-                invalid: !!this.email__conf__error,
+                valid: !this.emailConfError && this.emailConf,
+                invalid: !!this.emailConfError,
             };
         },
         password__class() {
             return {
-                valid: !this.password__error && this.password,
-                invalid: !!this.password__error,
+                valid: !this.passwordError && this.password,
+                invalid: !!this.passwordError,
             };
         },
         password__conf__class() {
             return {
-                valid: !this.password__conf__error && this.password__conf,
-                invalid: !!this.password__conf__error,
+                valid: !this.passwordConfError && this.passwordConf,
+                invalid: !!this.passwordConfError,
             };
         },
         username__class() {
             return {
-                valid: !this.username__error && this.username,
-                invalid: !!this.username__error || this.username_search_valid === false || this.username__search__error,
+                valid: !this.usernameError && this.username,
+                invalid: !!this.usernameError || this.usernameSearchValid === false || this.usernameSearchError,
             };
         },
 
@@ -208,30 +203,28 @@ new Vue({
     },
     watch: {
         username() {
-            if (this.username__error || !this.username) {
-                clearTimeout(this.username_timeout);
-                this.username_search_valid = undefined;
-                this.username_search_loading = false;
+            if (this.usernameError || !this.username) {
+                clearTimeout(this.usernameTimeout);
+                this.usernameSearchValid = undefined;
+                this.usernameSearchLoading = false;
                 return;
             }
 
-            this.username_search_loading = true;
+            this.usernameSearchLoading = true;
             // If user types, reset timeout
-            clearTimeout(this.username_timeout);
+            clearTimeout(this.usernameTimeout);
 
-            this.username_timeout = setTimeout(() => {
+            this.usernameTimeout = setTimeout(() => {
                 usernameAvailable(this.username)
                     .then(res => {
-                        this.username_search_valid = res;
-                        this.username__search__request__error = null;
-                        this.username_search_loading = false;
+                        this.usernameSearchValid = res;
+                        this.usernameSearchRequestError = null;
                     })
                     .catch(err => {
                         console.log('Fetch username err', err);
-
-                        this.username_search_loading = false;
-                        this.username__search__request__error = 'Cannot connect to server';
-                    });
+                        this.usernameSearchRequestError = 'Cannot connect to server';
+                    })
+                    .finally(() => (this.usernameSearchLoading = false));
             }, 500);
 
             // on change, set loading to true

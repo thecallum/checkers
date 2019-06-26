@@ -19,14 +19,11 @@ module.exports = new Vue({
     },
 
     mounted() {
-        console.log('Vue mounted');
-
-        Object.keys(this.$refs).map(key => {
-            const el = this.$refs[key];
-            this.username = el.dataset.value;
-            this.baseValue = el.dataset.value;
-        });
+        const username = this.$refs['username'].dataset.value;
+        this.username = username;
+        this.baseValue = username;
     },
+
     methods: {
         save() {
             if (this.unchanged || !this.valid || this.available === false) {
@@ -61,9 +58,7 @@ module.exports = new Vue({
                     console.error('save user error', e);
                     this.setError('Unknown Error. Try again');
                 })
-                .finally(() => {
-                    this.saving = false;
-                });
+                .finally(() => (this.saving = false));
         },
 
         closeSuccessMessage() {
@@ -87,10 +82,7 @@ module.exports = new Vue({
 
     computed: {
         invalid() {
-            if (!this.username.match(/^.{2,14}$/) || !this.username.match(/^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]*$/)) {
-                return true;
-            }
-
+            if (!this.username.match(/^.{2,14}$/) || !this.username.match(/^[a-zA-Z0-9!@#$%^&*(),.?":{}|<>]*$/)) return true;
             return false;
         },
 
@@ -111,8 +103,6 @@ module.exports = new Vue({
 
     watch: {
         username() {
-            // console.log('username changed');
-
             if (!this.valid) return;
 
             this.loading = true;
@@ -136,9 +126,7 @@ module.exports = new Vue({
         },
 
         valid() {
-            if (!this.valid) {
-                this.loading = false;
-            }
+            if (!this.valid) this.loading = false;
         },
     },
 });

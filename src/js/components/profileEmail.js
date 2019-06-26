@@ -1,6 +1,5 @@
 const successMessage = require('../components/successMessage');
 const errorMessage = require('../components/errorMessage');
-
 const { isEmail } = require('validator');
 
 module.exports = new Vue({
@@ -19,21 +18,13 @@ module.exports = new Vue({
     },
 
     mounted() {
-        console.log('Vue mounted');
-
-        Object.keys(this.$refs).map(key => {
-            const el = this.$refs[key];
-            this.email = el.dataset.value;
-            this.baseValue = el.dataset.value;
-        });
+        const email = this.$refs['email'].dataset.value;
+        this.email = email;
+        this.baseValue = email;
     },
     methods: {
         save() {
-            if (this.unchanged || !this.valid || this.available === false) {
-                console.log('Error, cannot save email');
-                // add rules somewhere
-                return;
-            }
+            if (this.unchanged || !this.valid || this.available === false) return;
 
             this.saving = true;
             this.successMessage = null;
@@ -69,9 +60,7 @@ module.exports = new Vue({
                     console.error('save user error', e);
                     this.setError('Unknown error. try again');
                 })
-                .finally(() => {
-                    this.saving = false;
-                });
+                .finally(() => (this.saving = false));
         },
 
         closeSuccessMessage() {
@@ -111,14 +100,8 @@ module.exports = new Vue({
     },
 
     watch: {
-        // email() {
-        //     // this.available = true;
-        // },
-
         valid() {
-            if (!this.valid) {
-                this.loading = false;
-            }
+            if (!this.valid) this.loading = false;
         },
     },
 });

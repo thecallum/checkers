@@ -22,34 +22,34 @@
                         class="form__input form__input__username"
                         :disabled="loading"
                     />
-                    <label class="form__label" for="input__username" v-bind:class="{notempty: username}">Username</label>
-                    <span class="form__input__username__search" v-bind:class="{loading: username_search_loading}"></span>
-                    <span class="form__error" v-if="(username__error || !!username__search__error) && !username_search_loading" v-cloak>{{
-                        username__error || username__search__error
-                    }}</span>
-                    <span class="form__message" v-if="!username_search_loading && !username__search__error && !username__error && username" v-cloak>
+                    <label class="form__label" for="input__username" v-bind:class="{ notempty: username }">Username</label>
+                    <span class="form__input__username__search" v-bind:class="{ loading: usernameSearchLoading }"></span>
+                    <span class="form__error" v-if="(usernameError || !!usernameSearchRequestError) && !usernameSearchLoading" v-cloak>
+                        {{ usernameError || usernameSearchRequestError }}
+                    </span>
+                    <span class="form__message" v-if="!usernameSearchLoading && !usernameSearchRequestError && !usernameError && username" v-cloak>
                         {{ username }} is available
                     </span>
                 </div>
 
                 <div class="form__row">
                     <input type="text" name="email" id="input__email" v-model="email" v-bind:class="email__class" class="form__input" :disabled="loading" />
-                    <label class="form__label" for="input__email" v-bind:class="{notempty: email}">Email</label>
-                    <span class="form__error" v-if="email__error" v-cloak>{{ email__error }}</span>
+                    <label class="form__label" for="input__email" v-bind:class="{ notempty: email }">Email</label>
+                    <span class="form__error" v-if="emailError" v-cloak>{{ emailError }}</span>
                 </div>
 
                 <div class="form__row">
                     <input
                         type="text"
-                        name="email__comf"
+                        name="email__conf"
                         id="input__email__conf"
-                        v-model="email__conf"
+                        v-model="emailConf"
                         v-bind:class="email__conf__class"
                         class="form__input"
                         :disabled="loading"
                     />
-                    <label class="form__label" for="input__email__conf" v-bind:class="{notempty: email__conf}">Confirm Email</label>
-                    <span class="form__error" v-if="email__conf__error" v-cloak>{{ email__conf__error }}</span>
+                    <label class="form__label" for="input__email__conf" v-bind:class="{ notempty: emailConf }">Confirm Email</label>
+                    <span class="form__error" v-if="emailConfError" v-cloak>{{ emailConfError }}</span>
                 </div>
 
                 <div class="form__row">
@@ -63,7 +63,7 @@
                         :disabled="loading"
                     />
                     <label class="form__label" for="input__password" v-bind:class="{notempty: password}">Password</label>
-                    <span class="form__error" v-if="password__error" v-cloak>{{ password__error }}</span>
+                    <span class="form__error" v-if="passwordError" v-cloak>{{ passwordError }}</span>
                 </div>
 
                 <div class="form__row">
@@ -71,13 +71,13 @@
                         type="password"
                         name="password__conf"
                         id="input__password__conf"
-                        v-model="password__conf"
+                        v-model="passwordConf"
                         v-bind:class="password__conf__class"
                         class="form__input"
                         :disabled="loading"
                     />
-                    <label class="form__label" for="input__password__conf" v-bind:class="{notempty: password__conf}">Confirm Password</label>
-                    <span class="form__error" v-if="password__conf__error" v-cloak>{{ password__conf__error }}</span>
+                    <label class="form__label" for="input__password__conf" v-bind:class="{ notempty: passwordConf }">Confirm Password</label>
+                    <span class="form__error" v-if="passwordConfError" v-cloak>{{ passwordConfError }}</span>
                 </div>
 
                 <div class="form__row">
@@ -99,16 +99,16 @@
                 </div>
 
                 <span v-cloak>
-                    <div class="form__row" v-if="main__error">
+                    <div class="form__row" v-if="mainError">
                         <div class="form__request__error">
                             <strong>Error: </strong>
-                            {{ main__error }}
+                            {{ mainError }}
                         </div>
                     </div>
                 </span>
 
                 <div class="form__row">
-                    <button type="submit" class="form__submit" v-bind:class="{loading}">
+                    <button type="submit" class="form__submit" v-bind:class="{ loading }">
                         <span v-if="loading"></span>
                         <span v-else>Register</span>
                     </button>

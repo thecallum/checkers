@@ -18,14 +18,9 @@ module.exports = new Vue({
         passwordRulesActive: false,
     },
 
-    mounted() {
-        console.log('Vue mounted');
-    },
     methods: {
         save() {
-            if (!this.validPassword || !this.passwordsMatch || this.saving || this.empty) {
-                return;
-            }
+            if (!this.validPassword || !this.passwordsMatch || this.saving || this.empty) return;
 
             const body = {
                 currentPassword: this.passwordCurrent,
@@ -60,13 +55,16 @@ module.exports = new Vue({
         closeSuccessMessage() {
             this.successMessage = null;
         },
+
         closeErrorMessage() {
             this.errorMessage = null;
         },
+
         setError(message) {
             this.successMessage = null;
             this.errorMessage = message;
         },
+
         setSuccess(message) {
             this.errorMessage = null;
             this.successMessage = message;
@@ -98,9 +96,7 @@ module.exports = new Vue({
         },
 
         loadingClass() {
-            return {
-                loading: this.loading,
-            };
+            return { loading: this.loading };
         },
 
         passwordRules() {

@@ -6,16 +6,12 @@ research socket security
 
 firefox modal clickout broken (::after)
 
-Build profile page
-
 Build Leaderboard page
 Setup Leaderboard functionality
 
 setup socket for multi-server use
 
 Player picks piece color
-
-stay logged doesn't seem to work
 
 breakup regiser.js into smaller components
 

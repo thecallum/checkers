@@ -3,7 +3,7 @@ new Vue({
     data: {
         hasSubmitted: false,
         loading: false,
-        request__error: null,
+        requestError: null,
 
         email: '',
         password: '',
@@ -17,7 +17,7 @@ new Vue({
 
             this.hasSubmitted = true;
 
-            if (!!this.email__error && this.password__error) return;
+            if (!!this.emailError || !!this.passwordError) return;
 
             this.loading = true;
 
@@ -33,61 +33,44 @@ new Vue({
                 headers: { 'Content-Type': 'application/json' },
             })
                 .then(res => {
-                    this.loading = false;
                     if (res.status === 200) {
                         window.location = '/profile';
-                    } else {
-                        if (res.status === 401) {
-                            this.request__error = 'Invalid email or password!';
-                        }
+                    } else if (res.status === 401) {
+                        this.requestError = 'Invalid email or password!';
                     }
                 })
                 .catch(e => {
                     console.error('Login error', e);
-                    this.request__error = 'Unknown error! Please try again';
-                    this.loading = false;
-                });
+                    this.requestError = 'Unknown error! Please try again';
+                })
+                .finally(() => (this.loading = false));
         },
     },
 
     computed: {
-        email__error() {
-            if (this.hasSubmitted && this.email === '') {
-                return 'Email is required';
-            } else if (this.email === '') {
-                return false;
-            }
-
-            if (!validator.isEmail(this.email)) {
-                return 'Invalid email';
-            }
-
+        emailError() {
+            if (this.hasSubmitted && this.email === '') return 'Email is required';
+            if (this.email === '') return false;
+            if (!validator.isEmail(this.email)) return 'Invalid email';
             return false;
         },
-        password__error() {
-            if (this.hasSubmitted && this.password === '') {
-                return 'Password is required';
-            } else if (this.password === '') {
-                return false;
-            }
-
-            // We don't need to tell the user too much about the password policy
+        passwordError() {
+            if (this.hasSubmitted && this.password === '') return 'Password is required';
+            if (this.password === '') return false;
             return false;
         },
 
-        email__class() {
+        emailClass() {
             return {
-                valid: !this.email__error && this.email,
-                invalid: !!this.email__error,
+                valid: !this.emailError && this.email,
+                invalid: !!this.emailError,
             };
         },
-        password__class() {
+        passwordClass() {
             return {
-                valid: !this.password__error && this.password,
-                invalid: !!this.password__error,
+                valid: !this.passwordError && this.password,
+                invalid: !!this.passwordError,
             };
         },
     },
 });
-
-//

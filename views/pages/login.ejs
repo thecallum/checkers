@@ -12,10 +12,12 @@
             <form class="form" @submit="handleSubmit">
                 <h1 class="form__title">Login</h1>
 
+                <p>EmailError: {{ emailError }}</p>
+
                 <div class="form__row">
-                    <input type="text" name="email" id="input__email" v-model="email" v-bind:class="email__class" class="form__input" :disabled="loading" />
+                    <input type="text" name="email" id="input__email" v-model="email" v-bind:class="emailClass" class="form__input" :disabled="loading" />
                     <label class="form__label" for="input__email" v-bind:class="{notempty: email}">Email</label>
-                    <span class="form__error" v-if="email__error" v-cloak>{{ email__error }}</span>
+                    <span class="form__error" v-if="emailError" v-cloak>{{ emailError }}</span>
                 </div>
 
                 <div class="form__row">
@@ -24,12 +26,12 @@
                         name="password"
                         id="input__password"
                         v-model="password"
-                        v-bind:class="password__class"
+                        v-bind:class="passwordClass"
                         class="form__input"
                         :disabled="loading"
                     />
-                    <label class="form__label" for="input__password" v-bind:class="{notempty: password}">Password</label>
-                    <span class="form__error" v-if="password__error" v-cloak>{{ password__error }}</span>
+                    <label class="form__label" for="input__password" v-bind:class="{ notempty: password }">Password</label>
+                    <span class="form__error" v-if="passwordError" v-cloak>{{ passwordError }}</span>
                 </div>
 
                 <div class="form__row">
@@ -41,13 +43,13 @@
                 </div>
 
                 <span v-cloak>
-                    <div class="form__row" v-if="request__error">
-                        <div class="form__request__error"><strong>Error: </strong> {{ request__error }}</div>
+                    <div class="form__row" v-if="requestError">
+                        <div class="form__request__error"><strong>Error: </strong> {{ requestError }}</div>
                     </div>
                 </span>
 
                 <div class="form__row">
-                    <button type="submit" class="form__submit" v-bind:class="{loading}">
+                    <button type="submit" class="form__submit" v-bind:class="{ loading }">
                         <span v-if="loading"></span>
                         <span v-else>Login</span>
                     </button>
