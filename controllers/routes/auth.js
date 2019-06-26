@@ -26,10 +26,12 @@ router.post('/login', (req, res) => {
                 };
 
                 req.session.user = sessionUser;
-                req.session.save();
 
                 // If user has selected stayLogged, cookie will expire in 1 week
-                if (user.stayLogged) req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7;
+                if (stayLogged) req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7;
+
+                req.session.save();
+
                 res.status(200).send();
             })
             .catch(() => res.status(500).send());
@@ -60,10 +62,11 @@ router.post('/register', (req, res) => {
             };
 
             req.session.user = sessionUser;
-            req.session.save();
 
             // If user has selected stayLogged, cookie will expire in 1 week
-            if (newUser.stayLogged) req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7;
+            if (stayLogged) req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 7;
+
+            req.session.save();
 
             res.status(200).send();
         })
