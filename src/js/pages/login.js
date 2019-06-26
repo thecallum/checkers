@@ -1,5 +1,8 @@
+const message = require('../components/message');
+
 new Vue({
     el: '#app',
+    components: { message },
     data: {
         hasSubmitted: false,
         loading: false,
@@ -19,6 +22,7 @@ new Vue({
 
             if (!!this.emailError || !!this.passwordError) return;
 
+            this.closeErrorMessage();
             this.loading = true;
 
             const body = {
@@ -45,6 +49,9 @@ new Vue({
                 })
                 .finally(() => (this.loading = false));
         },
+        closeErrorMessage() {
+            this.requestError = null;
+        },
     },
 
     computed: {
@@ -54,6 +61,7 @@ new Vue({
             if (!validator.isEmail(this.email)) return 'Invalid email';
             return false;
         },
+
         passwordError() {
             if (this.hasSubmitted && this.password === '') return 'Password is required';
             if (this.password === '') return false;
@@ -66,6 +74,7 @@ new Vue({
                 invalid: !!this.emailError,
             };
         },
+
         passwordClass() {
             return {
                 valid: !this.passwordError && this.password,

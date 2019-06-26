@@ -15,8 +15,6 @@ Player picks piece color
 
 breakup regiser.js into smaller components
 
-update error message in login/register to one used in /profile
-
 Find way to reuse pasword/username validation rules
 
 fix consistancy with either underscore or cammelCase

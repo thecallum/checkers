@@ -1,9 +1,10 @@
 const usernameAvailable = require('../requests/usernameAvailable');
 const passwordRules = require('../components/passwordRules');
+const message = require('../components/message');
 
 new Vue({
     el: '#app',
-    components: { passwordRules },
+    components: { passwordRules, message },
     data: {
         hasSubmitted: false,
         loading: false,
@@ -29,7 +30,7 @@ new Vue({
             e.preventDefault();
 
             if (this.loading || this.usernameSearchLoading) return;
-            this.mainError = null;
+            this.closeErrorMessage();
             this.hasSubmitted = true;
 
             if (
@@ -82,6 +83,9 @@ new Vue({
         togglePasswordRules(state) {
             this.passwordRulesActive = typeof state === 'boolean' ? state : !this.passwordRulesActive;
         },
+        closeErrorMessage() {
+            this.mainError = null;
+        },
     },
     computed: {
         emailError() {
@@ -103,6 +107,7 @@ new Vue({
             const el = this.password;
             if (this.hasSubmitted && el === '') return 'Password is required';
             if (el === '') return false;
+            if (!this.validPassword) return "Password doesn't meet rules";
             // check password policy
             return false;
         },

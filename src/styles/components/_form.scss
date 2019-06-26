@@ -228,17 +228,6 @@ $color_text: hsl(200, 20%, 20%);
             border: 2px dashed hsl(200, 20%, 50%);
         }
     }
-
-    &__request__error {
-        border: 0px solid hsl(0, 50%, 50%);
-        border-width: 2px 0;
-        padding: 10px 20px;
-        width: 100%;
-
-        > strong {
-            color: hsl(0, 50%, 50%);
-        }
-    }
 }
 
 @media (max-width: 750px) {

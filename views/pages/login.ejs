@@ -12,8 +12,6 @@
             <form class="form" @submit="handleSubmit">
                 <h1 class="form__title">Login</h1>
 
-                <p>EmailError: {{ emailError }}</p>
-
                 <div class="form__row">
                     <input type="text" name="email" id="input__email" v-model="email" v-bind:class="emailClass" class="form__input" :disabled="loading" />
                     <label class="form__label" for="input__email" v-bind:class="{notempty: email}">Email</label>
@@ -42,11 +40,9 @@
                     </label>
                 </div>
 
-                <span v-cloak>
-                    <div class="form__row" v-if="requestError">
-                        <div class="form__request__error"><strong>Error: </strong> {{ requestError }}</div>
-                    </div>
-                </span>
+                <div class="form__row" v-if="requestError" v-cloak>
+                    <message :close="closeErrorMessage" :message="requestError" v-if="requestError" type="error"> </message>
+                </div>
 
                 <div class="form__row">
                     <button type="submit" class="form__submit" v-bind:class="{ loading }">

@@ -1,11 +1,9 @@
-const successMessage = require('../components/successMessage');
-const errorMessage = require('../components/errorMessage');
-
+const message = require('../components/message');
 const usernameAvailable = require('../requests/usernameAvailable');
 
 module.exports = new Vue({
     el: '#app__username',
-    components: { successMessage, errorMessage },
+    components: { message },
     data: {
         username: '',
         baseValue: '',

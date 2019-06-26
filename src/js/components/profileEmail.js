@@ -1,10 +1,9 @@
-const successMessage = require('../components/successMessage');
-const errorMessage = require('../components/errorMessage');
+const message = require('../components/message');
 const { isEmail } = require('validator');
 
 module.exports = new Vue({
     el: '#app__email',
-    components: { successMessage, errorMessage },
+    components: { message },
     data: {
         email: '',
         baseValue: '',

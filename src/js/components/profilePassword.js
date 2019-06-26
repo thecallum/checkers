@@ -1,10 +1,9 @@
-const successMessage = require('../components/successMessage');
-const errorMessage = require('../components/errorMessage');
+const message = require('../components/message');
 const passwordRules = require('../components/passwordRules');
 
 module.exports = new Vue({
     el: '#app__password',
-    components: { successMessage, errorMessage, passwordRules },
+    components: { message, passwordRules },
     data: {
         passwordCurrent: '',
         passwordNew: '',

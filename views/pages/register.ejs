@@ -98,14 +98,9 @@
                     </label>
                 </div>
 
-                <span v-cloak>
-                    <div class="form__row" v-if="mainError">
-                        <div class="form__request__error">
-                            <strong>Error: </strong>
-                            {{ mainError }}
-                        </div>
-                    </div>
-                </span>
+                <div class="form__row" v-if="mainError" v-cloak>
+                    <message :close="closeErrorMessage" :message="mainError" v-if="mainError" type="error"> </message>
+                </div>
 
                 <div class="form__row">
                     <button type="submit" class="form__submit" v-bind:class="{ loading }">
