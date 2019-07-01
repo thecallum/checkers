@@ -26,6 +26,7 @@ app.use(compression());
 app.use('/js/', express.static('public/js/'));
 app.use('/css/', express.static('public/css/'));
 app.use('/assets/', express.static('public/assets/'));
+app.use('/uploadedImages/', express.static('public/uploadedImages/'));
 
 app.use(require('./controllers/routes/data'));
 app.use(require('./controllers/routes/user'));

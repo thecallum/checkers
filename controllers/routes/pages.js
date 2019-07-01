@@ -40,6 +40,10 @@ router.get('/leaderboard', (req, res) => {
     res.render('pages/leaderboard', { auth: !!req.session.user });
 });
 
+router.get('/upload', (req, res) => {
+    res.render('pages/upload', { auth: !!req.session.user });
+});
+
 router.get('*', (req, res) => {
     res.render('pages/pageNotFound', { auth: !!req.session.user });
 });

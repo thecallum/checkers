@@ -17,6 +17,4 @@ breakup regiser.js into smaller components
 
 Find way to reuse pasword/username validation rules
 
-fix consistancy with either underscore or cammelCase
-
 Setup profile picture setup
