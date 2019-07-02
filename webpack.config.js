@@ -22,7 +22,6 @@ module.exports = env => {
             register: path.resolve(__dirname, 'src', 'js', 'pages', 'register.js'),
             online: path.resolve(__dirname, 'src', 'js', 'pages', 'online.js'),
             profile: path.resolve(__dirname, 'src', 'js', 'pages', 'profile.js'),
-            upload: path.resolve(__dirname, 'src', 'js', 'pages', 'upload.js'),
         },
         output: {
             path: path.resolve(__dirname, 'public'),

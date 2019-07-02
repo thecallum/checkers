@@ -11,17 +11,25 @@
             <div class="profile__container">
                 <h1 class="profile__title">Profile</h1>
 
-                <!-- <div class="profile__group">
-                    <label class="profile__label" for="">Profile Picture</label>
+                <div id="app__image">
+                    <div class="profile__group">
+                        <h2 class="profile__subtitle">Profile Picture</h2>
 
-                    <div class="profile__profile__container">
-                        <img src="<%= img %>" alt="" class="profile__profile__picture" /> 
+                        <div class="profile__input__group">
+                            <form @submit="handleSubmit">
+                                <img ref="image" v-bind:src="imageUrl" data-src="<%= img %>" alt="" class="profile__img" />
+                                <input v-on:change="inputChanged" ref="input" type="file" name="uploaded_image" id="uploaded_image" accept="image/*" />
 
-                        <div class="profile__profile__label">Update Profile Picture</div>
+                                <button class="profile__button" disabled v-bind:disabled="!imageSelected" v-bind:class="{ loading }">
+                                    <span v-if="!loading">Save</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <message :close="closeSuccessMessage" :message="successMessage" v-if="successMessage" type="success"></message>
+                        <message :close="closeErrorMessage" :message="errorMessage" v-if="errorMessage" type="error"></message>
                     </div>
-
-                    <button>Select File</button>
-                </div> -->
+                </div>
 
                 <div id="app__username">
                     <div class="profile__group">

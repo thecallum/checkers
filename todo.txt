@@ -18,3 +18,5 @@ breakup regiser.js into smaller components
 Find way to reuse pasword/username validation rules
 
 Setup profile picture setup
+
+Suggest profile image upload on register

@@ -20,7 +20,7 @@ router.get('/profile', auth, (req, res) => {
         auth: !!req.session.user,
         username: req.session.user.username,
         email: req.session.user.email,
-        img: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg',
+        img: req.session.user.profileImage,
     });
 });
 
@@ -38,10 +38,6 @@ router.get('/play/online', auth, (req, res) => {
 
 router.get('/leaderboard', (req, res) => {
     res.render('pages/leaderboard', { auth: !!req.session.user });
-});
-
-router.get('/upload', (req, res) => {
-    res.render('pages/upload', { auth: !!req.session.user });
 });
 
 router.get('*', (req, res) => {

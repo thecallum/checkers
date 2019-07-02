@@ -89,8 +89,16 @@ router.post('/user/update/profile', auth, upload, async (req, res) => {
 
     console.log('file', req.file);
 
+    const url = `/uploadedImages/${req.file.filename}`;
+
+    req.session.user = {
+        ...req.session.user,
+        profileImage: url,
+    };
+    req.session.save();
+
     res.status(200).json({
-        url: `/uploadedImages/${req.file.filename}`,
+        url,
     });
 
     // res.status(200).send();

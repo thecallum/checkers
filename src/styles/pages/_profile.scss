@@ -80,6 +80,13 @@
         }
     }
 
+    &__img {
+        width: 150px;
+        height: 150px;
+        border: 1px solid #333;
+        background-color: #999;
+    }
+
     &__button {
         border: none;
         border-radius: 8px;
