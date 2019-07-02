@@ -1,6 +1,8 @@
+const message = require('../components/message');
+
 new Vue({
     el: '#app__image',
-
+    components: { message },
     data: {
         // responseURL: null,
         loading: false,
