@@ -4,12 +4,10 @@ new Vue({
     el: '#app__image',
     components: { message },
     data: {
-        // responseURL: null,
         loading: false,
         imageSelected: false,
         errorMessage: null,
         successMessage: null,
-
         imageUrl: '',
     },
 
@@ -20,7 +18,6 @@ new Vue({
 
     methods: {
         inputChanged() {
-            // console.log('input change', this.$refs.input.files);
             this.imageSelected = this.$refs.input.files.length > 0;
         },
 
@@ -28,11 +25,8 @@ new Vue({
             e.preventDefault();
 
             const file = e.target.uploaded_image.files[0];
-
             if (file === undefined) return;
-
             const fd = new FormData();
-
             fd.append('uploaded_image', file);
 
             this.loading = true;
@@ -46,13 +40,11 @@ new Vue({
                 processData: false,
             })
                 .then(res => {
-                    // console.log({ status: res.status });
                     if (res.status === 200) return res.json();
                     this.setError('Unknown error. try again');
                     return false;
                 })
                 .then(res => {
-                    // console.log({ res });
                     this.imageUrl = res.url;
                     this.setSuccess('Profile image updated');
                 })

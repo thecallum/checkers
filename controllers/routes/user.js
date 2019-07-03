@@ -1,19 +1,25 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const uuid = require('uuid/v1');
+const { isEmail } = require('validator');
 
 const updateUsername = require('../updateUsername');
 const updateEmail = require('../updateEmail');
 const updatePassword = require('../updatePassword');
-
 const validatePassword = require('../validatePassword');
 const validateUsername = require('../validateUsername');
-const multer = require('multer');
-const { isEmail } = require('validator');
-const path = require('path');
+const removeImage = require('../removeImage');
+
 const auth = require('../../middleware/auth');
 
-const uuid = require('uuid/v1');
-// uuid(); // ⇨ '45745c60-7b1a-11e8-9c9c-2d42b21b1a3e'
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, path.resolve(__dirname, '../', '../', 'public', 'uploadedImages')),
+    filename: (req, file, cb) => cb(null, uuid() + path.extname(file.originalname)),
+});
+
+const upload = multer({ storage }).single('uploaded_image');
 
 router.post('/user/update/username', auth, (req, res) => {
     const { username } = req.body;
@@ -66,42 +72,18 @@ router.post('/user/update/password', auth, async (req, res) => {
         .catch(() => res.status(400).send());
 });
 
-const fileLocation = path.resolve(__dirname, '../', '../', 'public', 'uploadedImages');
-
-console.log({ fileLocation });
-
-var storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, fileLocation);
-    },
-    filename: function(req, file, cb) {
-        const newName = uuid() + path.extname(file.originalname);
-        cb(null, newName);
-    },
-});
-
-var upload = multer({
-    storage,
-}).single('uploaded_image');
-
 router.post('/user/update/profile', auth, upload, async (req, res) => {
-    console.log('UPLOAD IMAGE REQUEST');
-
-    console.log('file', req.file);
-
     const url = `/uploadedImages/${req.file.filename}`;
+    const currentImage = req.session.user.profileImage;
 
-    req.session.user = {
-        ...req.session.user,
-        profileImage: url,
-    };
+    if (currentImage !== undefined) {
+        const fileName = currentImage.split('/')[2];
+        await removeImage(fileName);
+    }
+
+    req.session.user = { ...req.session.user, profileImage: url };
     req.session.save();
-
-    res.status(200).json({
-        url,
-    });
-
-    // res.status(200).send();
+    res.status(200).json({ url });
 });
 
 module.exports = router;
