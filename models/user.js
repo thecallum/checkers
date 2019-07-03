@@ -21,7 +21,7 @@ exports.register = (username, email, passwordHash) =>
 
 exports.login = email =>
     new Promise(async resolve => {
-        const query = `SELECT id, username, password FROM user WHERE email = '${email}';`;
+        const query = `SELECT id, username, password, profile_image FROM user WHERE email = '${email}';`;
 
         con.query(query, (err, response) => {
             resolve(response.length === 0 ? null : response[0]);
@@ -65,5 +65,15 @@ exports.getPassword = id =>
         con.query(query, (err, response) => {
             if (err) return reject(err);
             resolve(response.length === 0 ? null : response[0].password);
+        });
+    });
+
+exports.updateProfileImage = (id, url) =>
+    new Promise(async (resolve, reject) => {
+        const query = `UPDATE user SET profile_image = '${url}' where id = '${id}';`;
+
+        con.query(query, (err, response) => {
+            if (err) return reject(err);
+            resolve(response);
         });
     });

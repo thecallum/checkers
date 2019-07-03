@@ -20,7 +20,7 @@ router.get('/profile', auth, (req, res) => {
         auth: !!req.session.user,
         username: req.session.user.username,
         email: req.session.user.email,
-        img: req.session.user.profileImage,
+        img: req.session.user.profile_image,
     });
 });
 

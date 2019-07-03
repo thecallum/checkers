@@ -23,6 +23,7 @@ router.post('/login', (req, res) => {
                     username: user.username,
                     id: user.id,
                     stayLogged,
+                    profile_image: user.profile_image,
                 };
 
                 req.session.user = sessionUser;

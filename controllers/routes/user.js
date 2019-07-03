@@ -10,7 +10,7 @@ const updateEmail = require('../updateEmail');
 const updatePassword = require('../updatePassword');
 const validatePassword = require('../validatePassword');
 const validateUsername = require('../validateUsername');
-const removeImage = require('../removeImage');
+const updateProfileImage = require('../updateProfileImage');
 
 const auth = require('../../middleware/auth');
 
@@ -73,17 +73,16 @@ router.post('/user/update/password', auth, async (req, res) => {
 });
 
 router.post('/user/update/profile', auth, upload, async (req, res) => {
-    const url = `/uploadedImages/${req.file.filename}`;
-    const currentImage = req.session.user.profileImage;
+    const fileName = req.file.filename;
+    const { id, profile_image: currentImage } = req.session.user;
 
-    if (currentImage !== undefined) {
-        const fileName = currentImage.split('/')[2];
-        await removeImage(fileName);
-    }
-
-    req.session.user = { ...req.session.user, profileImage: url };
-    req.session.save();
-    res.status(200).json({ url });
+    updateProfileImage(id, fileName, currentImage)
+        .then(({ url }) => {
+            req.session.user = { ...req.session.user, profile_image: url };
+            req.session.save();
+            res.status(200).json({ url });
+        })
+        .catch(() => res.status(500));
 });
 
 module.exports = router;
