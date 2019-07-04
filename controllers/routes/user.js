@@ -19,7 +19,24 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => cb(null, uuid() + path.extname(file.originalname)),
 });
 
-const upload = multer({ storage }).single('uploaded_image');
+const upload = multer({
+    storage,
+    size: 1000000,
+    fileFilter: (req, file, cb) => {
+        // check filetype
+        const filetypes = /jpeg|jpg|png|gif|webp/;
+        // check extension
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        // check mime
+        const mimetype = filetypes.test(file.mimetype);
+
+        if (mimetype && extname) {
+            return cb(null, true);
+        } else {
+            return cb('Error: images only');
+        }
+    },
+}).single('uploaded_image');
 
 router.post('/user/update/username', auth, (req, res) => {
     const { username } = req.body;
@@ -72,17 +89,21 @@ router.post('/user/update/password', auth, async (req, res) => {
         .catch(() => res.status(400).send());
 });
 
-router.post('/user/update/profile', auth, upload, async (req, res) => {
-    const fileName = req.file.filename;
-    const { id, profile_image: currentImage } = req.session.user;
+router.post('/user/update/profile', auth, async (req, res) => {
+    upload(req, res, err => {
+        if (err) return res.status(400).json({ error: err });
 
-    updateProfileImage(id, fileName, currentImage)
-        .then(({ url }) => {
-            req.session.user = { ...req.session.user, profile_image: url };
-            req.session.save();
-            res.status(200).json({ url });
-        })
-        .catch(() => res.status(500));
+        const fileName = req.file.filename;
+        const { id, profile_image: currentImage } = req.session.user;
+
+        updateProfileImage(id, fileName, currentImage)
+            .then(({ url }) => {
+                req.session.user = { ...req.session.user, profile_image: url };
+                req.session.save();
+                res.status(200).json({ url });
+            })
+            .catch(() => res.status(500));
+    });
 });
 
 module.exports = router;

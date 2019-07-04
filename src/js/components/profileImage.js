@@ -40,21 +40,31 @@ new Vue({
                 processData: false,
             })
                 .then(res => {
-                    if (res.status === 200) return res.json();
+                    if (res.status === 200 || res.status === 400) return res.json();
+
                     this.setError('Unknown error. try again');
+                    this.$refs.input.value = null;
+                    this.imageSelected = false;
+
                     return false;
                 })
                 .then(res => {
-                    this.imageUrl = res.url;
-                    this.setSuccess('Profile image updated');
+                    if (res) {
+                        if (res.hasOwnProperty('error')) {
+                            this.setError('Invalid image type');
+                            this.$refs.input.value = null;
+                            this.imageSelected = false;
+                        } else {
+                            this.imageUrl = res.url;
+                            this.setSuccess('Profile image updated');
+                        }
+                    }
                 })
                 .catch(e => {
                     console.log('fetch err', e);
                     this.setError('Unknown error. try again');
                 })
                 .finally(() => {
-                    this.imageSelected = false;
-                    this.$refs.input.value = null;
                     this.loading = false;
                 });
         },

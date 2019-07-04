@@ -191,19 +191,26 @@ module.exports = (server, session) => {
 
             const players = queue.getPlayers();
 
+            const users = {
+                [players[1]]: {
+                    username: io.sockets.sockets[players[1]].handshake.session.user.username,
+                    src: io.sockets.sockets[players[1]].handshake.session.user.profile_image,
+                },
+                [players[0]]: {
+                    username: io.sockets.sockets[players[0]].handshake.session.user.username,
+                    src: io.sockets.sockets[players[0]].handshake.session.user.profile_image,
+                },
+            };
+
             const room = rooms.join({
                 players: {
                     [players[0]]: {
                         accepted: false,
-                        username: io.sockets.sockets[players[0]].handshake.session.user.username,
-                        src: '/',
-                        alt: 'user pic',
+                        ...users[players[1]],
                     },
                     [players[1]]: {
                         accepted: false,
-                        username: io.sockets.sockets[players[1]].handshake.session.user.username,
-                        src: '/',
-                        alt: 'user pic',
+                        ...users[players[1]],
                     },
                 },
             });
@@ -216,17 +223,6 @@ module.exports = (server, session) => {
                 updateSessionRoom(socket, room);
                 socket.join(room);
             });
-
-            const users = {
-                [players[1]]: {
-                    username: io.sockets.sockets[players[1]].handshake.session.user.username,
-                    src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg',
-                },
-                [players[0]]: {
-                    username: io.sockets.sockets[players[0]].handshake.session.user.username,
-                    src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg',
-                },
-            };
 
             setTimeout(() => {
                 io.to(room).emit('game', { state: 'found', players: users });

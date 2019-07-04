@@ -15,8 +15,9 @@ Player picks piece color
 
 breakup regiser.js into smaller components
 
-Find way to reuse pasword/username validation rules
-
-Setup profile picture setup
-
+Improve profile image verification
 Suggest profile image upload on register
+
+rejoin queue doesnt work
+
+queue sometimes crashes
