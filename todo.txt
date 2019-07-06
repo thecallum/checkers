@@ -4,8 +4,6 @@ online rematch
 
 research socket security
 
-firefox modal clickout broken (::after)
-
 Build Leaderboard page
 Setup Leaderboard functionality
 
