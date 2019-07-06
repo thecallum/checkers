@@ -17,6 +17,7 @@ breakup regiser.js into smaller components
 
 Improve profile image verification
 Suggest profile image upload on register
+add delete profile image option
 
 rejoin queue doesnt work
 

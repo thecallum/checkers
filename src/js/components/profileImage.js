@@ -4,16 +4,17 @@ new Vue({
     el: '#app__image',
     components: { message },
     data: {
-        loading: false,
+        saveLoading: false,
+        deleteLoading: false,
         imageSelected: false,
         errorMessage: null,
         successMessage: null,
-        imageUrl: '',
+        imageURL: '',
     },
 
     mounted() {
         const src = this.$refs['image'].dataset.src;
-        if (src !== '') this.imageUrl = src;
+        if (src !== '') this.imageURL = src;
     },
 
     methods: {
@@ -29,11 +30,11 @@ new Vue({
             const fd = new FormData();
             fd.append('uploaded_image', file);
 
-            this.loading = true;
+            this.saveLoading = true;
             this.successMessage = null;
             this.errorMessage = null;
 
-            fetch('/user/update/profile', {
+            fetch('/user/update/update-profile', {
                 method: 'POST',
                 body: fd,
                 contentType: false,
@@ -52,10 +53,10 @@ new Vue({
                     if (res) {
                         if (res.hasOwnProperty('error')) {
                             this.setError('Invalid image type');
+                        } else {
+                            this.imageURL = res.url;
                             this.$refs.input.value = null;
                             this.imageSelected = false;
-                        } else {
-                            this.imageUrl = res.url;
                             this.setSuccess('Profile image updated');
                         }
                     }
@@ -65,7 +66,7 @@ new Vue({
                     this.setError('Unknown error. try again');
                 })
                 .finally(() => {
-                    this.loading = false;
+                    this.saveLoading = false;
                 });
         },
 
@@ -85,6 +86,30 @@ new Vue({
 
         closeErrorMessage() {
             this.errorMessage = null;
+        },
+
+        deleteProfileImage() {
+            this.deleteLoading = true;
+
+            fetch('/user/update/delete-profile', {
+                method: 'POST',
+            })
+                .then(res => {
+                    if (res.status === 200) {
+                        this.setSuccess('Profile image deleted');
+                        this.imageURL = '';
+                    } else {
+                        this.setError('Unknown error. try again');
+                    }
+                })
+
+                .catch(e => {
+                    console.log('fetch err', e);
+                    this.setError('Unknown error. try again');
+                })
+                .finally(() => {
+                    this.deleteLoading = false;
+                });
         },
     },
 });

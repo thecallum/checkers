@@ -90,19 +90,13 @@
     &__button {
         border: none;
         border-radius: 8px;
-
-        padding: 16px 20px;
         cursor: pointer;
-
         display: block;
-        margin-left: auto;
-
+        margin: 0 0 10px auto;
         font-size: 20px;
         background-color: hsl(100, 45%, 50%);
         color: white;
-
         position: relative;
-
         width: 85px;
         height: 55px;
 
@@ -116,10 +110,6 @@
 
         &:disabled {
             background-color: hsl(100, 0%, 50%);
-        }
-
-        &::-moz-focus-inner {
-            border: 0;
         }
 
         &.loading::after {
@@ -139,6 +129,14 @@
             width: 30px;
             height: 30px;
             animation: submit_loading 1s infinite linear;
+        }
+    }
+
+    &__button__delete {
+        background-color: hsl(0, 50%, 50%);
+
+        &:active {
+            background-color: darken($color: hsl(0, 50%, 50%), $amount: 2%);
         }
     }
 

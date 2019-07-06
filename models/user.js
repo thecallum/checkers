@@ -77,3 +77,13 @@ exports.updateProfileImage = (id, url) =>
             resolve(response);
         });
     });
+
+exports.deleteProfileImage = id =>
+    new Promise(async (resolve, reject) => {
+        const query = `UPDATE user SET profile_image = NULL WHERE id = ${id};`;
+
+        con.query(query, (err, response) => {
+            if (err) return reject(err);
+            resolve(response);
+        });
+    });

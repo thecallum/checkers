@@ -1,4 +1,4 @@
-const { updateProfileImage: updateImage } = require('../models/user');
+const { deleteProfileImage: deleteImage } = require('../models/user');
 
 const fs = require('fs');
 const path = require('path');
@@ -14,20 +14,16 @@ const removeImage = fileName =>
         });
     });
 
-const updateProfileImage = (id, fileName, currentImage) =>
+const deleteProfileImage = (id, currentImage) =>
     new Promise(async (resolve, reject) => {
-        if (currentImage) {
+        if (currentImage !== undefined) {
             const fileName = currentImage.split('/')[2];
             await removeImage(fileName);
         }
 
-        const url = `/uploadedImages/${fileName}`;
-
-        updateImage(id, url)
-            .then(() => {
-                resolve({ url });
-            })
+        deleteImage(id)
+            .then(() => resolve())
             .catch(err => reject(err));
     });
 
-module.exports = updateProfileImage;
+module.exports = deleteProfileImage;

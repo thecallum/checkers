@@ -11,6 +11,7 @@ const updatePassword = require('../updatePassword');
 const validatePassword = require('../validatePassword');
 const validateUsername = require('../validateUsername');
 const updateProfileImage = require('../updateProfileImage');
+const deleteProfileImage = require('../deleteProfileImage');
 
 const auth = require('../../middleware/auth');
 
@@ -89,7 +90,7 @@ router.post('/user/update/password', auth, async (req, res) => {
         .catch(() => res.status(400).send());
 });
 
-router.post('/user/update/profile', auth, async (req, res) => {
+router.post('/user/update/update-profile', auth, async (req, res) => {
     upload(req, res, err => {
         if (err) return res.status(400).json({ error: err });
 
@@ -104,6 +105,18 @@ router.post('/user/update/profile', auth, async (req, res) => {
             })
             .catch(() => res.status(500));
     });
+});
+
+router.post('/user/update/delete-profile', auth, async (req, res) => {
+    const { id, profile_image: currentImage } = req.session.user;
+
+    deleteProfileImage(id, currentImage)
+        .then(() => {
+            req.session.user = { ...req.session.user, profile_image: undefined };
+            req.session.save();
+            res.status(200).send();
+        })
+        .catch(() => res.status(500));
 });
 
 module.exports = router;

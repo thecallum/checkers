@@ -17,11 +17,22 @@
 
                         <div class="profile__input__group">
                             <form @submit="handleSubmit">
-                                <img ref="image" v-bind:src="imageUrl" data-src="<%= img %>" alt="" class="profile__img" />
+                                <img ref="image" v-bind:src="imageURL" data-src="<%= img %>" alt="" class="profile__img" />
                                 <input v-on:change="inputChanged" ref="input" type="file" name="uploaded_image" id="uploaded_image" accept="image/*" />
 
-                                <button class="profile__button" disabled v-bind:disabled="!imageSelected" v-bind:class="{ loading }">
-                                    <span v-if="!loading">Save</span>
+                                <button
+                                    class="profile__button profile__button__delete"
+                                    type="button"
+                                    v-bind:class="{ loading: deleteLoading }"
+                                    @click="deleteProfileImage"
+                                    disabled
+                                    v-bind:disabled="imageURL === ''"
+                                >
+                                    <div v-if="!deleteLoading">Delete</div>
+                                </button>
+
+                                <button class="profile__button" disabled v-bind:disabled="!imageSelected" v-bind:class="{ loading: saveLoading }">
+                                    <div v-if="!saveLoading">Save</div>
                                 </button>
                             </form>
                         </div>
@@ -57,7 +68,7 @@
                         </div>
 
                         <button class="profile__button" disabled v-bind:disabled="unchanged" @click="save" v-bind:class="{ loading:saving }">
-                            <span v-if="!saving">Save</span>
+                            <div v-if="!saving">Save</div>
                         </button>
 
                         <message :close="closeSuccessMessage" :message="successMessage" v-if="successMessage" type="success"></message>
@@ -89,7 +100,7 @@
                         </div>
 
                         <button class="profile__button" disabled v-bind:disabled="unchanged" @click="save" v-bind:class="{ loading:saving }">
-                            <span v-if="!saving">Save</span>
+                            <div v-if="!saving">Save</div>
                         </button>
 
                         <message :close="closeSuccessMessage" :message="successMessage" v-if="successMessage" type="success"></message>
@@ -133,7 +144,7 @@
                             :disabled="empty || !validPassword || !passwordsMatch"
                             v-bind:class="{ loading:saving }"
                         >
-                            <span v-if="!saving">Save</span>
+                            <div v-if="!saving">Save</div>
                         </button>
 
                         <message :close="closeSuccessMessage" :message="successMessage" v-if="successMessage" type="success"></message>
