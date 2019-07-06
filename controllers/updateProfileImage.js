@@ -1,18 +1,5 @@
 const { updateProfileImage: updateImage } = require('../models/user');
-
-const fs = require('fs');
-const path = require('path');
-
-const removeImage = fileName =>
-    new Promise(resolve => {
-        fs.unlink(path.resolve('__dirname', '..', 'public', 'uploadedImages', fileName), err => {
-            if (err) {
-                console.log('remove image err', err);
-                return resolve(false);
-            }
-            resolve(true);
-        });
-    });
+const removeImage = require('./removeImage');
 
 const updateProfileImage = (id, fileName, currentImage) =>
     new Promise(async (resolve, reject) => {
