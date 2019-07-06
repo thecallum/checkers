@@ -91,20 +91,24 @@ router.post('/user/update/password', auth, async (req, res) => {
 });
 
 router.post('/user/update/update-profile', auth, async (req, res) => {
-    upload(req, res, err => {
-        if (err) return res.status(400).json({ error: err });
+    try {
+        upload(req, res, err => {
+            if (err) return res.status(400).json({ error: err });
 
-        const fileName = req.file.filename;
-        const { id, profile_image: currentImage } = req.session.user;
+            const fileName = req.file.filename;
+            const { id, profile_image: currentImage } = req.session.user;
 
-        updateProfileImage(id, fileName, currentImage)
-            .then(({ url }) => {
-                req.session.user = { ...req.session.user, profile_image: url };
-                req.session.save();
-                res.status(200).json({ url });
-            })
-            .catch(() => res.status(500));
-    });
+            updateProfileImage(id, fileName, currentImage)
+                .then(({ url }) => {
+                    req.session.user = { ...req.session.user, profile_image: url };
+                    req.session.save();
+                    res.status(200).json({ url });
+                })
+                .catch(() => res.status(500));
+        });
+    } catch (e) {
+        res.status(400).send();
+    }
 });
 
 router.post('/user/update/delete-profile', auth, async (req, res) => {
