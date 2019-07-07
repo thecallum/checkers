@@ -4,14 +4,13 @@ online rematch
 
 research socket security
 
-Build Leaderboard page
-Setup Leaderboard functionality
+Style leaderboard
+leaderboard cache query
 
+/data/usernames shouldn't directly access user modal
 setup socket for multi-server use
 
 Player picks piece color
-
-breakup regiser.js into smaller components
 
 Improve profile image verification
 Suggest profile image upload on register

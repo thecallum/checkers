@@ -1,9 +1,41 @@
 .leaderboard {
     &__container {
-        background-color: orange;
+        background-color: #f0f3f5;
         padding: 50px 20px;
         border-radius: $border_radius;
 
         margin-top: 100px;
     }
+}
+
+// too unspecific
+
+table,
+table * {
+    // border: 1px solid black;
+    width: 100%;
+}
+
+tr {
+    > td:hover {
+        background-color: darken($color: #f0f3f5, $amount: 2%);
+    }
+    &:nth-child(2n-1):not(:first-child) {
+        background-color: #ddd;
+
+        > td:hover {
+            background-color: darken($color: #ddd, $amount: 5%);
+        }
+    }
+}
+
+td,
+th {
+    padding: 10px;
+    /* flex-grow: 1; */
+
+    width: 0.1%;
+    white-space: nowrap;
+
+    text-align: left;
 }

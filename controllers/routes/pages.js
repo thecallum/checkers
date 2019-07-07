@@ -3,6 +3,8 @@ const router = express.Router();
 
 const auth = require('../../middleware/auth');
 
+const getLeaderboard = require('../getLeaderboard');
+
 router.get('/', (req, res) => {
     res.render('pages/index', { auth: !!req.session.user });
 });
@@ -37,7 +39,18 @@ router.get('/play/online', auth, (req, res) => {
 });
 
 router.get('/leaderboard', (req, res) => {
-    res.render('pages/leaderboard', { auth: !!req.session.user });
+    getLeaderboard()
+        .then(response =>
+            res.render('pages/leaderboard', {
+                auth: !!req.session.user,
+                ...response,
+                error: false,
+            })
+        )
+        .catch(err => {
+            console.log({ err });
+            res.render('pages/leaderboard', { auth: !!req.session.user, error: true });
+        });
 });
 
 router.get('*', (req, res) => {
