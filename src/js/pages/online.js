@@ -120,9 +120,6 @@ new Vue({
         },
 
         updateGame(updates) {
-            // console.log({
-            //     updates
-            // })
             this.game = {
                 ...updates,
                 selectedPiece: null,
@@ -140,13 +137,7 @@ new Vue({
 
         acceptGame() {
             if (this.accepted) return;
-            this.socket.emit(
-                'game',
-                {
-                    state: 'accept',
-                },
-                () => (this.accepted = true)
-            );
+            this.socket.emit('game', { state: 'accept' }, () => (this.accepted = true));
         },
 
         fetchCanvasControls(update, canvasElement) {
@@ -224,7 +215,7 @@ new Vue({
 
                     this.updateGame(data.game);
                     this.callCanvasRedraw();
-                    this.updateWinMessage(data.winMessage, data.player);
+                    this.updateWinMessage(data.winType, data.player);
 
                     this.gameEnded = true;
                     return;

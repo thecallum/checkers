@@ -19,3 +19,5 @@ add delete profile image option
 rejoin queue doesnt work
 
 queue sometimes crashes
+
+error message appears after register

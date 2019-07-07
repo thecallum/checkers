@@ -61,7 +61,7 @@ const Games = () => {
             pieces: newPieces,
             options: newOptions,
             currentPlayer: newPlayer,
-            won: !!gameWon,
+            won: gameWon,
         };
 
         games[gameID] = newGame;

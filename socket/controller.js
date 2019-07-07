@@ -7,6 +7,7 @@ const auth = require('./middleware/auth');
 const ios = require('socket.io-express-session');
 
 const updateSessionRoom = require('./updateSessionRoom');
+const updateLeaderboard = require('./updateLeaderboard');
 
 module.exports = (server, session) => {
     const io = socketio(server);
@@ -167,11 +168,19 @@ module.exports = (server, session) => {
                 if (updatedGame.won) {
                     games.close(room);
 
-                    io.to(room).emit('game', {
-                        state: 'win',
-                        winType: updatedGame.gameWon,
-                        player: socket.id,
-                        game: { ...updatedGame, currentPlayer: socket.id }, // game updated player, but current player has won
+                    // update leaderboard
+                    const users = updatedGame.players.map(player => ({
+                        sessionID: player.id,
+                        id: io.sockets.sockets[player.id].handshake.session.user.id,
+                    }));
+
+                    updateLeaderboard(updatedGame.won, socket.id, users).then(() => {
+                        io.to(room).emit('game', {
+                            state: 'win',
+                            winType: updatedGame.won,
+                            player: socket.id,
+                            game: { ...updatedGame, currentPlayer: socket.id }, // game updated player, but current player has won
+                        });
                     });
                 } else {
                     io.to(room).emit('game', {

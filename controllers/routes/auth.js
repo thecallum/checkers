@@ -18,13 +18,7 @@ router.post('/login', (req, res) => {
                 if (!user) return res.status(401).send();
 
                 // login successful
-                const sessionUser = {
-                    email,
-                    username: user.username,
-                    id: user.id,
-                    stayLogged,
-                    profile_image: user.profile_image,
-                };
+                const sessionUser = { ...user, stayLogged };
 
                 req.session.user = sessionUser;
 

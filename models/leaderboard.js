@@ -2,10 +2,10 @@ const con = require('../db/connection');
 
 exports.update = (field, userID) =>
     new Promise(async resolve => {
-        const query = `INSERT INTO leaderboard (userID, ${field}) VALUES (${userID}, 1) ON DUPLICATE KEY UPDATE ${field} = ${field} + 1;`;
+        const query = `INSERT INTO leaderboard (id, ${field}) VALUES (${userID}, 1) ON DUPLICATE KEY UPDATE ${field} = ${field} + 1;`;
 
         con.query(query, (err, response) => {
-            resolve(response.length === 0);
+            resolve();
         });
     });
 
