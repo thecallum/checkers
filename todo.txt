@@ -25,3 +25,5 @@ error message appears after register
 add test for /data/username route
 
 store profile image in seperate table??
+
+leaderboard scroll (when screen too small) draggable

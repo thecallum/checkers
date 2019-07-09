@@ -29,15 +29,14 @@
         <div id="app">
             <div class="container">
                 <div class="leaderboard__container">
-                    <p>Leaderboard</p>
+                    <h1 class="leaderboard__title">Leaderboard</h1>
 
                     <% if (error) { %>
                     <p>Error: no data found</p>
                     <% } else { %>
 
-                    <p>Total users: {{ total }} Page {{ offset + 1 }}</p>
-                    <div>
-                        <table>
+                    <div class="leaderboard__overflow">
+                        <table class="leaderboard__table">
                             <tr>
                                 <th>Position</th>
                                 <th>Username</th>
@@ -57,6 +56,8 @@
                             </tr>
                         </table>
                     </div>
+
+                    <p>Page {{ offset + 1 }} of {{ Math.ceil((total * 2) / interval) }}</p>
 
                     <p>
                         <button @click="handleBack" disabled :disabled="!back">Back</button>

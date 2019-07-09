@@ -5,6 +5,7 @@ const io = require('socket.io-client');
 const { app } = require('../../app');
 const truncateUserTable = require('../testUtils/truncateUserTable');
 const registerUser = require('../testUtils/registerUser');
+const request = require('supertest');
 
 let cookie1, cookie2, options1, options2;
 
@@ -44,7 +45,11 @@ beforeAll(async done => {
         },
     };
 
-    done();
+    request(app)
+        .get('/')
+        .then(() => {
+            done();
+        });
 });
 
 describe('socket', () => {
