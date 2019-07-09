@@ -34,7 +34,6 @@ describe('POST /login', () => {
 
         con.query(query, (err, result) => {
             if (err) done(err);
-            expect(result.insertId).toBe(1);
             done();
         });
     });
@@ -129,7 +128,6 @@ describe('POST /register', () => {
 
         con.query(query, (err, result) => {
             if (err) done(err);
-            expect(result.insertId).toBe(1);
             done();
         });
     });

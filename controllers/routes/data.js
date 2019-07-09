@@ -17,7 +17,7 @@ router.post('/data/usernames', async (req, res) => {
 router.post('/data/leaderboard/', (req, res) => {
     const { offset } = req.body;
 
-    getLeaderboard(offset)
+    getLeaderboard(offset === undefined ? 0 : offset)
         .then(response => res.status(200).json({ ...response, error: false }))
         .catch(() => res.status(400).send());
 });

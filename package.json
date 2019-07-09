@@ -43,7 +43,8 @@
         "build-dev": "webpack --config webpack.config.js --env.development",
         "start": "node --require dotenv/config app.js",
         "dev": "webpack-dev-server --env.development",
-        "test": "DEVELOPMENT=true jest --forceExit --runInBand"
+        "test": "DEVELOPMENT=true jest --forceExit --runInBand --testTimeout=10000 --testPathIgnorePatterns=tests/socket/controller.test.js",
+        "test-socket": "DEVELOPMENT=true jest --forceExit --runInBand --testTimeout=10000 tests/socket"
     },
     "devDependencies": {
         "eslint": "5.16.0",

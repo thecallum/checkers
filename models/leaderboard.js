@@ -5,7 +5,7 @@ exports.update = (field, userID) =>
         const query = `INSERT INTO leaderboard (id, ${field}) VALUES (${userID}, 1) ON DUPLICATE KEY UPDATE ${field} = ${field} + 1;`;
 
         con.query(query, (err, response) => {
-            resolve();
+            resolve(err ? false : true);
         });
     });
 
