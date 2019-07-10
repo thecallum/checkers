@@ -1,6 +1,6 @@
 const con = require('../../db/connection');
 
-const truncateLeaderboard = () =>
+module.exports = () =>
     new Promise((resolve, reject) => {
         const query = `DELETE FROM leaderboard;`;
         con.query(query, (err, result) => {
@@ -8,5 +8,3 @@ const truncateLeaderboard = () =>
             resolve();
         });
     });
-
-module.exports = truncateLeaderboard;

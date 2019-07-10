@@ -4,7 +4,6 @@ online rematch
 
 research socket security
 
-Style leaderboard
 leaderboard cache query (try memory-cache)
 leaderboard scroll (when screen too small) draggable
 
@@ -23,5 +22,3 @@ queue sometimes crashes
 error message appears after register
 
 store profile image in seperate table??
-
-rename truncate.. functions in testUtils directory

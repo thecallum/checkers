@@ -8,8 +8,8 @@ const request = require('supertest');
 
 const con = require('../../../db/connection');
 
-const truncateUserTable = require('../../testUtils/truncateUserTable');
-const truncateLeaderboardTable = require('../../testUtils/truncateLeaderboardTable');
+const resetUserTable = require('../../testUtils/resetUserTable');
+const resetLeaderboardTable = require('../../testUtils/resetLeaderboardTable');
 
 const user = {
     email: 'email1@email.com',
@@ -26,8 +26,8 @@ afterAll(done => {
 
 describe('POST /data/leaderboard', () => {
     beforeEach(async done => {
-        await truncateLeaderboardTable();
-        await truncateUserTable();
+        await resetLeaderboardTable();
+        await resetUserTable();
 
         const query1 = `INSERT INTO user (email, password, username) VALUES ('${user.email}', '${user.password}', '${user.username}');`;
 
@@ -70,7 +70,7 @@ describe('POST /data/leaderboard', () => {
 
 describe('POST /data/usernames', () => {
     beforeEach(async done => {
-        await truncateUserTable();
+        await resetUserTable();
 
         const query1 = `INSERT INTO user (email, password, username) VALUES ('${user.email}', '${user.password}', '${user.username}');`;
 

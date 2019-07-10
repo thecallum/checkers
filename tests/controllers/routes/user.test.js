@@ -13,7 +13,7 @@ const fs = require('fs');
 
 const con = require('../../../db/connection');
 
-const truncateUserTable = require('../../testUtils/truncateUserTable');
+const resetUserTable = require('../../testUtils/resetUserTable');
 const registerUser = require('../../testUtils/registerUser');
 
 const user1 = { email: 'email1@email.com', password: 'Password1234!', hash: bcrypt.hashSync('Password1234!', saltRounds), username: 'username111', id: null };
@@ -29,7 +29,7 @@ describe('POST /user/update/username', () => {
     const newUsername = 'user1234';
     let cookie1;
     beforeEach(async done => {
-        await truncateUserTable();
+        await resetUserTable();
         const response = await Promise.all([registerUser(app, user1), registerUser(app, user2)]);
 
         expect(response[0].status).toBe(200);
@@ -89,7 +89,7 @@ describe('POST /user/update/email', () => {
     let cookie1;
 
     beforeEach(async done => {
-        await truncateUserTable();
+        await resetUserTable();
         const response = await Promise.all([registerUser(app, user1), registerUser(app, user2)]);
 
         expect(response[0].status).toBe(200);
@@ -149,7 +149,7 @@ describe('POST /user/update/password', () => {
     let cookie1;
 
     beforeEach(async done => {
-        await truncateUserTable();
+        await resetUserTable();
         const response = await Promise.all([registerUser(app, user1), registerUser(app, user2)]);
 
         expect(response[0].status).toBe(200);
@@ -205,7 +205,7 @@ describe('POST /user/update/update-profile', () => {
     let cookie1;
 
     beforeEach(async done => {
-        await truncateUserTable();
+        await resetUserTable();
         const response = await registerUser(app, user1);
 
         expect(response.status).toBe(200);
@@ -271,7 +271,7 @@ describe('POST /user/update/delete-profile', () => {
     let url;
 
     beforeEach(async done => {
-        await truncateUserTable();
+        await resetUserTable();
         const response = await registerUser(app, user1);
 
         expect(response.status).toBe(200);

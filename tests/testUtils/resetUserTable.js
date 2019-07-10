@@ -1,6 +1,6 @@
 const con = require('../../db/connection');
 
-const truncateUserTable = () =>
+module.exports = () =>
     new Promise((resolve, reject) => {
         const query = `DELETE FROM user`;
         con.query(query, (err, result) => {
@@ -8,5 +8,3 @@ const truncateUserTable = () =>
             resolve();
         });
     });
-
-module.exports = truncateUserTable;

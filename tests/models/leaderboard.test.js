@@ -3,8 +3,8 @@ process.env.TESTING = true;
 const expect = require('expect');
 
 const con = require('../../db/connection');
-const truncateUserTable = require('../testUtils/truncateUserTable');
-const truncateLeaderboardTable = require('../testUtils/truncateLeaderboardTable');
+const resetUserTable = require('../testUtils/resetUserTable');
+const resetLeaderboardTable = require('../testUtils/resetLeaderboardTable');
 const asyncQuery = require('../../helpers/asyncQuery');
 
 const { get, update } = require('../../models/leaderboard');
@@ -18,8 +18,8 @@ describe('get leaderboard model', () => {
     };
 
     beforeEach(async done => {
-        await truncateLeaderboardTable();
-        await truncateUserTable();
+        await resetLeaderboardTable();
+        await resetUserTable();
         const query1 = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.password}','${user.username}');`;
         const result = await asyncQuery(con, query1);
 
@@ -52,8 +52,8 @@ describe('update leaderboard model', () => {
     };
 
     beforeEach(async done => {
-        await truncateLeaderboardTable();
-        await truncateUserTable();
+        await resetLeaderboardTable();
+        await resetUserTable();
         const query1 = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.password}','${user.username}');`;
         const result = await asyncQuery(con, query1);
 

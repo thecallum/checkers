@@ -10,7 +10,7 @@ const { app, server } = require('../../../app');
 
 const con = require('../../../db/connection');
 
-const truncateUserTable = require('../../testUtils/truncateUserTable');
+const resetUserTable = require('../../testUtils/resetUserTable');
 
 var request = require('supertest');
 
@@ -29,7 +29,7 @@ describe('POST /login', () => {
     };
 
     beforeEach(async done => {
-        await truncateUserTable();
+        await resetUserTable();
         const query = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.hash}','${user.username}');`;
 
         con.query(query, (err, result) => {
@@ -123,7 +123,7 @@ describe('POST /register', () => {
     };
 
     beforeEach(async done => {
-        await truncateUserTable();
+        await resetUserTable();
         const query = `INSERT INTO user (email, password, username) VALUES ('${existing.email}','${existing.hash}','${existing.username}');`;
 
         con.query(query, (err, result) => {
