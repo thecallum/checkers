@@ -72,7 +72,9 @@ new Vue({
                         return false;
                     }
                 })
-                .then(res => (this.mainError = res.message))
+                .then(res => {
+                    if (res) this.mainError = res.message;
+                })
                 .catch(e => {
                     console.error('Login error', e);
                     this.mainError = 'Unknown error! Please try again';

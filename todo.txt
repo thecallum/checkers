@@ -19,6 +19,6 @@ rejoin queue doesnt work
 
 queue sometimes crashes
 
-error message appears after register
+move page requests to /requests directory
 
 store profile image in seperate table??
