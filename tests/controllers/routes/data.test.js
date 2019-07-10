@@ -67,3 +67,45 @@ describe('POST /data/leaderboard', () => {
             .catch(e => done(e));
     });
 });
+
+describe('POST /data/usernames', () => {
+    beforeEach(async done => {
+        await truncateUserTable();
+
+        const query1 = `INSERT INTO user (email, password, username) VALUES ('${user.email}', '${user.password}', '${user.username}');`;
+
+        con.query(query1, (err, response) => {
+            if (err) done(err);
+
+            done();
+        });
+    });
+
+    test('should return false', done => {
+        request(app)
+            .post('/data/usernames')
+            .send({ username: user.username })
+            .then(response => {
+                expect(response.status).toBe(200);
+
+                expect(response.body.exists).toBe(false);
+                done();
+            })
+
+            .catch(e => done(e));
+    });
+
+    test('should return true', done => {
+        request(app)
+            .post('/data/usernames')
+            .send({ username: 'availableUsername' })
+            .then(response => {
+                expect(response.status).toBe(200);
+
+                expect(response.body.exists).toBe(true);
+                done();
+            })
+
+            .catch(e => done(e));
+    });
+});

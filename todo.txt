@@ -8,7 +8,6 @@ Style leaderboard
 leaderboard cache query (try memory-cache)
 leaderboard scroll (when screen too small) draggable
 
-/data/usernames shouldn't directly access user modal
 setup socket for multi-server use
 
 Player picks piece color
@@ -23,6 +22,6 @@ queue sometimes crashes
 
 error message appears after register
 
-add test for /data/username route
-
 store profile image in seperate table??
+
+rename truncate.. functions in testUtils directory
