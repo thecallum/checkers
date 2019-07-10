@@ -5,7 +5,8 @@ online rematch
 research socket security
 
 Style leaderboard
-leaderboard cache query
+leaderboard cache query (try memory-cache)
+leaderboard scroll (when screen too small) draggable
 
 /data/usernames shouldn't directly access user modal
 setup socket for multi-server use
@@ -25,5 +26,3 @@ error message appears after register
 add test for /data/username route
 
 store profile image in seperate table??
-
-leaderboard scroll (when screen too small) draggable
