@@ -21,7 +21,7 @@ exports.register = (username, email, passwordHash) =>
 
 exports.login = email =>
     new Promise(async resolve => {
-        const query = `SELECT id, username, password, profile_image FROM user WHERE email = '${email}';`;
+        const query = `SELECT user.id, username, password, profile_image FROM user LEFT JOIN profile ON user.id = profile.id WHERE email = '${email}' ;`;
 
         con.query(query, (err, response) => {
             resolve(response.length === 0 ? null : response[0]);
@@ -70,7 +70,7 @@ exports.getPassword = id =>
 
 exports.updateProfileImage = (id, url) =>
     new Promise(async (resolve, reject) => {
-        const query = `UPDATE user SET profile_image = '${url}' where id = '${id}';`;
+        const query = `INSERT INTO profile (id, profile_image) VALUES (${id}, '${url}') ON DUPLICATE KEY UPDATE profile_image = '${url}';`;
 
         con.query(query, (err, response) => {
             if (err) return reject(err);
@@ -80,7 +80,7 @@ exports.updateProfileImage = (id, url) =>
 
 exports.deleteProfileImage = id =>
     new Promise(async (resolve, reject) => {
-        const query = `UPDATE user SET profile_image = NULL WHERE id = ${id};`;
+        const query = `DELETE FROM profile WHERE id = ${id};`;
 
         con.query(query, (err, response) => {
             if (err) return reject(err);

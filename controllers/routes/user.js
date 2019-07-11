@@ -100,9 +100,9 @@ router.post('/user/update/update-profile', auth, async (req, res) => {
 
             updateProfileImage(id, fileName, currentImage)
                 .then(({ url }) => {
-                    req.session.user = { ...req.session.user, profile_image: url };
+                    req.session.user = { ...req.session.user, profile_image: `/uploadedImages/${url}` };
                     req.session.save();
-                    res.status(200).json({ url });
+                    res.status(200).json({ url: `/uploadedImages/${url}` });
                 })
                 .catch(() => res.status(500));
         });

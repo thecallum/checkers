@@ -14,6 +14,7 @@ const fs = require('fs');
 const con = require('../../../db/connection');
 
 const resetUserTable = require('../../testUtils/resetUserTable');
+const resetProfileTable = require('../../testUtils/resetProfileTable');
 const registerUser = require('../../testUtils/registerUser');
 
 const user1 = { email: 'email1@email.com', password: 'Password1234!', hash: bcrypt.hashSync('Password1234!', saltRounds), username: 'username111', id: null };
@@ -215,6 +216,11 @@ describe('POST /user/update/update-profile', () => {
         done();
     });
 
+    afterEach(async done => {
+        await resetProfileTable();
+        done();
+    });
+
     test('update profile image', done => {
         request(app)
             .post('/user/update/update-profile')
@@ -226,12 +232,13 @@ describe('POST /user/update/update-profile', () => {
                 expect(response.body.url).not.toBe('');
 
                 const url = response.body.url;
-                const query = `SELECT profile_image FROM user WHERE email = '${user1.email}';`;
+
+                const query = `SELECT profile_image FROM user left join profile on profile.id = user.id WHERE email = '${user1.email}';`;
 
                 con.query(query, (err, response) => {
                     if (err) done(err);
 
-                    expect(response[0].profile_image).toBe(url);
+                    expect(response[0].profile_image).toBe(url.split('/')[2]);
 
                     fs.stat(path.join(__dirname, '..', '..', '..', 'public', url), (err, stats) => {
                         if (err) done(err);
@@ -270,6 +277,11 @@ describe('POST /user/update/delete-profile', () => {
     let cookie1;
     let url;
 
+    afterEach(async done => {
+        await resetProfileTable();
+        done();
+    });
+
     beforeEach(async done => {
         await resetUserTable();
         const response = await registerUser(app, user1);
@@ -299,12 +311,12 @@ describe('POST /user/update/delete-profile', () => {
             .then(response => {
                 expect(response.status).toBe(200);
 
-                const query = `SELECT profile_image FROM user WHERE email = '${user1.email}';`;
+                const query = `SELECT profile_image FROM user left join profile on profile.id = user.id WHERE email = '${user1.email}';`;
 
                 con.query(query, (err, response) => {
                     if (err) done(err);
 
-                    expect(response[0].profile_image).toBe(null);
+                    expect(response.profile_image).toBe(undefined);
 
                     fs.stat(path.join(__dirname, '..', '..', '..', 'public', url), (err, stats) => {
                         if (err) {

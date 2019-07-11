@@ -8,11 +8,9 @@ const updateProfileImage = (id, fileName, currentImage) =>
             await removeImage(fileName);
         }
 
-        const url = `/uploadedImages/${fileName}`;
-
-        updateImage(id, url)
+        updateImage(id, fileName)
             .then(() => {
-                resolve({ url });
+                resolve({ url: fileName });
             })
             .catch(err => reject(err));
     });

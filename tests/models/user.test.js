@@ -4,6 +4,7 @@ const expect = require('expect');
 
 const con = require('../../db/connection');
 const resetUserTable = require('../testUtils/resetUserTable');
+const resetProfileTable = require('../testUtils/resetProfileTable');
 const asyncQuery = require('../../helpers/asyncQuery');
 
 const {
@@ -279,6 +280,11 @@ describe('update profile image model', () => {
         id: null,
     };
 
+    afterEach(async done => {
+        await resetProfileTable();
+        done();
+    });
+
     beforeEach(async done => {
         await resetUserTable();
         const query = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.password}','${user.username}');`;
@@ -292,12 +298,19 @@ describe('update profile image model', () => {
         const profileImage = 'someprofileimage';
         await updateProfileImage(user.id, profileImage);
 
-        const query = `SELECT profile_image FROM user WHERE id = ${user.id}`;
+        const query = `update profile set profile_image = '${profileImage}' where id = ${user.id}`;
+
         con.query(query, (err, response) => {
             if (err) done(err);
 
-            expect(response[0].profile_image).toBe(profileImage);
-            done();
+            const query = `SELECT * FROM user left join profile on profile.id = user.id WHERE user.id = ${user.id}`;
+
+            con.query(query, (err, response) => {
+                if (err) done(err);
+
+                expect(response[0].profile_image).toBe(profileImage);
+                done();
+            });
         });
     });
 });
@@ -313,23 +326,29 @@ describe('delete profile image model', () => {
 
     beforeEach(async done => {
         await resetUserTable();
-        const query = `INSERT INTO user (email, password, username, profile_image) VALUES ('${user.email}','${user.password}','${user.username}','${
-            user.profileImage
-        }');`;
-        const res = await asyncQuery(con, query);
+        const query1 = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.password}','${user.username}');`;
+        const res = await asyncQuery(con, query1);
 
         user.id = res.insertId;
+        const query2 = `INSERT INTO profile (id, profile_image) VALUES (${user.id}, '${user.profileImage}');`;
+        await asyncQuery(con, query2);
+
+        done();
+    });
+
+    afterEach(async done => {
+        await resetProfileTable();
         done();
     });
 
     test('Delete image url', async done => {
         await deleteProfileImage(user.id);
 
-        const query = `SELECT profile_image FROM user WHERE id = ${user.id}`;
+        const query = `SELECT * FROM profile WHERE id = ${user.id}`;
         con.query(query, (err, response) => {
             if (err) done(err);
 
-            expect(response[0].profile_image).toBe(null);
+            expect(response.length).toBe(0);
             done();
         });
     });

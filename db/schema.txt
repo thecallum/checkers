@@ -16,6 +16,13 @@ CREATE TABLE leaderboard (
     FOREIGN KEY (id) REFERENCES user(id) ON DELETE CASCADE
 );
 
+CREATE TABLE profile (
+    id INT NOT NULL,
+    profile_image VARCHAR(45) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (id) REFERENCES user(id) ON DELETE CASCADE
+);
+
 // QUERY; update or insert
 
 INSERT INTO leaderboard (field, userID) VALUES ('win', 1) ON DUPLICATE KEY UPDATE count = count + 1;
