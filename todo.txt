@@ -13,13 +13,9 @@ Player picks piece color
 
 Improve profile image verification
 Suggest profile image upload on register
-add delete profile image option
+
 add delete account option
 
 rejoin queue doesnt work
 
 queue sometimes crashes
-
-move page requests to /requests directory
-
-store profile image in seperate table??
