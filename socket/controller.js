@@ -96,6 +96,22 @@ module.exports = (server, session) => {
                 return;
             }
 
+            if (data.state === 'leave_rematch') {
+                if (rematch.findKey(socket.id) === undefined) {
+                    if (cb) cb();
+                    return;
+                }
+
+                const opponentID = rematch.getOpponentID(socket.id);
+
+                io.sockets.sockets[opponentID].emit('game', { state: 'rematch_leave' });
+
+                rematch.close(socket.id);
+
+                if (cb) cb();
+                return;
+            }
+
             if (data.state === 'reject_rematch') {
                 if (rematch.findKey(socket.id) === undefined) {
                     if (cb) cb();

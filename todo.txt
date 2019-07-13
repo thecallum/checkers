@@ -18,20 +18,5 @@ show opponent profile image on proposed game
 
 show new stats on game end
 
-join queue on end game doesnt work
-
 rematch -- show score total ie. 3:4
 update styling for rematch
-
-
-/home/callum/projects/checkers/socket/Rooms.js:23
-        if (rooms[roomID].players.length < 2) return false;
-                          ^
-
-TypeError: Cannot read property 'players' of undefined
-    at Object.getOpponentID (/home/callum/projects/checkers/socket/Rooms.js:23:27)
-    at Socket.socket.on (/home/callum/projects/checkers/socket/controller.js:99:40)
-    at Socket.emit (events.js:189:13)
-    at /home/callum/projects/checkers/node_modules/socket.io/lib/socket.js:528:12
-    at process._tickCallback (internal/process/next_tick.js:61:11)
-error Command failed with exit code 1.

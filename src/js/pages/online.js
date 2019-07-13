@@ -85,10 +85,12 @@ new Vue({
             this.state = null;
             this.accepted = false;
             this.gameStarted = false;
+            this.gameEnded = false;
             this.opponentAccepted = false;
             this.game = {};
             this.opponentDisconnected = false;
 
+            this.leaveRematch();
             this.joinQueue();
         },
 
@@ -104,17 +106,19 @@ new Vue({
         },
 
         rematch() {
-            // alert('Feature not build yet');
-
             this.socket.emit('game', { state: 'rematch' }, () => {
-                // alert('cb ');
-
                 this.rematchSelected = true;
             });
         },
 
+        leaveRematch() {
+            this.socket.emit('game', { state: 'leave_rematch' }, () => {
+                this.rematchDisabled = true;
+                this.rematchSelected = false;
+            });
+        },
+
         rejectRematch() {
-            console.log('reject opponent rematch');
             this.socket.emit('game', { state: 'reject_rematch' }, () => {
                 this.rematchDisabled = true;
                 this.rematchSelected = false;
