@@ -13,13 +13,45 @@ const Rooms = () => {
                 [players[1]]: { ...users[players[1]], accepted: false },
             },
             state: 'game', // 'game' | 'rematch'
+
+            tally: {
+                [players[0]]: { wins: 0, losses: 0 },
+                [players[1]]: { wins: 0, losses: 0 },
+                draws: 0,
+            },
         };
 
         return roomID;
     };
 
-    const reset = roomID => {
+    const reset = (roomID, winType, currentPlayer) => {
         const players = Object.keys(rooms[roomID].players);
+
+        let newTally;
+
+        if (winType === 'draw') {
+            newTally = {
+                ...rooms[roomID].tally,
+                draws: rooms[roomID].tally.draws + 1,
+            };
+        } else {
+            // is win
+
+            const opponentID = getOpponentID(roomID, currentPlayer);
+            newTally = {
+                ...rooms[roomID].tally,
+
+                [currentPlayer]: {
+                    ...rooms[roomID].tally[currentPlayer],
+                    wins: rooms[roomID].tally[currentPlayer].wins + 1,
+                },
+
+                [opponentID]: {
+                    ...rooms[roomID].tally[opponentID],
+                    losses: rooms[roomID].tally[opponentID].losses + 1,
+                },
+            };
+        }
 
         rooms[roomID] = {
             players: {
@@ -27,6 +59,7 @@ const Rooms = () => {
                 [players[1]]: { ...rooms[roomID][players[1]], accepted: false },
             },
             state: 'rematch',
+            tally: newTally,
         };
     };
 
@@ -56,7 +89,22 @@ const Rooms = () => {
 
     const getUsers = roomID => rooms[roomID].players;
 
-    return { join, close, accept, getPlayerIDs, playerHasAccepted, getOpponentID, exists, state, getUsers, bothPlayersAccepted, reset };
+    const getTally = roomID => rooms[roomID].tally;
+
+    return {
+        join,
+        getTally,
+        close,
+        accept,
+        getPlayerIDs,
+        playerHasAccepted,
+        getOpponentID,
+        exists,
+        state,
+        getUsers,
+        bothPlayersAccepted,
+        reset,
+    };
 };
 
 module.exports = Rooms;

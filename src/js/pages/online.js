@@ -29,6 +29,7 @@ new Vue({
         socketerror: null,
 
         state: null,
+        gameTally: null,
 
         accepted: false,
         opponentAccepted: false,
@@ -271,6 +272,10 @@ new Vue({
                     this.opponentRejectedRematch = false;
                     this.rematchOpponentLeft = false;
                     this.rematchDisabled = false;
+
+                    console.log('win tally', data.tally);
+
+                    this.gameTally = data.tally;
 
                     this.updateGame(data.game);
                     this.callCanvasRedraw();

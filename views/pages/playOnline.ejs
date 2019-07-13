@@ -73,6 +73,12 @@
 
                 <p class="modal__message">{{ winMessage }}</p>
 
+                <span v-if="gameTally">
+                    <p>Wins: {{ gameTally[socket.id].wins }}</p>
+                    <p>Losses: {{ gameTally[socket.id].losses }}</p>
+                    <p>Draws: {{ gameTally.draws }}</p>
+                </span>
+
                 <div v-if="(rematchSelected || opponentAcceptedRematch) && !rematchDisabled">
                     <div v-if="opponentRejectedRematch">
                         Opponent has rejected a rematch

@@ -242,7 +242,8 @@ module.exports = (server, session) => {
 
                 if (updatedGame.won) {
                     games.close(roomID);
-                    rooms.reset(roomID);
+                    rooms.reset(roomID, updatedGame.won, socket.id);
+                    const tally = rooms.getTally(roomID);
 
                     // update leaderboard
                     const users = updatedGame.players.map(player => ({
@@ -256,6 +257,7 @@ module.exports = (server, session) => {
                             winType: updatedGame.won,
                             player: socket.id,
                             game: { ...updatedGame, currentPlayer: socket.id }, // game updated player, but current player has won
+                            tally,
                         });
                     });
                 } else {

@@ -16,8 +16,6 @@ add delete account option
 
 show opponent profile image on proposed game
 
-show new stats on game end
-
 rematch -- show score total ie. 3:4
 update styling for rematch
 
