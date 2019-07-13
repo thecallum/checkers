@@ -16,7 +16,7 @@ module.exports = (players, rooms, io) => {
         players: {
             [players[0]]: {
                 accepted: false,
-                ...users[players[1]],
+                ...users[players[0]],
             },
             [players[1]]: {
                 accepted: false,

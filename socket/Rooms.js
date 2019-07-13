@@ -20,6 +20,7 @@ const Rooms = () => {
     const getPlayerIDs = id => Object.keys(rooms[id].players);
 
     const getOpponentID = (roomID, userID) => {
+        if (!exists(roomID)) return false;
         if (rooms[roomID].players.length < 2) return false;
         return Object.keys(rooms[roomID].players).filter(id => id !== userID)[0];
     };
