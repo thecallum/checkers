@@ -28,7 +28,11 @@
                             </div>
                         </div>
 
-                        <canvas-component :fetch-canvas-controls="fetchCanvasControls" v-bind:class="{rotate: rotateCanvas}"></canvas-component>
+                        <canvas-component
+                            v-if="showCanvas"
+                            :fetch-canvas-controls="fetchCanvasControls"
+                            v-bind:class="{rotate: rotateCanvas}"
+                        ></canvas-component>
 
                         <div class="canvas__bottom" v-if="gameStarted">
                             <h3 class="canvas__message">{{ currentPlayerMessage }}</h3>
@@ -69,14 +73,42 @@
 
                 <p class="modal__message">{{ winMessage }}</p>
 
-                <div class="modal__options">
-                    <div class="modal__options__row">
-                        <button class="button modal__button" @click="rematch">Rematch</button>
-                        <button class="button modal__button" @click="joinQueue">Join Queue</button>
+                <div v-if="(rematchSelected || opponentAcceptedRematch) && !rematchDisabled">
+                    <div v-if="opponentRejectedRematch">
+                        Opponent has rejected a rematch
                     </div>
-                    <div class="modal__options__row">
-                        <a class="button modal__button" href="/">Home</a>
-                        <a class="button modal__button" href="/leaderboard">Leaderboard</a>
+                    <div v-else-if="opponentAcceptedRematch">
+                        Opponent has accepted rematch
+                    </div>
+                    <div v-else>Waiting for opponent</div>
+
+                    <div v-if="!rematchSelected">
+                        <button @click="rejectRematch">Reject Rematch</button>
+                        <button @click="rematch">Accept Rematch</button>
+                    </div>
+                    <div v-else>
+                        <button @click="rejectRematch">Cancel rematch</button>
+                    </div>
+                </div>
+
+                <div v-else>
+                    <!-- <div v-if="rematchSelected">
+                        Opponent has accepted rematch
+                        <button @click="rejectRematch">Reject Rematch</button>
+                    </div> -->
+
+                    <p v-if="rematchOpponentLeft">Opponent left</p>
+                    <p v-if="opponentRejectedRematch">Opponent has rejected a rematch</p>
+
+                    <div class="modal__options">
+                        <div class="modal__options__row">
+                            <button class="button modal__button" @click="rematch" :disabled="rematchDisabled">Rematch</button>
+                            <button class="button modal__button" @click="joinQueue">Join Queue</button>
+                        </div>
+                        <div class="modal__options__row">
+                            <a class="button modal__button" href="/">Home</a>
+                            <a class="button modal__button" href="/leaderboard">Leaderboard</a>
+                        </div>
                     </div>
                 </div>
             </modal>

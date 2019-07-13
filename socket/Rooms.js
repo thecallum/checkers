@@ -26,7 +26,9 @@ const Rooms = () => {
 
     const exists = id => !!rooms.hasOwnProperty(id);
 
-    return { join, close, accept, getPlayerIDs, getOpponentID, exists };
+    const getUsers = roomID => rooms[roomID].players;
+
+    return { join, close, accept, getPlayerIDs, getOpponentID, exists, getUsers };
 };
 
 module.exports = Rooms;

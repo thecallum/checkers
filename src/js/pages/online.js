@@ -22,6 +22,7 @@ new Vue({
             gridSize: 500 / 8,
             halfGridSize: 500 / 16,
         },
+        showCanvas: true,
 
         socket: null,
         connecting: true,
@@ -37,6 +38,11 @@ new Vue({
         gameEnded: false,
         winMessage: '',
         gameStarted: false,
+        rematchSelected: false,
+        opponentAcceptedRematch: false,
+        opponentRejectedRematch: false,
+        rematchOpponentLeft: false,
+        rematchDisabled: false,
 
         rotateCanvas: false,
 
@@ -72,15 +78,7 @@ new Vue({
         },
 
         joinQueue() {
-            this.socket.emit(
-                'game',
-                {
-                    state: 'join_queue',
-                },
-                () => {
-                    this.state = 'queue';
-                }
-            );
+            this.socket.emit('game', { state: 'join_queue' }, () => (this.state = 'queue'));
         },
 
         rejoinQueue() {
@@ -95,24 +93,32 @@ new Vue({
         },
 
         cancelSetup() {
-            this.socket.emit(
-                'game',
-                {
-                    state: 'leave_queue',
-                },
-                () => {
-                    this.state = null;
-                    this.toggleSetup = false;
+            this.socket.emit('game', { state: 'leave_queue' }, () => {
+                this.state = null;
+                this.toggleSetup = false;
 
-                    // reset values
-                    this.accepted = false;
-                    this.opponentAccepted = false;
-                }
-            );
+                // reset values
+                this.accepted = false;
+                this.opponentAccepted = false;
+            });
         },
 
         rematch() {
-            alert('Feature not build yet');
+            // alert('Feature not build yet');
+
+            this.socket.emit('game', { state: 'rematch' }, () => {
+                // alert('cb ');
+
+                this.rematchSelected = true;
+            });
+        },
+
+        rejectRematch() {
+            console.log('reject opponent rematch');
+            this.socket.emit('game', { state: 'reject_rematch' }, () => {
+                this.rematchDisabled = true;
+                this.rematchSelected = false;
+            });
         },
 
         startGame() {
@@ -157,6 +163,15 @@ new Vue({
             this.update(this.game, hasResized ? this.canvas : undefined);
         },
 
+        remountCanvas() {
+            this.showCanvas = false;
+
+            this.$nextTick(() => {
+                // Add the component back in
+                this.showCanvas = true;
+            });
+        },
+
         handleSocket() {
             this.socket.on('error', error => {
                 this.socketerror = error;
@@ -183,6 +198,33 @@ new Vue({
                     return this.joinQueue();
                 }
 
+                if (data.state === 'rematch_leave') {
+                    this.rematchDisabled = true;
+                    this.rematchSelected = false;
+                    this.rematchOpponentLeft = true;
+
+                    // alert('opponent left rematch queue');
+                    return;
+                }
+
+                if (data.state === 'rematch_reject') {
+                    console.log('opponent rejected');
+                    this.rematchDisabled = true;
+                    this.rematchSelected = false;
+                    this.opponentRejectedRematch = true;
+
+                    // alert('opponent has rejected rematch');
+                    return;
+                }
+
+                if (data.state === 'rematch_accept') {
+                    this.opponentAcceptedRematch = true;
+
+                    // alert('opponent accepted rematch');
+
+                    return;
+                }
+
                 if (data.state === 'found') {
                     this.state = 'found';
                     this.players = data.players;
@@ -196,11 +238,17 @@ new Vue({
 
                 if (data.state === 'ready') {
                     this.state = 'ready';
-                    if (data.game.currentPlayer !== this.socket.id) {
-                        this.rotateCanvas = true;
-                    }
+                    this.gameEnded = false;
+
+                    // if (data.game.currentPlayer !== this.socket.id) {
+                    // alert('rotate');
+                    this.rotateCanvas = data.game.currentPlayer !== this.socket.id;
+                    // }
+
                     this.updateGame(data.game);
+                    this.remountCanvas();
                     this.startGame();
+
                     return;
                 }
 
@@ -212,6 +260,13 @@ new Vue({
 
                 if (data.state === 'win') {
                     this.state = 'win';
+
+                    // reset any rematch variables
+                    this.rematchSelected = false;
+                    this.opponentAcceptedRematch = false;
+                    this.opponentRejectedRematch = false;
+                    this.rematchOpponentLeft = false;
+                    this.rematchDisabled = false;
 
                     this.updateGame(data.game);
                     this.callCanvasRedraw();

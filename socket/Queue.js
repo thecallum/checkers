@@ -7,6 +7,7 @@ const Queue = () => {
         if (inQueue) return false;
         queue.push(id);
         emit();
+        return true;
     };
 
     const getPlayers = () => {
