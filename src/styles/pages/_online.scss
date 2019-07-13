@@ -18,6 +18,11 @@
         padding: 10px;
     }
 
+    &__img {
+        width: 100px;
+        height: 100px;
+    }
+
     &__searching {
         &::after {
             content: '';

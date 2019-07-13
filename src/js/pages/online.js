@@ -233,6 +233,8 @@ new Vue({
                 if (data.state === 'found') {
                     this.state = 'found';
                     this.players = data.players;
+
+                    console.log('found', data.players);
                     return;
                 }
 
@@ -343,7 +345,7 @@ new Vue({
         },
         opponent() {
             if (this.state !== 'found') return false;
-            return this.players[Object.keys(this.players).filter(key => key !== this.socket.id)[0]].username;
+            return this.players[Object.keys(this.players).filter(key => key !== this.socket.id)[0]];
         },
     },
 });

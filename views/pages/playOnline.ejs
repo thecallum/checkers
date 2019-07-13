@@ -55,7 +55,10 @@
 
                     <p v-if="accepted && opponentAccepted" class="online__searching">Setting up game</p>
                     <div v-else>
-                        <p v-if="opponent">Opponent: {{ opponent }}</p>
+                        <span v-if="opponent">
+                            <p>Opponent: {{ opponent.username }}</p>
+                            <img class="online__img" :src="opponent.src" alt="opponent profile picture" />
+                        </span>
 
                         <p v-if="accepted">You have accepted</p>
                         <p v-if="opponentAccepted">Your opponent has accepted</p>
