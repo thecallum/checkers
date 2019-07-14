@@ -19,7 +19,7 @@ if (!process.env.COOKIE_SECRET) throw 'Missing env variable COOKIE_SECRET';
 const setupSession = () =>
     Session({
         secret: process.env.COOKIE_SECRET,
-        resave: true,
+        resave: !process.env.DEVELOPMENT,
         saveUninitialized: false,
         rolling: true,
         store: sessionStore,
@@ -27,10 +27,10 @@ const setupSession = () =>
         cookie: {
             secure: true,
             maxAge: 1000 * 60 * 60,
-            // domain: process.env.PAGE_URL,
+            domain: process.env.PAGE_URL,
             httpOnly: true,
             path: '/',
-            // sameSite: true,
+            sameSite: true,
         },
         name: 'sessionID',
     });
