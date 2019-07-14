@@ -1,11 +1,11 @@
 const { deleteProfileImage: deleteImage } = require('../models/user');
-const removeImage = require('./removeImage');
+const removeTempFile = require('./removeTempFile');
 
 const deleteProfileImage = (id, currentImage) =>
     new Promise(async (resolve, reject) => {
         if (currentImage !== undefined) {
             const fileName = currentImage.split('/')[2];
-            await removeImage(fileName);
+            await removeTempFile(fileName);
         }
 
         deleteImage(id)

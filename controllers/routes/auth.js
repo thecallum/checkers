@@ -18,7 +18,7 @@ router.post('/login', (req, res) => {
                 if (!user) return res.status(401).send();
 
                 // login successful
-                const sessionUser = { ...user, stayLogged, email, profile_image: `/uploadedImages/${user.profile_image}` };
+                const sessionUser = { ...user, stayLogged, email, profile_image: user.profile_image };
 
                 req.session.user = sessionUser;
 

@@ -1,18 +1,24 @@
 const { updateProfileImage: updateImage } = require('../models/user');
-const removeImage = require('./removeImage');
+const removeTempFile = require('./removeTempFile');
 
-const updateProfileImage = (id, fileName, currentImage) =>
+const cloudinary = require('cloudinary').v2;
+
+const updateProfileImage = (id, filePath) =>
     new Promise(async (resolve, reject) => {
-        if (currentImage) {
-            const fileName = currentImage.split('/')[2];
-            await removeImage(fileName);
-        }
+        try {
+            cloudinary.uploader.upload(filePath, (err, result) => {
+                if (err) reject(err);
 
-        updateImage(id, fileName)
-            .then(() => {
-                resolve({ url: fileName });
-            })
-            .catch(err => reject(err));
+                const url = result.secure_url;
+
+                updateImage(id, url)
+                    .then(() => resolve({ url }))
+                    .catch(err => reject(err))
+                    .finally(async () => await removeTempFile(filePath));
+            });
+        } catch (err) {
+            reject(err);
+        }
     });
 
 module.exports = updateProfileImage;
