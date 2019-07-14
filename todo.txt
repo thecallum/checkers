@@ -27,6 +27,8 @@ sometimes uploaded image link is incorrect, then there is an unused image file
 
 add v-cloak to leaderboard
 
+user can play agaist themselves online
+
 app.js:19:20
 app.js is running on https://localhost:3000
 /home/callum/projects/checkers/socket/Games.js:15
