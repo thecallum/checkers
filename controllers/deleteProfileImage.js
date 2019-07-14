@@ -1,16 +1,19 @@
 const { deleteProfileImage: deleteImage } = require('../models/user');
-const removeTempFile = require('./removeTempFile');
+const getImagePublicID = require('./getImagePublicID');
+
+const cloudinary = require('cloudinary').v2;
 
 const deleteProfileImage = (id, currentImage) =>
     new Promise(async (resolve, reject) => {
-        if (currentImage !== undefined) {
-            const fileName = currentImage.split('/')[2];
-            await removeTempFile(fileName);
-        }
+        const previousID = getImagePublicID(currentImage);
 
-        deleteImage(id)
-            .then(() => resolve())
-            .catch(err => reject(err));
+        cloudinary.uploader.destroy(previousID, (err, result) => {
+            if (err) reject(err);
+
+            deleteImage(id)
+                .then(() => resolve())
+                .catch(err => reject(err));
+        });
     });
 
 module.exports = deleteProfileImage;

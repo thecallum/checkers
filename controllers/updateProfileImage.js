@@ -1,17 +1,12 @@
 const { updateProfileImage: updateImage } = require('../models/user');
 const removeTempFile = require('./removeTempFile');
+const getImagePublicID = require('./getImagePublicID');
 
 const cloudinary = require('cloudinary').v2;
 
 const updateProfileImage = (id, filePath, previousImage) =>
     new Promise(async (resolve, reject) => {
-        const previousID =
-            previousImage === undefined
-                ? false
-                : previousImage
-                      .split('/')
-                      .slice(-1)[0]
-                      .split('.')[0];
+        const previousID = getImagePublicID(previousImage);
 
         try {
             cloudinary.uploader.upload(filePath, previousID ? { public_id: previousID } : {}, (err, result) => {
