@@ -24,12 +24,12 @@ const setupSession = () =>
         rolling: true,
         store: sessionStore,
         cookie: {
-            // secure: !process.env.DEVELOPMENT,
+            secure: true,
             maxAge: 1000 * 60 * 60,
-            domain: process.env.PAGE_URL,
+            // domain: process.env.PAGE_URL,
             httpOnly: true,
             path: '/',
-            sameSite: true,
+            // sameSite: true,
         },
         name: 'sessionID',
     });
