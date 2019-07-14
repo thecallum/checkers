@@ -9,7 +9,7 @@
         <%- include('../components/header', { auth }); %>
 
         <div id="app">
-            <button @click="toggleWin">WIN</button>
+            <!-- <button @click="toggleWin">WIN</button> -->
 
             <div class="container">
                 <div class="canvas__view">
@@ -45,7 +45,7 @@
 
                 <div class="modal__form">
                     <div class="modal__formRow" v-for="(player, index) in players">
-                        <div class="modal__piece" v-bind:class='{ "modal__piece--red" : index === 0, "modal__piece--blue" : index === 1 }'></div>
+                        <div class="modal__piece" :style="{ backgroundColor: colors[index].primary }"></div>
                         <input type="text" class="modal__input" :name="index" :placeholder="player.default" v-model="player.name" />
                     </div>
                 </div>

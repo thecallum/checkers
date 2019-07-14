@@ -21,15 +21,17 @@ new Vue({
                 name: '',
                 default: 'player 1',
                 src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg',
-                color: colors.red,
+                color: 0,
             },
             {
                 name: '',
                 default: 'player 2',
                 src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg',
-                color: colors.blue,
+                color: 1,
             },
         ],
+
+        colors: colors.colors,
 
         canvas: {
             width: 500,

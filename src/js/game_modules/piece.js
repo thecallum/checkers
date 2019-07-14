@@ -9,7 +9,7 @@ class Piece {
     }
 }
 
-const draw = (piece, gridSize, ctx, validOptions, selected, color, upsideDown = false) => {
+const draw = (usePrimaryColor, piece, gridSize, ctx, validOptions, selected, color, upsideDown = false) => {
     const radius = gridSize / 2 - 6;
     const x = piece.coords.x * gridSize + gridSize / 2;
     const y = piece.coords.y * gridSize + gridSize / 2;
@@ -18,8 +18,10 @@ const draw = (piece, gridSize, ctx, validOptions, selected, color, upsideDown = 
         ctx.fillStyle = colors.grey;
     } else if (selected) {
         ctx.fillStyle = colors.green;
+    } else if (usePrimaryColor) {
+        ctx.fillStyle = colors.colors[color].primary;
     } else {
-        ctx.fillStyle = color;
+        ctx.fillStyle = colors.colors[color].secondary;
     }
 
     ctx.beginPath();

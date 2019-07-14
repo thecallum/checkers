@@ -134,7 +134,11 @@ module.exports = (server, session) => {
             if (data.state === 'join_queue') {
                 // must not already be in queue
 
+                io.sockets.sockets[socket.id].handshake.session.user = { ...io.sockets.sockets[socket.id].handshake.session.user, color: data.color };
+                io.sockets.sockets[socket.id].handshake.session.save();
+
                 const addedToQueue = queue.add(socket.id);
+
                 if (cb) cb(addedToQueue);
                 return;
             }
@@ -164,9 +168,9 @@ module.exports = (server, session) => {
                     updateSessionRoom(opponentSocket, null);
 
                     opponentSocket.emit('game', { state: 'opponent_left' });
-
-                    if (cb) cb();
                 }
+
+                if (cb) cb();
 
                 return;
             }
@@ -174,8 +178,6 @@ module.exports = (server, session) => {
             if (data.state === 'accept') {
                 // must be in room
                 // room must be valid
-
-                // const room = socket.handshake.session.user.room;
 
                 if (!roomID && roomID !== 0) {
                     if (cb) cb(false);
@@ -197,7 +199,8 @@ module.exports = (server, session) => {
 
                 if (bothAccepted) {
                     const players = [socket.id, rooms.getOpponentID(roomID, socket.id)];
-                    const game = games.create(roomID, players);
+                    const users = rooms.getUsers(roomID);
+                    const game = games.create(roomID, players, users);
 
                     players.map(player => updateSessionRoom(io.sockets.sockets[player], roomID));
 
@@ -279,10 +282,12 @@ module.exports = (server, session) => {
                 [players[1]]: {
                     username: io.sockets.sockets[players[1]].handshake.session.user.username,
                     src: io.sockets.sockets[players[1]].handshake.session.user.profile_image,
+                    color: io.sockets.sockets[players[1]].handshake.session.user.color,
                 },
                 [players[0]]: {
                     username: io.sockets.sockets[players[0]].handshake.session.user.username,
                     src: io.sockets.sockets[players[0]].handshake.session.user.profile_image,
+                    color: io.sockets.sockets[players[0]].handshake.session.user.color,
                 },
             };
 
@@ -296,8 +301,6 @@ module.exports = (server, session) => {
                 updateSessionRoom(socket, roomID);
                 socket.join(roomID);
             });
-
-            // const users = rooms.getUsers(roomID);
 
             setTimeout(() => io.to(roomID).emit('game', { state: 'found', players: users }));
         }

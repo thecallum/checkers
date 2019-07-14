@@ -16,9 +16,11 @@
 
                         <p class="canvas__subtitle">Play against another human from anywhere across the internet</p>
 
+                        <color-picker :update-color="updateColor"></color-picker>
+
                         <button class="button canvas__button" @click="beginSetup">Play</button>
                     </div>
-                    <div v-if="gameStarted" v-cloak>
+                    <div v-else v-cloak>
                         <div class="canvas__players" v-if="gameStarted">
                             <div class="canvas__player" v-for="player in players">
                                 <img v-bind:src="player.src" v-bind:alt="player.alt" class="canvas__playerImg" />
@@ -58,6 +60,7 @@
                         <span v-if="opponent">
                             <p>Opponent: {{ opponent.username }}</p>
                             <img class="online__img" :src="opponent.src" alt="opponent profile picture" />
+                            <p>Color: {{ opponent.color }}</p>
                         </span>
 
                         <p v-if="accepted">You have accepted</p>

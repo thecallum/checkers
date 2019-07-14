@@ -2,6 +2,7 @@ const io = require('socket.io-client');
 
 const canvas = require('../components/canvas');
 const modal = require('../components/modal');
+const colorPicker = require('../components/colorPicker');
 
 const findClickedPiece = require('../game_modules/findClickedPiece');
 const checkOptionsClicked = require('../game_modules/checkOptionsClicked');
@@ -11,6 +12,7 @@ new Vue({
     components: {
         canvasComponent: canvas,
         modal,
+        colorPicker,
     },
     data: {
         players: {},
@@ -23,6 +25,8 @@ new Vue({
             halfGridSize: 500 / 16,
         },
         showCanvas: true,
+
+        selectedColor: null,
 
         socket: null,
         connecting: true,
@@ -59,6 +63,11 @@ new Vue({
     },
 
     methods: {
+        updateColor(newColor) {
+            // console.log('update color', newColor);
+            this.selectedColor = newColor;
+        },
+
         updateCanvasSize() {
             const maxWidth = this.canvas.maxWidth;
             // 40px for padding
@@ -79,7 +88,7 @@ new Vue({
         },
 
         joinQueue() {
-            this.socket.emit('game', { state: 'join_queue' }, () => (this.state = 'queue'));
+            this.socket.emit('game', { state: 'join_queue', color: this.selectedColor }, () => (this.state = 'queue'));
         },
 
         rejoinQueue() {
@@ -96,7 +105,9 @@ new Vue({
         },
 
         cancelSetup() {
+            console.log('cancel setup');
             this.socket.emit('game', { state: 'leave_queue' }, () => {
+                console.log('cancel setup calback');
                 this.state = null;
                 this.toggleSetup = false;
 
@@ -134,6 +145,7 @@ new Vue({
             this.game = {
                 ...updates,
                 selectedPiece: null,
+                activePlayer: this.socket.id,
                 upsideDown: updates.players[0].id !== this.socket.id,
             };
         },

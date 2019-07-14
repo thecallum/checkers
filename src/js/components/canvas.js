@@ -99,12 +99,15 @@ const canvas = {
         },
 
         drawPieces() {
+            const colors = Object.keys(this.gameState.players).map(player => this.gameState.players[player].color);
+
             this.gameState.pieces.map(piece => {
                 const isSelected = piece.id === this.gameState.selectedPiece;
                 const availableOptions = this.gameState.options[piece.id].length > 0;
 
+                const usePrimaryColor = colors[0] != colors[1] ? true : this.gameState.activePlayer === piece.player;
                 const color = this.gameState.players.filter(player => player.id === piece.player)[0].color;
-                drawPiece(piece, this.gridSize, this.ctx, availableOptions, isSelected, color, this.gameState.upsideDown);
+                drawPiece(usePrimaryColor, piece, this.gridSize, this.ctx, availableOptions, isSelected, color, this.gameState.upsideDown);
             });
         },
 
@@ -118,11 +121,15 @@ const canvas = {
         },
 
         drawSelectedPiece() {
+            const colors = Object.keys(this.gameState.players).map(player => this.gameState.players[player].color);
+
             const pieceID = this.gameState.selectedPiece;
             const availableOptions = this.gameState.options[pieceID].length > 0;
 
+            const usePrimaryColor = colors[0] == colors[1] ? true : this.gameState.activePlayer === selectedPiece;
+
             const selectedPiece = this.gameState.pieces.filter(piece => piece.id === pieceID)[0];
-            drawPiece(selectedPiece, this.gridSize, this.ctx, availableOptions, true);
+            drawPiece(usePrimaryColor, selectedPiece, this.gridSize, this.ctx, availableOptions, true);
         },
     },
     template: `
