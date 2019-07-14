@@ -2,9 +2,9 @@ const Session = require('express-session');
 
 const RedisStore = require('connect-redis')(Session);
 const sessionStore = new RedisStore(
-    process.env.REDDISCLOUD_URL
+    process.env.REDISCLOUD_URL
         ? {
-              url: process.env.REDDISCLOUD_URL,
+              url: process.env.REDISCLOUD_URL,
           }
         : {
               host: 'localhost',
