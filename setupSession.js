@@ -1,5 +1,7 @@
 const Session = require('express-session');
 
+if (!process.env.PAGE_URL) throw 'Missing env variable PAGE_URL';
+
 const RedisStore = require('connect-redis')(Session);
 const sessionStore = new RedisStore(
     process.env.REDISCLOUD_URL
@@ -7,7 +9,7 @@ const sessionStore = new RedisStore(
               url: process.env.REDISCLOUD_URL,
           }
         : {
-              host: 'localhost',
+              host: process.env.PAGE_URL,
               port: 6379,
           }
 );
@@ -24,7 +26,7 @@ const setupSession = () =>
         cookie: {
             secure: !process.env.DEVELOPMENT,
             maxAge: 1000 * 60 * 60,
-            domain: 'localhost',
+            domain: process.env.PAGE_URL,
             httpOnly: true,
             path: '/',
             sameSite: true,
