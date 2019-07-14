@@ -23,6 +23,7 @@ const setupSession = () =>
         saveUninitialized: false,
         rolling: true,
         store: sessionStore,
+        proxy: true,
         cookie: {
             secure: true,
             maxAge: 1000 * 60 * 60,
