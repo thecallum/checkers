@@ -26,10 +26,10 @@ const setupSession = () =>
         cookie: {
             // secure: !process.env.DEVELOPMENT,
             maxAge: 1000 * 60 * 60,
-            // domain: process.env.PAGE_URL,
+            domain: process.env.PAGE_URL,
             httpOnly: true,
             path: '/',
-            // sameSite: true,
+            sameSite: true,
         },
         name: 'sessionID',
     });
