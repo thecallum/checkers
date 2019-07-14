@@ -9,9 +9,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 module.exports = env => {
     const isDev = !!env && env.hasOwnProperty('development');
 
-    console.log({
-        isDev,
-    });
+    console.log({ isDev }, 'using', isDev ? 'development' : 'production');
 
     return {
         mode: isDev ? 'development' : 'production',
@@ -30,11 +28,14 @@ module.exports = env => {
         },
         resolve: {
             alias: {
-                vue: 'vue/dist/vue',
+                vue: isDev ? 'vue/dist/vue' : 'vue/dist/vue.min.js',
                 validator: 'validator/validator.js',
             },
         },
         plugins: [
+            new webpack.DefinePlugin({
+                'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
+            }),
             new MiniCssExtractPlugin({
                 filename: 'css/main.css',
             }),
@@ -44,9 +45,6 @@ module.exports = env => {
             }),
             ...(!isDev
                 ? [
-                      new webpack.DefinePlugin({
-                          'process.env.NODE_ENV': 'production',
-                      }),
                       new CompressionPlugin({
                           // asset: "[path].gz[query]",
                           algorithm: 'gzip',

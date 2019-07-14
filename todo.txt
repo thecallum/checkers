@@ -17,11 +17,13 @@ Add online guest account
 
 check multiplayer page still works
 
-profile isnt responsive
+profile isn't responsive
 
-burger menu broekn on mobile
+burger menu broken on mobile
 
-imprrove modals on mobile
+improve modals on mobile
+
+sometimes uploaded image link is incorrect, then there is an unused image file
 
 app.js:19:20
 app.js is running on https://localhost:3000
