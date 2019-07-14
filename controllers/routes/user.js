@@ -68,9 +68,9 @@ router.post('/user/update/update-profile', auth, async (req, res) => {
 
     const file = req.files.uploaded_image;
 
-    const { id } = req.session.user;
+    const { id, profile_image: previousImage } = req.session.user;
 
-    updateProfileImage(id, file.tempFilePath)
+    updateProfileImage(id, file.tempFilePath, previousImage)
         .then(({ url }) => {
             req.session.user = { ...req.session.user, profile_image: url };
             req.session.save();

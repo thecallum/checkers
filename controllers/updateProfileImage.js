@@ -3,10 +3,18 @@ const removeTempFile = require('./removeTempFile');
 
 const cloudinary = require('cloudinary').v2;
 
-const updateProfileImage = (id, filePath) =>
+const updateProfileImage = (id, filePath, previousImage) =>
     new Promise(async (resolve, reject) => {
+        const previousID =
+            previousImage === undefined
+                ? false
+                : previousImage
+                      .split('/')
+                      .slice(-1)[0]
+                      .split('.')[0];
+
         try {
-            cloudinary.uploader.upload(filePath, (err, result) => {
+            cloudinary.uploader.upload(filePath, previousID ? { public_id: previousID } : {}, (err, result) => {
                 if (err) reject(err);
 
                 const url = result.secure_url;
