@@ -1,5 +1,5 @@
 module.exports = imageURL =>
-    imageURL === undefined
+    !imageURL
         ? false
         : imageURL
               .split('/')

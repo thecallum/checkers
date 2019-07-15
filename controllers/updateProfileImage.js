@@ -9,16 +9,25 @@ const updateProfileImage = (id, filePath, previousImage) =>
         const previousID = getImagePublicID(previousImage);
 
         try {
-            cloudinary.uploader.upload(filePath, previousID ? { public_id: previousID } : {}, (err, result) => {
-                if (err) reject(err);
+            cloudinary.uploader.upload(
+                filePath,
+                {
+                    public_id: previousID ? previousID : undefined,
+                    format: 'jpg',
+                    allowed_formats: 'png, jpg, jpeg, gif, webp',
+                    asnyc: true,
+                },
+                (err, result) => {
+                    if (err) reject(err);
 
-                const url = result.secure_url;
+                    const url = result.secure_url;
 
-                updateImage(id, url)
-                    .then(() => resolve({ url }))
-                    .catch(err => reject(err))
-                    .finally(async () => await removeTempFile(filePath));
-            });
+                    updateImage(id, url)
+                        .then(() => resolve({ url }))
+                        .catch(err => reject(err))
+                        .finally(async () => await removeTempFile(filePath));
+                }
+            );
         } catch (err) {
             reject(err);
         }

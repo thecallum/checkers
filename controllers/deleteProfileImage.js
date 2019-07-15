@@ -5,6 +5,8 @@ const cloudinary = require('cloudinary').v2;
 
 const deleteProfileImage = (id, currentImage) =>
     new Promise(async (resolve, reject) => {
+        if (!currentImage) return reject(new Error('No image to delete'));
+
         const previousID = getImagePublicID(currentImage);
 
         cloudinary.uploader.destroy(previousID, (err, result) => {

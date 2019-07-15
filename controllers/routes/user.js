@@ -65,9 +65,7 @@ router.post('/user/update/password', auth, async (req, res) => {
 
 router.post('/user/update/update-profile', auth, async (req, res) => {
     if (!req.files) return res.status(400).send('No files were uploaded.');
-
     const file = req.files.uploaded_image;
-
     const { id, profile_image: previousImage } = req.session.user;
 
     updateProfileImage(id, file.tempFilePath, previousImage)
@@ -85,13 +83,18 @@ router.post('/user/update/update-profile', auth, async (req, res) => {
 router.post('/user/update/delete-profile', auth, async (req, res) => {
     const { id, profile_image: currentImage } = req.session.user;
 
+    if (!currentImage) return res.status(400).send();
+
     deleteProfileImage(id, currentImage)
         .then(() => {
             req.session.user = { ...req.session.user, profile_image: undefined };
             req.session.save();
             res.status(200).send();
         })
-        .catch(() => res.status(500));
+        .catch(err => {
+            console.log({ err });
+            res.status(400).send();
+        });
 });
 
 module.exports = router;
