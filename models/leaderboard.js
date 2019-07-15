@@ -11,7 +11,7 @@ exports.update = (field, userID) =>
 
 exports.get = offset =>
     new Promise(async (resolve, reject) => {
-        const interval = 2;
+        const interval = 50;
 
         const query1 = `SELECT user.id AS id, username, IFNULL(win, 0) AS win, IFNULL(lose, 0) AS lose, IFNULL(draw, 0) AS draw, IFNULL(win + lose + draw, 0) AS games FROM user 
         LEFT JOIN leaderboard ON leaderboard.id = user.id
