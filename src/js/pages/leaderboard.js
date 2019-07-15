@@ -5,17 +5,11 @@ new Vue({
         offset: 0,
         interval: 50,
 
+        loadedData: false,
         data: null,
         next: false,
         back: false,
         total: 0,
-    },
-
-    created() {
-        this.data = loaded.data;
-        this.next = loaded.next;
-        this.back = loaded.back;
-        this.total = loaded.total;
     },
 
     methods: {
@@ -27,7 +21,10 @@ new Vue({
                     headers: { 'Content-Type': 'application/json' },
                 })
                     .then(res => res.json())
-                    .then(res => resolve(res))
+                    .then(res => {
+                        this.loadedData = true;
+                        resolve(res);
+                    })
                     .catch(err => {
                         console.log('fetch err', err);
                         resolve(false);

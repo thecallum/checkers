@@ -5,24 +5,6 @@
         <title>Leaderboard | Checkers</title>
     </head>
 
-    <script>
-        var loaded = {
-            data: [
-                <% for(var i=0; i < data.length; i++) { %>
-                    {
-                      username: '<%= data[i].username %>',
-                      win: <%= data[i].win %>,
-                      lose: <%= data[i].lose %>,
-                      draw: <%= data[i].draw %>,
-                      games: <%= data[i].games %>,
-                    },
-                <% } %>
-            ],
-            next: <%= next %>,
-            back: <%= back %>,
-            total: <%= total %>,
-        };
-    </script>
     <body>
         <%- include('../components/header', { auth }); %>
 
@@ -46,22 +28,48 @@
                                 <th>Games</th>
                             </tr>
 
-                            <tr v-for="(user, index) in data">
-                                <td>{{ index + 1 + offset * interval }}</td>
-                                <td>{{ user.username }}</td>
-                                <td>{{ user.win }}</td>
-                                <td>{{ user.lose }}</td>
-                                <td>{{ user.draw }}</td>
-                                <td>{{ user.games }}</td>
-                            </tr>
+                            <div v-if="!loadedData">
+                                <p>IF</p>
+                                <% for(var i=0; i < data.length; i++) { %>
+                                <tr>
+                                    <td><%= i + 1 %></td>
+                                    <td><%= data[i].username %></td>
+                                    <td><%= data[i].win %></td>
+                                    <td><%= data[i].lose %></td>
+                                    <td><%= data[i].draw %></td>
+                                    <td><%= data[i].games %></td>
+                                </tr>
+                                <% } %>
+                            </div>
+
+                            <div v-else v-cloak>
+                                <tr v-for="(user, index) in data" v-cloak>
+                                    <td>{{ index + 1 + offset * interval }}</td>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.win }}</td>
+                                    <td>{{ user.lose }}</td>
+                                    <td>{{ user.draw }}</td>
+                                    <td>{{ user.games }}</td>
+                                </tr>
+                            </div>
                         </table>
                     </div>
 
-                    <p>Page {{ offset + 1 }} of {{ Math.ceil((total * 2) / interval) }}</p>
+                    <p v-if="!loadedData">Page 1 of <%= Math.ceil((total * 2) / 50) %></p>
+                    <p v-else v-cloak>Page {{ offset + 1 }} of {{ Math.ceil((total * 2) / interval) }}</p>
 
-                    <p>
-                        <button @click="handleBack" disabled :disabled="!back">Back</button>
-                        <button @click="handleNext" disabled :disabled="!next">Next</button>
+                    <p v-if="!loadedData">
+                        <button @click="handleBack" 
+                            <%= !back ? 'disabled' : '' %>
+                        > 
+                        Back</button>
+                        <button @click="handleNext" 
+                            <%= !next ? 'disabled' : '' %>
+                        >Next</button>
+                        </p>
+                    <p v-else v-cloak>
+                        <button @click="handleBack" :disabled="!back || <%= !back %>">Back</button>
+                        <button @click="handleNext" :disabled="!next || <%= !next %>">Next</button>
                     </p>
 
                     <% } %>
