@@ -25,7 +25,7 @@ new Vue({
         handleSubmit(e) {
             e.preventDefault();
 
-            const file = e.target.uploaded_image.files[0];
+            const file = this.$refs.input.files[0];
             if (file === undefined) return;
             const fd = new FormData();
             fd.append('uploaded_image', file);
