@@ -30,7 +30,7 @@ module.exports = {
 
     template: `
         <div class="colorpicker">
-            <h3 class="colorpicker__title">Select A Color</h3>
+            <h4 class="colorpicker__title">Select A Color</h4>
             <div class="colorpicker__container">
                 <div 
                     class="colorpicker__color" 

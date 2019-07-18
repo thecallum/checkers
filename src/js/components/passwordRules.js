@@ -38,7 +38,7 @@ const passwordRules = {
         <ul class="passwordRules" v-bind:class="{ active: show }">
             <button class="passwordRules__toggle" @click="toggle" type="button"></button>
 
-            <h3>Password Rules</h3>
+            <h5>Password Rules</h5>
 
             <li class="passwordRules__rule" v-bind:class="rule0">
                 Between 10-128 Characters

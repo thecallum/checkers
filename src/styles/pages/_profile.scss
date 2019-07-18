@@ -9,11 +9,6 @@
         position: relative;
     }
 
-    &__title {
-        font-weight: 100;
-        font-size: 40px;
-    }
-
     &__profile__picture {
         width: 100%;
         height: 100%;
@@ -23,8 +18,6 @@
     }
 
     &__subtitle {
-        font-size: 30px;
-        font-weight: 100;
         border-bottom: 3px solid #777;
         color: #333;
         padding-bottom: 10px;
@@ -94,7 +87,6 @@
         cursor: pointer;
         display: block;
         margin: 5px 0 5px auto;
-        // margin-left: 10px;
         font-size: 20px;
         background-color: hsl(100, 45%, 50%);
         color: white;
@@ -143,7 +135,7 @@
     }
 
     &__group {
-        padding: 40px 0;
+        padding: 0 0 40px;
     }
 
     &__input__group {
