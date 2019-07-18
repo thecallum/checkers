@@ -12,29 +12,27 @@
             <!-- <button @click="toggleWin">WIN</button> -->
 
             <div class="container">
-                <div class="canvas__view">
-                    <div v-if="!gameStarted">
-                        <h2 class="canvas__title">Multiplayer</h2>
+                <div v-if="!gameStarted">
+                    <h2 class="canvas__title">Multiplayer</h2>
 
-                        <p class="canvas__subtitle">Play against another human on the same device</p>
+                    <p class="canvas__subtitle">Play against another human on the same device</p>
 
-                        <button class="button canvas__button" @click="beginSetup">Play</button>
+                    <button class="button canvas__button" @click="beginSetup">Play</button>
+                </div>
+                <div v-if="gameStarted" v-cloak>
+                    <div class="canvas__players">
+                        <div class="canvas__player" v-for="player in players">
+                            <img v-bind:src="player.src" v-bind:alt="player.name" class="canvas__playerImg" />
+                            <p class="canvas__playerName">
+                                {{ !!player.name ? player.name : player.default }}
+                            </p>
+                        </div>
                     </div>
-                    <div v-if="gameStarted" v-cloak>
-                        <div class="canvas__players">
-                            <div class="canvas__player" v-for="player in players">
-                                <img v-bind:src="player.src" v-bind:alt="player.name" class="canvas__playerImg" />
-                                <p class="canvas__playerName">
-                                    {{ !!player.name ? player.name : player.default }}
-                                </p>
-                            </div>
-                        </div>
 
-                        <canvas-component :fetch-canvas-controls="fetchCanvasControls"></canvas-component>
+                    <canvas-component :fetch-canvas-controls="fetchCanvasControls"></canvas-component>
 
-                        <div class="canvas__bottom">
-                            <h3 class="canvas__message">It's {{ currentPlayer }}'s turn!</h3>
-                        </div>
+                    <div class="canvas__bottom">
+                        <h3 class="canvas__message">It's {{ currentPlayer }}'s turn!</h3>
                     </div>
                 </div>
             </div>

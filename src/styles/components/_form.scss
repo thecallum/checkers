@@ -9,11 +9,9 @@ $color_text: hsl(200, 20%, 20%);
 }
 
 .form {
-    width: 100%;
-    max-width: 750px;
-    margin: 100px auto;
-    padding: 30px 50px;
-    font-family: sans-serif;
+    &__container {
+        max-width: 750px;
+    }
 
     &__label {
         color: $color_text;
@@ -220,29 +218,5 @@ $color_text: hsl(200, 20%, 20%);
         &:focus {
             border: 2px dashed hsl(200, 20%, 50%);
         }
-    }
-}
-
-@media (max-width: 750px) {
-    .form {
-        margin: 20px auto;
-    }
-}
-
-@media (max-width: 600px) {
-    .form {
-        padding: 30px 40px;
-    }
-}
-
-@media (max-width: 500px) {
-    .form {
-        padding: 20px;
-    }
-}
-
-@media (max-width: 350px) {
-    .form {
-        padding: 10px;
     }
 }

@@ -10,35 +10,29 @@
 
         <div id="app">
             <div class="container">
-                <div class="canvas__view">
-                    <div v-if="!gameStarted">
-                        <h2 class="canvas__title">Online</h2>
+                <div v-if="!gameStarted">
+                    <h2 class="canvas__title">Online</h2>
 
-                        <p class="canvas__subtitle">Play against another human from anywhere across the internet</p>
+                    <p class="canvas__subtitle">Play against another human from anywhere across the internet</p>
 
-                        <color-picker :update-color="updateColor"></color-picker>
+                    <color-picker :update-color="updateColor"></color-picker>
 
-                        <button class="button canvas__button" @click="beginSetup">Play</button>
+                    <button class="button canvas__button" @click="beginSetup">Play</button>
+                </div>
+                <div v-else v-cloak>
+                    <div class="canvas__players" v-if="gameStarted">
+                        <div class="canvas__player" v-for="player in players">
+                            <img v-bind:src="player.src" v-bind:alt="player.alt" class="canvas__playerImg" />
+                            <p class="canvas__playerName">
+                                {{ player.username }}
+                            </p>
+                        </div>
                     </div>
-                    <div v-else v-cloak>
-                        <div class="canvas__players" v-if="gameStarted">
-                            <div class="canvas__player" v-for="player in players">
-                                <img v-bind:src="player.src" v-bind:alt="player.alt" class="canvas__playerImg" />
-                                <p class="canvas__playerName">
-                                    {{ player.username }}
-                                </p>
-                            </div>
-                        </div>
 
-                        <canvas-component
-                            v-if="showCanvas"
-                            :fetch-canvas-controls="fetchCanvasControls"
-                            v-bind:class="{rotate: rotateCanvas}"
-                        ></canvas-component>
+                    <canvas-component v-if="showCanvas" :fetch-canvas-controls="fetchCanvasControls" v-bind:class="{rotate: rotateCanvas}"></canvas-component>
 
-                        <div class="canvas__bottom" v-if="gameStarted">
-                            <h3 class="canvas__message">{{ currentPlayerMessage }}</h3>
-                        </div>
+                    <div class="canvas__bottom" v-if="gameStarted">
+                        <h3 class="canvas__message">{{ currentPlayerMessage }}</h3>
                     </div>
                 </div>
             </div>

@@ -10,7 +10,7 @@
         <div class="container">
             <div class="profile">
                 <div class="profile__container">
-                    <h3 class="profile__title">Profile</h3>
+                    <h2 class="profile__title">Profile</h2>
 
                     <div id="app__image">
                         <div class="profile__group">
@@ -68,8 +68,6 @@
                         <div class="profile__group">
                             <h4 class="profile__subtitle">Username</h4>
 
-                            <!-- <div class="profile__input__group"> -->
-                            <!-- <div class="profile__input__group__section"> -->
                             <input
                                 ref="username"
                                 type="text"
@@ -89,13 +87,10 @@
                                     Invalid username
                                 </span>
                             </div>
-                            <!-- </div> -->
-                            <!-- <div class="profile__input__group__section"> -->
+
                             <button class="profile__button" disabled v-bind:disabled="unchanged" @click="save" v-bind:class="{ loading:saving }">
                                 <div v-if="!saving">Save</div>
                             </button>
-                            <!-- </div> -->
-                            <!-- </div> -->
 
                             <message :close="closeSuccessMessage" :message="successMessage" v-if="successMessage" type="success"></message>
                             <message :close="closeErrorMessage" :message="errorMessage" v-if="errorMessage" type="error"></message>
@@ -106,7 +101,6 @@
                         <div class="profile__group">
                             <h4 class="profile__subtitle">Email</h4>
 
-                            <!-- <div class="profile__input__group"> -->
                             <input
                                 ref="email"
                                 type="text"
@@ -117,7 +111,6 @@
                                 :disabled="saving"
                             />
                             <span class="profile__search" v-bind:class="loadingClass"></span>
-                            <!-- </div> -->
 
                             <div class="profile__status" v-if="valid || invalid" v-bind:class="{ invalid, error: available === false }" v-cloak>
                                 <span v-if="!loading && invalid">
@@ -138,14 +131,12 @@
                         <div class="profile__group">
                             <h4 class="profile__subtitle">Password</h4>
 
-                            <!-- <div class="profile__input__group"> -->
                             <input type="password" class="profile__input" v-model="passwordCurrent" :disabled="saving" placeholder="Current password" />
 
                             <input type="password" class="profile__input" v-model="passwordNew" :disabled="saving" placeholder="New Password" />
 
                             <input type="password" class="profile__input" v-model="passwordNewConf" :disabled="saving" placeholder="Confirm new password" />
                             <span class="profile__search" v-bind:class="loadingClass"></span>
-                            <!-- </div> -->
 
                             <div class="profile__status" v-if="!emptyNew" v-bind:class="{ invalid }" v-cloak>
                                 <span v-if="!validPassword">Password doesn't meet the requirements</span>

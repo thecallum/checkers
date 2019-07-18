@@ -26,11 +26,6 @@
         max-width: 400px;
     }
 
-    &__view {
-        margin-top: 100px;
-        padding: 50px 20px;
-    }
-
     &__players {
         display: flex;
         justify-content: space-between;
@@ -131,10 +126,6 @@
 
         &__players {
             padding: 0 9px;
-        }
-
-        &__view {
-            padding: 10px;
         }
     }
 }

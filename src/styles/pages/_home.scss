@@ -1,8 +1,4 @@
 .home {
-    &__container {
-        padding: 50px 20px;
-        margin-top: 100px;
-    }
     &__title {
         text-align: center;
         margin: 0;
@@ -53,14 +49,6 @@
     }
 }
 
-@media (max-width: 1000px) {
-    .home {
-        &__container {
-            margin: 0;
-        }
-    }
-}
-
 @media (max-width: 950px) {
     .home {
         &__optionContainer {
@@ -74,9 +62,6 @@
 
 @media (max-width: 600px) {
     .home {
-        &__container {
-            padding: 20px;
-        }
         &__title {
             padding: 30px 0;
         }

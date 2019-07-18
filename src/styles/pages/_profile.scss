@@ -1,10 +1,4 @@
 .profile {
-    &__container {
-        padding: 50px 70px;
-        margin-top: 100px;
-        position: relative;
-    }
-
     &__profile__picture {
         width: 100%;
         height: 100%;
@@ -25,10 +19,9 @@
         height: 50px;
         padding: 0 10px;
         font-size: 18px;
-        background-color: white;
-        border: none;
         border-radius: $border-radius;
         margin-bottom: 20px;
+        border: 1px solid #ccc;
 
         &:focus {
             outline-color: #777;
@@ -194,10 +187,6 @@
 
 @media (max-width: 800px) {
     .profile {
-        &__container {
-            padding: 30px;
-            margin-top: 0;
-        }
         &__group {
             padding: 20px 0;
         }
@@ -206,9 +195,6 @@
 
 @media (max-width: 700px) {
     .profile {
-        &__container {
-            padding: 15px;
-        }
         &__group {
             padding: 20px 0 0 0;
         }
