@@ -39,7 +39,7 @@
 
             <!-- Game Setup Modal -->
             <modal :show="!gameStarted && toggleSetup" v-cloak>
-                <h1 class="modal__title">Select Player Names</h1>
+                <h4 class="modal__title">Select Player Names</h4>
 
                 <div class="modal__form">
                     <div class="modal__formRow" v-for="(player, index) in players">
@@ -56,7 +56,7 @@
 
             <!-- Game End Modal -->
             <modal :show="gameEnded" v-cloak>
-                <h1 class="modal__title">Game Ended</h1>
+                <h4 class="modal__title">Game Ended</h4>
 
                 <p class="modal__message">{{ winMessage }}</p>
 

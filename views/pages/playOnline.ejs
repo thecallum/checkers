@@ -39,7 +39,7 @@
 
             <!-- Game Setup Modal -->
             <modal :show="!gameStarted && toggleSetup" v-cloak>
-                <h3>Queue</h3>
+                <h4 class="modal__title">Queue</h4>
 
                 <div v-if='state === "queue"' class="online__queue">
                     <p v-if="opponentLeft">Opponent left</p>
@@ -69,7 +69,7 @@
 
             <!-- Game End Modal -->
             <modal :show="gameEnded" v-cloak>
-                <h1 class="modal__title">Game Ended</h1>
+                <h4 class="modal__title">Game Ended</h4>
 
                 <p class="modal__message">{{ winMessage }}</p>
 
@@ -121,7 +121,7 @@
 
             <!-- Opponent disconnected Modal -->
             <modal :show="opponentDisconnected" v-cloak>
-                <h1 class="modal__title">Your Opponent Disconnected</h1>
+                <h4 class="modal__title">Your Opponent Disconnected</h4>
 
                 <div class="modal__options">
                     <a class="button modal__button" href="/">Home</a>

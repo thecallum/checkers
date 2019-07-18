@@ -18,12 +18,15 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: 500px;
-        max-width: calc(100vw - 20px);
-        min-height: 400px;
-        padding: 10px;
+        padding: 20px;
         border-radius: $border-radius;
-        background-color: $color_white-secondary;
+        background-color: white;
+        width: 100%;
+        max-width: 700px;
+    }
+
+    &__title {
+        text-align: center;
     }
 
     &__options {
@@ -84,6 +87,7 @@
         font-size: 22px;
         padding: 0 20px;
         width: 100%;
+        border: 1px solid #ccc;
     }
 
     &__show {
