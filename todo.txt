@@ -1,7 +1,3 @@
-Create timer for disconnected user
-
-leaderboard cache query (try memory-cache)
-
 setup socket for multi-server use
 
 Improve profile image verification
@@ -60,4 +56,4 @@ TypeError: Cannot read property 'nnOUQukJyqi7Lh61AAAA' of undefined
 add logging to app
 
 
-add try catch around controller
+add try catch around controller, and store data is redis
