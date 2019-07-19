@@ -9,21 +9,9 @@ Suggest profile image upload on register
 
 add delete account option
 
-update styling for rematch
-
 Add online guest account
 
-check multiplayer page still works
-
-profile isn't responsive
-
-burger menu broken on mobile
-
-improve modals on mobile
-
 sometimes uploaded image link is incorrect, then there is an unused image file
-
-add v-cloak to leaderboard
 
 user can play agaist themselves online
 

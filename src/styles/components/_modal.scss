@@ -121,3 +121,33 @@
         }
     }
 }
+
+@media (max-height: 600px) {
+    .modal {
+        &__body {
+            height: calc(100% - 20px);
+            max-height: 600px;
+            overflow-y: scroll;
+        }
+
+        &__title {
+            margin: 20px 0;
+        }
+
+        h5 {
+            margin: 10px 0 30px;
+        }
+
+        &__options {
+            margin-top: 0px;
+        }
+
+        &__message {
+            margin: 10px 0;
+        }
+
+        &__button {
+            margin: 5px 0;
+        }
+    }
+}
