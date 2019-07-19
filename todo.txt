@@ -1,7 +1,5 @@
 Create timer for disconnected user
 
-research socket security
-
 leaderboard cache query (try memory-cache)
 
 setup socket for multi-server use
@@ -28,6 +26,12 @@ sometimes uploaded image link is incorrect, then there is an unused image file
 add v-cloak to leaderboard
 
 user can play agaist themselves online
+
+default profile picture
+
+error handling
+
+move 'its your turn' text to top, user profiles can move to the right
 
 app.js:19:20
 app.js is running on https://localhost:3000

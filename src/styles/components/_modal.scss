@@ -6,6 +6,7 @@
     left: 0;
     display: none;
     visibility: hidden;
+    text-align: center;
 
     &__background {
         width: 100%;
@@ -38,23 +39,9 @@
 
     &__options__row {
         display: flex;
-        justify-content: space-evenly;
+        justify-content: center;
         width: 100%;
         margin-bottom: 20px;
-    }
-
-    &__button {
-        margin: 0 10px;
-        padding: 14px 10px;
-        font-size: 26px;
-        width: 130px;
-        flex-grow: 1;
-    }
-
-    &__message {
-        margin-top: 100px;
-        text-align: center;
-        font-size: 22px;
     }
 
     &__form {
@@ -93,5 +80,44 @@
     &__show {
         display: block;
         visibility: visible;
+    }
+
+    &__results {
+        background-color: #333;
+        display: block;
+        color: white;
+        padding: 10px;
+        margin: 50px auto 0;
+        text-align: center;
+        font-size: 26px;
+        max-width: 380px;
+    }
+
+    &__message {
+        background-color: hsl(204, 50%, 89%);
+        padding: 10px 0;
+        border-radius: 5px;
+        margin: 50px 0;
+        font-size: 22px;
+    }
+
+    &__button {
+        font-size: 26px;
+        border-radius: $border-radius;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        background-color: #333;
+        color: #fff;
+        text-decoration: none;
+        margin: 0 10px;
+
+        &:hover {
+            background-color: #444;
+        }
+
+        &:disabled {
+            background-color: #666;
+        }
     }
 }

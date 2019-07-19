@@ -49,8 +49,8 @@
                 </div>
 
                 <div class="modal__options">
-                    <button class="button modal__button" @click="startGame">Start</button>
-                    <button class="button modal__button" @click="cancelSetup">Cancel</button>
+                    <button class="modal__button" @click="startGame">Start</button>
+                    <button class="modal__button" @click="cancelSetup">Cancel</button>
                 </div>
             </modal>
 
@@ -58,11 +58,13 @@
             <modal :show="gameEnded" v-cloak>
                 <h4 class="modal__title">Game Ended</h4>
 
-                <p class="modal__message">{{ winMessage }}</p>
+                <div class="modal__message">
+                    <p>{{ winMessage }}</p>
+                </div>
 
                 <div class="modal__options">
-                    <button class="button modal__button" @click="handleRematch">Rematch</button>
-                    <a class="button modal__button" href="/">Home</a>
+                    <button class="modal__button" @click="handleRematch">Rematch</button>
+                    <a class="modal__button" href="/">Home</a>
                 </div>
             </modal>
         </div>
