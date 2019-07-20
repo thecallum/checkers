@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const saltRounds = 15;
-
 const { updatePassword, getPassword } = require('../models/user');
+const logger = require('../logger');
 
 module.exports = (currentPassword, newPassword, id) =>
     new Promise(async (resolve, reject) => {
@@ -17,6 +17,7 @@ module.exports = (currentPassword, newPassword, id) =>
 
             resolve(true);
         } catch (e) {
+            logger.error(e);
             reject(false);
         }
     });

@@ -1,6 +1,6 @@
 const { Piece } = require('./piece');
 
-const generatePieces = (player1 = 0, player2 = 1) => {
+module.exports = (player1 = 0, player2 = 1) => {
     let id = 0;
     const pieces = [];
 
@@ -20,5 +20,3 @@ const generatePieces = (player1 = 0, player2 = 1) => {
 
     return pieces;
 };
-
-module.exports = generatePieces;

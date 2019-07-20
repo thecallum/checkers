@@ -1,4 +1,4 @@
-const usernameAvailable = username =>
+module.exports = username =>
     new Promise((resolve, reject) => {
         fetch('/data/usernames', {
             method: 'POST',
@@ -14,5 +14,3 @@ const usernameAvailable = username =>
             })
             .catch(reject);
     });
-
-module.exports = usernameAvailable;

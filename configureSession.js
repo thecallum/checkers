@@ -16,7 +16,7 @@ const sessionStore = new RedisStore(
 
 if (!process.env.COOKIE_SECRET) throw 'Missing env variable COOKIE_SECRET';
 
-const setupSession = () =>
+module.exports = () =>
     Session({
         secret: process.env.COOKIE_SECRET,
         resave: true,
@@ -34,5 +34,3 @@ const setupSession = () =>
         },
         name: 'sessionID',
     });
-
-module.exports = setupSession;

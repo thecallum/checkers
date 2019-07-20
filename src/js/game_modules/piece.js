@@ -102,8 +102,4 @@ const drawOptions = (ctx, options, gridSize, halfGridSize) => {
     }
 };
 
-module.exports = {
-    Piece,
-    draw,
-    drawOptions,
-};
+module.exports = { Piece, draw, drawOptions };

@@ -23,6 +23,4 @@ const config = {
     multipleStatements: true,
 };
 
-const con = db.createConnection(process.env.TESTING ? testingConfig : config);
-
-module.exports = con;
+module.exports = db.createConnection(process.env.TESTING ? testingConfig : config);

@@ -1,6 +1,6 @@
 const { draw: drawPiece, drawOptions } = require('../game_modules/piece');
 
-const canvas = {
+module.exports = {
     props: {
         fetchCanvasControls: {
             type: Function,
@@ -141,5 +141,3 @@ const canvas = {
         ></canvas>
     `,
 };
-
-module.exports = canvas;

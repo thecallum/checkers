@@ -1,4 +1,4 @@
-const message = {
+module.exports = {
     props: {
         close: { type: Function, required: true },
         message: { type: String, required: true },
@@ -18,5 +18,3 @@ const message = {
         },
     },
 };
-
-module.exports = message;

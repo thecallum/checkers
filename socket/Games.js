@@ -3,7 +3,7 @@ const generateOptions = require('../src/js/game_modules/generateOptions');
 const updatePieces = require('../src/js/game_modules/updatePieces');
 const nextPlayer = require('../src/js/game_modules/nextPlayer');
 
-const Games = () => {
+module.exports = () => {
     const games = {};
 
     const create = (id, players, users) => {
@@ -119,5 +119,3 @@ const Games = () => {
 
     return { create, getCurrentPlayer, update, close, exists, isPlayersTurn, isValidMove };
 };
-
-module.exports = Games;

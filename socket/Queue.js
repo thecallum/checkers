@@ -1,4 +1,4 @@
-const Queue = () => {
+module.exports = () => {
     let queue = [];
     const subscribeList = [];
 
@@ -27,5 +27,3 @@ const Queue = () => {
 
     return { add, getPlayers, subscribe, remove };
 };
-
-module.exports = Queue;

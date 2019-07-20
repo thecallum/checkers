@@ -1,4 +1,4 @@
-const auth = (req, res, next) => {
+module.exports = (req, res, next) => {
     if (!!req.session && !!req.session.user) return next();
 
     if (req.method === 'POST') {
@@ -7,5 +7,3 @@ const auth = (req, res, next) => {
         res.redirect(`/login`);
     }
 };
-
-module.exports = auth;

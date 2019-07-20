@@ -1,4 +1,4 @@
-const modal = {
+module.exports = {
     props: {
         show: { type: Boolean, required: true },
     },
@@ -13,5 +13,3 @@ const modal = {
         </div>
     `,
 };
-
-module.exports = modal;

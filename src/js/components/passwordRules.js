@@ -1,4 +1,4 @@
-const passwordRules = {
+module.exports = {
     props: {
         password: { required: true, type: String },
         showValidation: { required: true, type: Boolean },
@@ -70,5 +70,3 @@ const passwordRules = {
         </ul>
     `,
 };
-
-module.exports = passwordRules;

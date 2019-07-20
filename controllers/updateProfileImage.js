@@ -1,10 +1,10 @@
-const { updateProfileImage: updateImage } = require('../models/user');
+const { updateProfileImage } = require('../models/user');
 const removeTempFile = require('./removeTempFile');
 const getImagePublicID = require('./getImagePublicID');
-
 const cloudinary = require('cloudinary').v2;
+const logger = require('../logger');
 
-const updateProfileImage = (id, filePath, previousImage) =>
+module.exports = (id, filePath, previousImage) =>
     new Promise(async (resolve, reject) => {
         const previousID = getImagePublicID(previousImage);
 
@@ -18,19 +18,20 @@ const updateProfileImage = (id, filePath, previousImage) =>
                     asnyc: true,
                 },
                 (err, result) => {
-                    if (err) reject(err);
+                    if (err) throw err;
 
                     const url = result.secure_url;
 
-                    updateImage(id, url)
+                    updateProfileImage(id, url)
                         .then(() => resolve({ url }))
-                        .catch(err => reject(err))
+                        .catch(err => {
+                            throw err;
+                        })
                         .finally(async () => await removeTempFile(filePath));
                 }
             );
         } catch (err) {
+            logger.error(err);
             reject(err);
         }
     });
-
-module.exports = updateProfileImage;

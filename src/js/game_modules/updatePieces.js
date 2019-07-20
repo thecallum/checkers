@@ -1,6 +1,6 @@
 const { Piece } = require('./piece');
 
-const updatePieces = (selectedOption, selectedPiece, pieces, currentPlayer) => {
+module.exports = (selectedOption, selectedPiece, pieces, currentPlayer) => {
     const kill = selectedOption.hasOwnProperty('kill');
     const becomeKing = selectedOption.becomeKing;
 
@@ -18,5 +18,3 @@ const updatePieces = (selectedOption, selectedPiece, pieces, currentPlayer) => {
 
     return newPieces;
 };
-
-module.exports = updatePieces;

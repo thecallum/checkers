@@ -1,61 +1,12 @@
-setup socket for multi-server use
+setup socket for multi-server use (Redis)
 
 Improve profile image verification
 Suggest profile image upload on register
 
-add delete account option
-
 Add online guest account
-
-sometimes uploaded image link is incorrect, then there is an unused image file
 
 user can play agaist themselves online
 
 default profile picture
 
-error handling
-
 move 'its your turn' text to top, user profiles can move to the right
-
-promised should return rather than reject on user controlled events
-
-app.js:19:20
-app.js is running on https://localhost:3000
-/home/callum/projects/checkers/socket/Games.js:15
-        const gamePlayers = [{ id: startPlayer, color: users[startPlayer].color }, { id: otherPlayer, color: users[otherPlayer].color }];
-                                                            ^
-
-TypeError: Cannot read property 'nnOUQukJyqi7Lh61AAAA' of undefined
-    at Object.create (/home/callum/projects/checkers/socket/Games.js:15:61)
-    at Socket.socket.on (/home/callum/projects/checkers/socket/controller.js:82:40)
-    at Socket.emit (events.js:189:13)
-    at /home/callum/projects/checkers/node_modules/socket.io/lib/socket.js:528:12
-
-
-
-    /app/socket/controller.js:100
-2019-07-14T19:39:16.590514+00:00 app[web.1]: rooms.getPlayerIDs.forEach(player => {
-2019-07-14T19:39:16.590517+00:00 app[web.1]: ^
-2019-07-14T19:39:16.590520+00:00 app[web.1]: 
-2019-07-14T19:39:16.590593+00:00 app[web.1]: TypeError: rooms.getPlayerIDs.forEach is not a function
-2019-07-14T19:39:16.590595+00:00 app[web.1]: at Socket.socket.on (/app/socket/controller.js:100:36)
-2019-07-14T19:39:16.590597+00:00 app[web.1]: at Socket.emit (events.js:198:13)
-2019-07-14T19:39:16.590600+00:00 app[web.1]: at /app/node_modules/socket.io/lib/socket.js:528:12
-2019-07-14T19:39:16.590603+00:00 app[web.1]: at process._tickCallback (internal/process/next_tick.js:61:11)
-2019-07-14T19:39:16.618498+00:00 app[web.1]: npm ERR! code ELIFECYCLE
-2019-07-14T19:39:16.619064+00:00 app[web.1]: npm ERR! errno 1
-2019-07-14T19:39:16.623510+00:00 app[web.1]: npm ERR! test@0.1.0 start: `node --require dotenv/config app.js`
-2019-07-14T19:39:16.627714+00:00 app[web.1]: npm ERR! Exit status 1
-2019-07-14T19:39:16.628180+00:00 app[web.1]: npm ERR!
-2019-07-14T19:39:16.628493+00:00 app[web.1]: npm ERR! Failed at the test@0.1.0 start script.
-2019-07-14T19:39:16.628757+00:00 app[web.1]: npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-2019-07-14T19:39:16.650059+00:00 app[web.1]: 
-2019-07-14T19:39:16.651573+00:00 app[web.1]: npm ERR! A complete log of this run can be found in:
-2019-07-14T19:39:16.652152+00:00 app[web.1]: npm ERR!     /app/.npm/_logs/2019-07-14T19_39_16_63
-
-
-
-add logging to app
-
-
-add try catch around controller, and store data is redis
