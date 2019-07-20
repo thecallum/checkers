@@ -18,7 +18,7 @@
 
                             <div class="profile__input__group">
                                 <div class="profile__input__group__section">
-                                    <img ref="image" v-bind:src="imageURL" data-src="<%= img %>" alt="" class="profile__img" />
+                                    <img ref="image" :src="imageURL ? imageURL : '/assets/default.jpg'" data-src="<%= img %>" alt="" class="profile__img" />
 
                                     <label class="profile__input__upload__label" for="uploaded_image" class="custom-file-upload">
                                         <i class="fa fa-cloud-upload"></i> Custom Upload

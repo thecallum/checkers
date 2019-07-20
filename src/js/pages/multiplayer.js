@@ -20,13 +20,13 @@ new Vue({
             {
                 name: '',
                 default: 'player 1',
-                src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg',
+                src: '/assets/default.jpg',
                 color: 0,
             },
             {
                 name: '',
                 default: 'player 2',
-                src: 'http://orig11.deviantart.net/8fb6/f/2014/142/a/0/best_shrek_face_by_mrlorgin-d7jaspk.jpg',
+                src: '/assets/default.jpg',
                 color: 1,
             },
         ],
