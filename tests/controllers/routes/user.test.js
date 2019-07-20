@@ -325,3 +325,60 @@ describe('POST /user/update/delete-profile', () => {
             });
     });
 });
+
+describe('POST /user/update/delete-account', () => {
+    let cookie1;
+
+    beforeEach(async done => {
+        await resetUserTable();
+        const response = await registerUser(app, user1);
+
+        expect(response.status).toBe(200);
+
+        cookie1 = response.headers['set-cookie'];
+
+        const query = `select * from user where email = '${user1.email}';`;
+
+        con.query(query, (err, result) => {
+            if (err) done(err);
+
+            expect(result.length).toBe(1);
+            user1.id = result[0].id;
+            done();
+        });
+    });
+
+    test('delete account', done => {
+        request(app)
+            .post('/user/update/delete-account')
+            .set('Cookie', cookie1)
+            .send({
+                password: user1.password,
+            })
+            .then(response => {
+                expect(response.status).toBe(200);
+
+                const query = `SELECT * FROM user WHERE id = ${user1.id};`;
+
+                con.query(query, (err, response) => {
+                    if (err) done(err);
+
+                    expect(response.length).toBe(0);
+                    done();
+                });
+            });
+    });
+
+    test('delete account -- send invalid password', done => {
+        request(app)
+            .post('/user/update/delete-account')
+            .set('Cookie', cookie1)
+            .send({
+                password: 'asdasd',
+            })
+            .then(response => {
+                expect(response.status).toBe(401);
+                done();
+            });
+    });
+});

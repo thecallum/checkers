@@ -17,6 +17,7 @@ const {
     getPassword,
     updateProfileImage,
     deleteProfileImage,
+    deleteAccount,
 } = require('../../models/user');
 
 describe('checkUsernameAvailable model', () => {
@@ -345,6 +346,41 @@ describe('delete profile image model', () => {
         await deleteProfileImage(user.id);
 
         const query = `SELECT * FROM profile WHERE id = ${user.id}`;
+        con.query(query, (err, response) => {
+            if (err) done(err);
+
+            expect(response.length).toBe(0);
+            done();
+        });
+    });
+});
+
+describe('delete account', () => {
+    const user = {
+        email: 'email@email.com',
+        password: 'Password1234!',
+        username: 'username1234',
+        id: null,
+        profileImage: 'someprofileimage',
+    };
+
+    beforeEach(async done => {
+        await resetUserTable();
+        const query = `INSERT INTO user (email, password, username) VALUES ('${user.email}','${user.password}','${user.username}');`;
+        await asyncQuery(con, query);
+
+        done();
+    });
+
+    afterEach(async done => {
+        await resetProfileTable();
+        done();
+    });
+
+    test('Delete account', async done => {
+        await deleteAccount(user.id);
+
+        const query = `SELECT * FROM user WHERE id = ${user.id}`;
         con.query(query, (err, response) => {
             if (err) done(err);
 
