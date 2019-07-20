@@ -6,6 +6,8 @@ const helmet = require('helmet');
 const compression = require('compression');
 const path = require('path');
 
+const logger = require('./logger');
+
 const configureSession = require('./configureSession');
 const configureCloudinary = require('./configureCloudinary');
 const controller = require('./socket/controller');
@@ -44,7 +46,10 @@ app.use(require('./controllers/routes/user'));
 app.use(require('./controllers/routes/auth'));
 app.use(require('./controllers/routes/pages'));
 
-const server = app.listen(process.env.PORT, () => console.log(`${path.basename(__filename)} is running on https://localhost:${process.env.PORT}`));
+const server = app.listen(process.env.PORT, () => {
+    console.log(`${path.basename(__filename)} is running on https://localhost:${process.env.PORT}`);
+    logger.info('Server started');
+});
 
 module.exports = { app, server };
 

@@ -7,8 +7,9 @@ const { register } = require('../models/user');
 const validateEmail = email => !!validator.isEmail(email);
 const validatePassword = require('./validatePassword');
 const validateUsername = require('./validateUsername');
+const logger = require('../logger');
 
-const registerUser = (username, email, password) =>
+module.exports = (username, email, password) =>
     new Promise(async (resolve, reject) => {
         // verify details
         // these should already have been validated clientside
@@ -32,8 +33,7 @@ const registerUser = (username, email, password) =>
                     });
                 }
 
+                logger.log(e);
                 reject(e.message);
             });
     });
-
-module.exports = registerUser;

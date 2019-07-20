@@ -3,8 +3,6 @@ setup socket for multi-server use
 Improve profile image verification
 Suggest profile image upload on register
 
-add delete account option
-
 Add online guest account
 
 sometimes uploaded image link is incorrect, then there is an unused image file

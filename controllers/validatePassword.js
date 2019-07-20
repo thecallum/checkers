@@ -1,4 +1,4 @@
-const validatePassword = password => {
+module.exports = password => {
     if (!password.match(/^.{10,128}$/)) return false;
     if (password.match(/(.)\1{2,}/)) return false;
 
@@ -15,5 +15,3 @@ const validatePassword = password => {
     // is valid
     return true;
 };
-
-module.exports = validatePassword;

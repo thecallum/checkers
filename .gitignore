@@ -3,4 +3,4 @@
 /public/js
 
 .env
-yarn-error.log
+*.log
