@@ -1,4 +1,4 @@
-const Rooms = () => {
+module.exports = () => {
     let rooms = {};
     let roomIndex = 0;
 
@@ -106,5 +106,3 @@ const Rooms = () => {
         reset,
     };
 };
-
-module.exports = Rooms;
