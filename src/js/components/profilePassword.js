@@ -1,7 +1,7 @@
 const message = require('../components/message');
 const passwordRules = require('../components/passwordRules');
 
-module.exports = new Vue({
+new Vue({
     el: '#app__password',
     components: { message, passwordRules },
     data: {

@@ -1,10 +1,10 @@
-const yellow = 'hsl(60, 80%, 50%)';
-const red = 'hsl(0, 50%, 50%)';
-const green = 'hsl(100, 50%, 50%)';
-const blue = 'hsl(220, 70%, 50%)';
-const grey = 'hsl(220, 5%, 70%)';
+exports.yellow = 'hsl(60, 80%, 50%)';
+exports.red = 'hsl(0, 50%, 50%)';
+exports.green = 'hsl(100, 50%, 50%)';
+exports.blue = 'hsl(220, 70%, 50%)';
+exports.grey = 'hsl(220, 5%, 70%)';
 
-const colors = [
+exports.colors = [
     { name: 'red', primary: 'hsl(0, 90%, 40%)', secondary: 'hsl(0, 90%, 55%)' },
     { name: 'blue', primary: 'hsl(200, 65%, 40%)', secondary: 'hsl(200, 50%, 55%)' },
     { name: 'green', primary: 'hsl(100, 50%, 40%)', secondary: 'hsl(100, 50%, 55%)' },
@@ -14,5 +14,3 @@ const colors = [
     { name: 'black', primary: 'hsl(0, 0%, 30%)', secondary: 'hsl(0, 0%, 50%)' },
     { name: 'purple', primary: 'hsl(290, 50%, 50%)', secondary: 'hsl(290, 50%, 65%)' },
 ];
-
-module.exports = { colors, yellow, red, green, blue, grey };

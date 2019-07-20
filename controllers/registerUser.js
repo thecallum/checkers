@@ -11,29 +11,33 @@ const logger = require('../logger');
 
 module.exports = (username, email, password) =>
     new Promise(async (resolve, reject) => {
-        // verify details
-        // these should already have been validated clientside
-        // therefore, if they are incorrect, they wil recieve a generic response
+        try {
+            // verify details
+            // these should already have been validated clientside
+            // therefore, if they are incorrect, they wil recieve a generic response
 
-        if (!validateEmail(email) || !validatePassword(password) || !validateUsername(username)) return resolve({ success: false, message: 'invalid' });
+            if (!validateEmail(email) || !validatePassword(password) || !validateUsername(username)) return resolve({ success: false, message: 'invalid' });
 
-        const passwordHash = await bcrypt.hash(password, saltRounds);
+            const passwordHash = await bcrypt.hash(password, saltRounds);
 
-        register(username, email, passwordHash)
-            .then(newUser => resolve({ success: true, newUser }))
-            .catch(e => {
-                if (!!e.message && e.message.includes('ER_DUP_ENTRY') && e.message.includes('email')) {
-                    return resolve({ success: false, message: 'Email taken' });
-                }
+            register(username, email, passwordHash)
+                .then(newUser => resolve({ success: true, newUser }))
+                .catch(e => {
+                    if (!!e.message && e.message.includes('ER_DUP_ENTRY') && e.message.includes('email')) {
+                        return resolve({ success: false, message: 'Email taken' });
+                    }
 
-                if (!!e.message && e.message.includes('ER_DUP_ENTRY') && e.message.includes('username')) {
-                    return resolve({
-                        success: false,
-                        message: 'Username taken',
-                    });
-                }
+                    if (!!e.message && e.message.includes('ER_DUP_ENTRY') && e.message.includes('username')) {
+                        return resolve({
+                            success: false,
+                            message: 'Username taken',
+                        });
+                    }
 
-                logger.log(e);
-                reject(e.message);
-            });
+                    throw e;
+                });
+        } catch (e) {
+            logger.log(e);
+            reject(e);
+        }
     });

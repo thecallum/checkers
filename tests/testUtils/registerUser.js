@@ -1,6 +1,6 @@
 const request = require('supertest');
 
-const registerUser = (app, body) =>
+module.exports = (app, body) =>
     new Promise(resolve => {
         request(app)
             .post('/register')
@@ -9,5 +9,3 @@ const registerUser = (app, body) =>
                 resolve(response);
             });
     });
-
-module.exports = registerUser;

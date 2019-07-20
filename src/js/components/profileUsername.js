@@ -1,7 +1,7 @@
 const message = require('../components/message');
 const usernameAvailable = require('../requests/usernameAvailable');
 
-module.exports = new Vue({
+new Vue({
     el: '#app__username',
     components: { message },
     data: {
