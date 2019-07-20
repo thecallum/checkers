@@ -7,6 +7,4 @@ Add online guest account
 
 user can play agaist themselves online
 
-default profile picture
-
 move 'its your turn' text to top, user profiles can move to the right
