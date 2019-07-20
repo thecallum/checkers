@@ -22,7 +22,7 @@
                 <div v-else v-cloak>
                     <div class="canvas__players" v-if="gameStarted">
                         <div class="canvas__player" v-for="player in players">
-                            <img v-bind:src="player.src" v-bind:alt="player.alt" class="canvas__playerImg" />
+                            <img v-bind:src="player.src ? player.src : '/assets/default.jpg'" v-bind:alt="player.alt" class="canvas__playerImg" />
                             <p class="canvas__playerName">
                                 {{ player.username }}
                             </p>
@@ -52,7 +52,7 @@
                     <p v-if="accepted && opponentAccepted" class="online__searching">Setting up game</p>
                     <div v-else>
                         <span v-if="opponent">
-                            <img class="online__img" :src="opponent.src" alt="opponent profile picture" />
+                            <img class="online__img" :src="opponent.src ? opponent.src : '/assets/default.jpg'" alt="opponent profile picture" />
                             <p>{{ opponent.username }}</p>
                         </span>
 
