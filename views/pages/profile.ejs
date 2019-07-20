@@ -168,6 +168,31 @@
                             <message :close="closeErrorMessage" :message="errorMessage" v-if="errorMessage" type="error"></message>
                         </div>
                     </div>
+
+                    <div id="app__delete">
+                        <div class="profile__group">
+                            <h4 class="profile__subtitle">Delete Account</h4>
+
+                            <p>Confirm your password</p>
+                            <input type="password" class="profile__input" v-model="password" :disabled="loading" placeholder="Password" />
+
+                            <div class="form__row">
+                                <message :close="closeErrorMessage" :message="errorMessage" v-if="errorMessage" type="error"></message>
+                            </div>
+
+                            <button class="profile__button" @click="deletePassword" disabled :disabled="password === ''">Delete</button>
+
+                            <modal :show="showModal" v-cloak>
+                                <h4 class="modal__title">Are you sure?</h4>
+                                <p>Your account will be lost forever.</p>
+
+                                <div class="modal__options">
+                                    <button class="modal__button" @click="cancel">Cancel</button>
+                                    <button class="modal__button modal__button--red" @click="confirmDelete" v-bind:class="{ loading }">Delete</button>
+                                </div>
+                            </modal>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

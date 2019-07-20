@@ -111,6 +111,7 @@
         color: #fff;
         text-decoration: none;
         margin: 0 10px;
+        position: relative;
 
         &:hover {
             background-color: #444;
@@ -118,6 +119,36 @@
 
         &:disabled {
             background-color: #666;
+        }
+
+        &.loading {
+            color: transparent;
+        }
+
+        &.loading::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: block;
+            border-radius: 50%;
+            border: 2px solid #bbb;
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: submit_loading 1s infinite linear;
+        }
+
+        &--red {
+            background-color: hsl(0, 50%, 50%);
+
+            &:hover {
+                background-color: hsl(0, 50%, 55%);
+            }
         }
     }
 }

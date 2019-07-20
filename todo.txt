@@ -17,6 +17,8 @@ error handling
 
 move 'its your turn' text to top, user profiles can move to the right
 
+promised should return rather than reject on user controlled events
+
 app.js:19:20
 app.js is running on https://localhost:3000
 /home/callum/projects/checkers/socket/Games.js:15

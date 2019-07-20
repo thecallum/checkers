@@ -9,6 +9,7 @@ const validatePassword = require('../validatePassword');
 const validateUsername = require('../validateUsername');
 const updateProfileImage = require('../updateProfileImage');
 const deleteProfileImage = require('../deleteProfileImage');
+const deleteAccount = require('../deleteAccount');
 
 const auth = require('../../middleware/auth');
 
@@ -90,6 +91,24 @@ router.post('/user/update/delete-profile', auth, async (req, res) => {
             req.session.user = { ...req.session.user, profile_image: undefined };
             req.session.save();
             res.status(200).send();
+        })
+        .catch(err => {
+            console.log({ err });
+            res.status(400).send();
+        });
+});
+
+router.post('/user/update/delete-account', auth, async (req, res) => {
+    const { id, email } = req.session.user;
+    const { password } = req.body;
+
+    // require user to send password as confirmation
+    if (!password) return res.status(400).send();
+
+    deleteAccount(id, password, email)
+        .then(({ status, message }) => {
+            if (!status && message === 'invalid password') return res.status(401).send();
+            req.session.destroy(() => res.status(200).send());
         })
         .catch(err => {
             console.log({ err });
