@@ -14,7 +14,17 @@ module.exports = env => {
     return {
         mode: isDev ? 'development' : 'production',
         entry: {
-            style: path.resolve(__dirname, 'src', 'styles', 'styles.scss'),
+            _main: path.resolve(__dirname, 'src', 'styles', 'main.scss'),
+            _home: path.resolve(__dirname, 'src', 'styles', 'home.scss'),
+            _leaderboard: path.resolve(__dirname, 'src', 'styles', 'leaderboard.scss'),
+            _online: path.resolve(__dirname, 'src', 'styles', 'online.scss'),
+            _profile: path.resolve(__dirname, 'src', 'styles', 'profile.scss'),
+            _form: path.resolve(__dirname, 'src', 'styles', 'form.scss'),
+            _modal: path.resolve(__dirname, 'src', 'styles', 'modal.scss'),
+            _canvas: path.resolve(__dirname, 'src', 'styles', 'canvas.scss'),
+            _message: path.resolve(__dirname, 'src', 'styles', 'message.scss'),
+            _passwordRules: path.resolve(__dirname, 'src', 'styles', 'passwordRules.scss'),
+
             multiplayer: path.resolve(__dirname, 'src', 'js', 'pages', 'multiplayer.js'),
             login: path.resolve(__dirname, 'src', 'js', 'pages', 'login.js'),
             register: path.resolve(__dirname, 'src', 'js', 'pages', 'register.js'),
@@ -37,7 +47,7 @@ module.exports = env => {
                 'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
             }),
             new MiniCssExtractPlugin({
-                filename: 'css/main.css',
+                filename: 'css/[name].css',
             }),
             new webpack.ProvidePlugin({
                 Vue: 'vue',
