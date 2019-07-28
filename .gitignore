@@ -4,3 +4,5 @@ node/public/js
 
 node/.env
 *.log
+
+node_modules
