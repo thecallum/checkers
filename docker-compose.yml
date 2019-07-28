@@ -4,9 +4,9 @@ nginx:
         - node1:node1
     ports:
         - '80:80'
+        - '443:443'
     volumes:
-        - ./data/certbot/conf:/etc/letsencrypt
-        - ./data/certbot/www:/var/www/certbot
+        - /etc/nginx/ssl/:/etc/nginx/ssl/
 node1:
     build: ./node
     ports:
@@ -19,8 +19,3 @@ redis:
     image: redis
     ports:
         - '6379'
-certbot:
-    image: certbot/certbot
-    volumes:
-        - ./data/certbot/conf:/etc/letsencrypt
-        - ./data/certbot/www:/var/www/certbot
