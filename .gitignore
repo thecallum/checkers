@@ -6,3 +6,5 @@ node/.env
 *.log
 
 node_modules
+
+data
