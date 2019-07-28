@@ -1,0 +1,40 @@
+.online {
+    &__box {
+        border: 1px solid black;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 10px 20px;
+        min-height: 100px;
+        box-sizing: border-box;
+    }
+
+    &__title {
+        font-weight: 100;
+    }
+
+    &__queue {
+        box-sizing: border-box;
+        padding: 10px;
+    }
+
+    &__img {
+        width: 100px;
+        height: 100px;
+    }
+
+    &__searching {
+        &::after {
+            content: '';
+            animation: searching_dots 2s linear infinite;
+        }
+    }
+
+    &__button__group {
+        display: flex;
+
+        > * {
+            flex-grow: 1;
+            flex-shrink: 1;
+        }
+    }
+}

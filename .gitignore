@@ -1,6 +1,6 @@
-/node_modules
-/public/css
-/public/js
+node/node_modules
+node/public/css
+node/public/js
 
-.env
+node/.env
 *.log

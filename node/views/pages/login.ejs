@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../components/head %>
+        <title>Login | Checkers</title>
+    </head>
+
+    <body>
+        <%- include('../components/header', { auth }); %>
+
+        <div class="container form__container">
+            <div id="app">
+                <form class="form" @submit="handleSubmit">
+                    <h3 class="form__title">Login</h3>
+
+                    <div class="form__row">
+                        <input type="text" name="email" id="input__email" v-model="email" v-bind:class="emailClass" class="form__input" :disabled="loading" />
+                        <label class="form__label" for="input__email" v-bind:class="{notempty: email}">Email</label>
+                        <span class="form__error" v-if="emailError" v-cloak>{{ emailError }}</span>
+                    </div>
+
+                    <div class="form__row">
+                        <input
+                            type="password"
+                            name="password"
+                            id="input__password"
+                            v-model="password"
+                            v-bind:class="passwordClass"
+                            class="form__input"
+                            :disabled="loading"
+                        />
+                        <label class="form__label" for="input__password" v-bind:class="{ notempty: password }">Password</label>
+                        <span class="form__error" v-if="passwordError" v-cloak>{{ passwordError }}</span>
+                    </div>
+
+                    <div class="form__row">
+                        <input type="checkbox" name="stay_logged" id="input_stay_logged" class="form__checkbox" v-model="stayLogged" :disabled="loading" />
+                        <label for="input_stay_logged" class="form__checkbox__label">
+                            <div class="form__fake__checkbox"></div>
+                            Stay Logged In
+                        </label>
+                    </div>
+
+                    <div class="form__row" v-if="requestError" v-cloak>
+                        <message :close="closeErrorMessage" :message="requestError" v-if="requestError" type="error"> </message>
+                    </div>
+
+                    <div class="form__row">
+                        <button type="submit" class="form__submit" v-bind:class="{ loading }">
+                            <span v-if="loading"></span>
+                            <span v-else>Login</span>
+                        </button>
+                    </div>
+
+                    <p class="form__links">
+                        <a class="form__link" href="/register">Register</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+
+        <script src="/js/validator.bundle.js"></script>
+        <script src="/js/vue.bundle.js"></script>
+        <script src="/js/login.bundle.js"></script>
+    </body>
+</html>
