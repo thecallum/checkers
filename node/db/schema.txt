@@ -1,0 +1,44 @@
+CREATE TABLE user (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    email VARCHAR(100) NOT NULL,
+    password VARCHAR(60) NOT NULL, 
+    username VARCHAR(30) NOT NULL,
+    UNIQUE(email),
+    UNIQUE(USERNAME)
+);
+
+CREATE TABLE leaderboard (
+    id INT NOT NULL,
+    win INT NOT NULL DEFAULT 0,
+    lose INT NOT NULL DEFAULT 0,
+    draw INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    FOREIGN KEY (id) REFERENCES user(id) ON DELETE CASCADE
+);
+
+CREATE TABLE profile (
+    id INT NOT NULL,
+    profile_image VARCHAR(45) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (id) REFERENCES user(id) ON DELETE CASCADE
+);
+
+// QUERY; update or insert
+
+INSERT INTO leaderboard (field, userID) VALUES ('win', 1) ON DUPLICATE KEY UPDATE count = count + 1;
+
+// win
+INSERT INTO leaderboard (id, win) VALUES (1, 1) ON DUPLICATE KEY UPDATE win = win + 1;
+
+SELECT user.id AS id, username, IFNULL(win, 0) AS win, IFNULL(lose, 0) AS lose, IFNULL(draw, 0) AS draw, IFNULL(win + lose + draw, 0) AS games FROM user 
+LEFT JOIN leaderboard ON leaderboard.id = user.id
+ORDER BY (win * 2) + (lose * -2) + draw DESC, games DESC;
+
+
+
+
+
+SELECT username, field, count FROM leaderboard INNER JOIN user ON userID = id;
+
+
+select username, (select count from leaderboard where userid = id and field = 'win') as win, (select count from leaderboard where userid = id and field = 'lose') as lose, (select count from leaderboard where userid = id and field = 'draw') as draw  from user;
