@@ -7,14 +7,16 @@ nginx:
         - '443:443'
     volumes:
         - /etc/nginx/ssl/:/etc/nginx/ssl/
+        - /var/log/nginx/:/var/log/nginx/
 node1:
     build: ./node
     ports:
         - '8080'
     links:
         - redis
-    environment:
-        - 'TEST=some test env yeet'
+    volumes:
+        - ./logs/error.log:/root/node/src/error.log
+        - ./logs/combined.log:/root/node/src/combined.log
 redis:
     image: redis
     ports:
