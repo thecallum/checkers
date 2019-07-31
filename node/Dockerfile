@@ -4,7 +4,9 @@ COPY . .
 RUN apt-get update && \
     apt-get upgrade -y && \
     npm install --global yarn && \
+    npm install --global pm2 && \
     yarn && \
     yarn build 
 EXPOSE 80
-CMD ["yarn", "start"]
+
+CMD ["pm2-runtime", "start", "npm -- start"]
