@@ -1,10 +1,13 @@
 const con = require('../db/connection');
+const mysql = require('mysql');
 
 exports.update = (field, userID) =>
     new Promise(async resolve => {
-        const query = `INSERT INTO leaderboard (id, ${field}) VALUES (${userID}, 1) ON DUPLICATE KEY UPDATE ${field} = ${field} + 1;`;
+        const query = `INSERT INTO ?? (??, ?) VALUES (?, ??) ON DUPLICATE KEY UPDATE ?? = ?? + 1;`;
+        const params = ['leaderboard', 'id', field, userID, 1, field, field];
+        const formattedQuery = mysql.format(query, params);
 
-        con.query(query, (err, response) => {
+        con.query(formattedQuery, (err, response) => {
             resolve(err ? false : true);
         });
     });
@@ -13,16 +16,50 @@ exports.get = offset =>
     new Promise(async (resolve, reject) => {
         const interval = 50;
 
-        const query1 = `SELECT user.id AS id, username, IFNULL(win, 0) AS win, IFNULL(lose, 0) AS lose, IFNULL(draw, 0) AS draw, IFNULL(win + lose + draw, 0) AS games FROM user 
-        LEFT JOIN leaderboard ON leaderboard.id = user.id
-        ORDER BY (win * 2) + (lose * -2) + draw DESC, games 
-        DESC LIMIT ${interval} offset ${offset * interval};`;
+        const query1 = `SELECT ?? AS id, ??, IFNULL(??, 0) AS win, IFNULL(??, 0) AS lose, IFNULL(??, 0) AS draw, IFNULL(?? + ?? + ??, 0) AS games FROM ??
+        LEFT JOIN ?? ON ?? = ??
+        ORDER BY (?? * 2) + (?? * -2) + ?? DESC, ??
+        DESC LIMIT ? offset ?;`;
+        const params1 = [
+            'user.id',
+            'username',
+            'win',
+            'lose',
+            'draw',
+            'win',
+            'lose',
+            'draw',
+            'user',
+            'leaderboard',
+            'leaderboard.id',
+            'user.id',
+            'win',
+            'lose',
+            'draw',
+            'games',
+            interval,
+            offset * interval,
+        ];
+        const formattedQuery1 = mysql.format(query1, params1);
 
-        const query2 = `SELECT COUNT(id) AS total FROM user;`;
+        const query2 = `SELECT COUNT(??) AS total FROM ??;`;
+        const params2 = ['id', 'user'];
+        const formattedQuery2 = mysql.format(query2, params2);
 
-        con.query(query1 + query2, (err, response) => {
-            if (err) reject(err);
+        const promises = [
+            new Promise(resolve => {
+                con.query(formattedQuery1, (err, response) => {
+                    resolve(response);
+                });
+            }),
+            new Promise(resolve => {
+                con.query(formattedQuery2, (err, response) => {
+                    resolve(response);
+                });
+            }),
+        ];
 
+        Promise.all(promises).then(response => {
             const data = response[0];
             const total = response[1][0].total;
             const next = data.length + offset * interval < total;
