@@ -1,22 +1,20 @@
 FROM node:10 AS build
-WORKDIR /root/node/src/
+WORKDIR /app/
 ADD package.json .
-RUN ls
-RUN npm install && \
-    npm install --global pm2
+RUN npm install --global yarn && \
+    yarn && \
+    yarn add --global pm2
 
 FROM node:10 AS compile
-WORKDIR /root/node/src/
-COPY --from=build /root/node/src/ /root/node/src/
-ADD src /root/node/src/src/
+WORKDIR /app/
+COPY --from=build . .
+ADD src /app/src/
 ADD webpack.config.js .
-RUN ls 
-# RUN pwd
-RUN npm run build 
+RUN yarn build 
 
 FROM node:10-slim
-COPY --from=compile /root/node/src/ /root/node/src/
+WORKDIR /app/
+COPY --from=compile . .
 ADD . .
-# RUN npm run build 
 EXPOSE 80
 CMD ["pm2-runtime", "start", "npm -- start"]

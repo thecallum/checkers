@@ -15,3 +15,7 @@ https://www.digitalocean.com/community/tutorials/how-to-create-an-ssl-certificat
 sudo mkdir /etc/nginx/ssl
 
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/ngin
+
+// optimize docker build process
+Split build into multiple stages, allowing docker to cache each stage
+Fixed npm global module error by using yarn global

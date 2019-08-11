@@ -15,7 +15,7 @@ node1:
     links:
         - redis
     volumes:
-        - ./logs/:/root/node/src/logs/
+        - ./logs/:/app/logs/
 redis:
     image: redis
     ports:
