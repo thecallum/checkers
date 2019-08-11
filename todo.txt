@@ -9,4 +9,3 @@ user can play agaist themselves online
 
 move 'its your turn' text to top, user profiles can move to the right
 
-Prepaired sql queries

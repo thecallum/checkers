@@ -5,7 +5,6 @@ const testingConfig = {
     user: 'root',
     password: 'password',
     database: 'test',
-    multipleStatements: true,
 };
 
 if (!process.env.TESTING) {
