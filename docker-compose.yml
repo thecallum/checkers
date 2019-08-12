@@ -1,14 +1,14 @@
 nginx:
     build: ./nginx
     links:
-        - node1:node1
+        - node:node
     ports:
         - '80:80'
         - '443:443'
     volumes:
         - /etc/nginx/ssl/:/etc/nginx/ssl/
         - /var/log/nginx/:/var/log/nginx/
-node1:
+node:
     build: ./node
     ports:
         - '8080'
@@ -16,6 +16,7 @@ node1:
         - redis
     volumes:
         - ./logs/:/app/logs/
+        - /public/:/app/logs/
 redis:
     image: redis
     ports:
