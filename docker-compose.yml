@@ -16,7 +16,6 @@ node:
         - redis
     volumes:
         - ./logs/:/app/logs/
-        - /public/:/app/logs/
 redis:
     image: redis
     ports:
