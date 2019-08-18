@@ -12,14 +12,16 @@ services:
             - /etc/nginx/ssl/:/etc/nginx/ssl/
             - /var/log/nginx/:/var/log/nginx/
     node:
-        build: ./node
+        build:
+            context: ./node
+            dockerfile: production.Dockerfile
         ports:
-            - '8080:8080'
+            - '8080'
         links:
             - redis
         volumes:
             - ./logs/:/app/logs/
-        command: npm run start
+        command: pm2-runtime start npm -- start
     redis:
         image: redis
         ports:

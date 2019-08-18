@@ -1,12 +1,11 @@
-FROM node:10
-WORKDIR /root/node/src/
-COPY . .
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    npm install --global yarn && \
-    npm install --global pm2 && \
-    yarn && \
-    yarn build 
-EXPOSE 80
+FROM node:10 AS build
+WORKDIR /app/
+ADD package.json .
+RUN npm install
 
-CMD ["pm2-runtime", "start", "npm -- start"]
+FROM node:10-slim
+RUN npm install --global --unsafe-perm pm2
+WORKDIR /app/
+COPY --from=build /app/ /app/
+ADD . .
+EXPOSE 80
