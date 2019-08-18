@@ -146,11 +146,8 @@ module.exports = env => {
         devServer: {
             contentBase: path.join(__dirname, 'public'),
             port: 8000,
-
             proxy: {
-                '/': {
-                    target: `http://localhost:${3000}`,
-                },
+                '/': { target: `http://localhost:${8080}` },
             },
         },
     };
