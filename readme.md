@@ -20,20 +20,17 @@ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/
 Split build into multiple stages, allowing docker to cache each stage
 Fixed npm global module error by using yarn global
 
-===============
-/\/\/\DEV/\/\/\
-===============
-yarn install
 
+## Devevlopment
+```
+yarn install
 make dev
 yarn dev
+```
+Runs on localhost:8000
 
-// localhost:8000
-
-===============
-/\/\/\PROD/\/\/\
-===============
-
+## Production
+```
 make prod
-
-// localhost:80
+```
+Runs on localhost:80
