@@ -1,4 +1,23 @@
-# Required environment variables
+Checkers board game built with VueJS, NodeJS and Docker
+
+## About
+
+Checkers board game built with VueJS, NodeJS and Docker.
+
+Checkers was the first large project that I build. The primary thing that I learned was to keep projects small. The project became too big, plus I didn't create any specication beforehand, so I was never able to complete it.
+
+I also learned how to use Docker, and a small amount of NGINX. Docker is great because it let's you containerize processes, where each container holds the entire environment of its process. In other words, you don't have to worry about deploying an app to a specific environment, because once you've setup the app in Docker, the app can run anywhere.
+
+The game has three modes:
+- Multiplayer, play against another human on the same computer
+- Online, play against a random player online
+- Singleplayer, against a computer player
+
+The first two modes worked great, however, I didn't have enough time to develope a computer player.
+
+The online mode uses websockets to allow communication between differente players. A player can join the queue, and will be matched with another player in the queue. 
+
+## Required environment variables
 
 
 - DEVELOPMENT
